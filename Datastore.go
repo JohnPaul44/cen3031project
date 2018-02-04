@@ -16,6 +16,7 @@ type DSUser struct {
 	Name			string				`json:"name,omitempty"`
 	PassHash		[]byte				`json:"pass_hash,omitempty"`
 	Email			string				`json:"email,omitempty"`
+	username		string				// unexported
 	Phone			*string				`json:"phone,omitempty"`
 	Contacts		[]string			`json:"contacts,omitempty"`
 	Conversations	[]*datastore.Key	`json:"conversations"`

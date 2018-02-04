@@ -16,7 +16,7 @@ import (
 
 const ProjectID = "cen3031-192414"
 
-// TODO: implement support for multiple connections on the same account - use a map of arrays for the connections
+// TODO: implement support for multiple connections on the same account - use a map of slices for the connections
 
 type Reaction struct {
 	Reactions	[]int	`json:"type"`
@@ -45,6 +45,11 @@ type Conversation struct {
 	Messages	[]Message			`json:"messages"`
 }
 
+type Contact struct {
+	Username	string	`json:"username"`
+	Online		bool	`json:"online"`
+}
+
 type ServerMessage struct {
 	Status			int             `json:"status"`
 	Error			*int			`json:"error,omitempty"`
@@ -54,7 +59,8 @@ type ServerMessage struct {
 	Email			*string         `json:"email,omitempty"`
 	Name			*string         `json:"name,omitempty"`
 	Phone			*string         `json:"phone,omitempty"`
-	Contacts		*[]string       `json:"contacts,omitempty"`
+	Contacts		[]Contact       `json:"contacts,omitempty"`
+	Online			*bool			`json:"online,omitempty"`
 	Conversations	*[]Conversation	`json:"conversations,omitempty"`
 	Message			*Message        `json:"message,omitempty"`
 }
@@ -96,6 +102,7 @@ const (
 	NotificationMessageRead          = iota // returns Message.ConversationKey and Message.From
 	NotificationTyping               = iota // returns Message.ConversationKey, Message.From and Message.Typing
 	NotificationMessageReceived      = iota // returns Message
+	NotificationUserOnlineStatus	 = iota	// returns
 
 	// Actions are received from client devices
 	ActionRegister                   = iota // requires Username, Password, Name, and Email
@@ -114,7 +121,7 @@ const (
 )
 
 func userToKey(user *DSUser) *datastore.Key {
-	return datastore.NameKey(KindUser, user.Name, nil)
+	return datastore.NameKey(KindUser, user.username, nil)
 }
 
 type ServerMessageHandler func(*DSUser, *json.Encoder, *ServerMessage)
@@ -134,7 +141,7 @@ func handleServerMessage(user *DSUser, encoder *json.Encoder, message *ServerMes
 
 func handleLogOut(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
 	rsp := new(ServerMessage)
-	conns.remove(user.Name)
+	conns.remove(user.username)
 	rsp.Status = NotificationLoggedOut
 	encoder.Encode(rsp)
 }
@@ -217,7 +224,7 @@ func handleSendMessage(user *DSUser, encoder *json.Encoder, message *ServerMessa
 	tmp.Message = message.Message
 	message = tmp
 
-	*message.Message.From = user.Name
+	*message.Message.From = user.username
 	conversation := new(DSConversation)
 
 	if message.Message.ConversationKey == nil {
@@ -225,7 +232,7 @@ func handleSendMessage(user *DSUser, encoder *json.Encoder, message *ServerMessa
 		// create conversation entity and get key
 		conversation.Time = time.Now()
 
-		*conversation.Members[user.Name].Read = true // the user who sent the message has already read it and is done typing
+		*conversation.Members[user.username].Read = true // the user who sent the message has already read it and is done typing
 		for _, member := range *message.Message.To {
 			*conversation.Members[member].Read = false	// reset user read status
 		}
@@ -267,7 +274,7 @@ func handleSendMessage(user *DSUser, encoder *json.Encoder, message *ServerMessa
 	m := new(DSMessage)
 	m.Time = time.Now()
 	m.Text = *message.Message.Text
-	m.From = user.Name
+	m.From = user.username
 	if message.Message.Reactions != nil {
 		for _, r := range *message.Message.Reactions {
 			*m.Reactions = append(*m.Reactions, r)
@@ -334,7 +341,7 @@ func handleReadMessage(user *DSUser, encoder *json.Encoder, message *ServerMessa
 		return
 	}
 
-	*conversation.Members[user.Name].Read = true
+	*conversation.Members[user.username].Read = true
 	_, err = client.Put(c, message.Message.ConversationKey, conversation)
 	if err != nil {
 		rsp.setError(err)
@@ -343,11 +350,11 @@ func handleReadMessage(user *DSUser, encoder *json.Encoder, message *ServerMessa
 	}
 
 	message.Status = NotificationMessageRead
-	*message.Message.From = user.Name
+	*message.Message.From = user.username
 
 	// notify members
 	for member := range conversation.Members {
-		if member != user.Name { json.NewEncoder(conns[member]).Encode(message) }
+		if member != user.username { json.NewEncoder(conns[member]).Encode(message) }
 	}
 }
 
@@ -375,7 +382,7 @@ func handleSetTyping(user *DSUser, encoder *json.Encoder, message *ServerMessage
 	}
 
 	// update conversation status in datastore
-	*conversation.Members[user.Name].Typing = *message.Message.Typing
+	*conversation.Members[user.username].Typing = *message.Message.Typing
 	_, err = client.Put(c, message.Message.ConversationKey, conversation)
 	if err != nil {
 		rsp.setError(err)
@@ -384,11 +391,11 @@ func handleSetTyping(user *DSUser, encoder *json.Encoder, message *ServerMessage
 	}
 
 	message.Status = NotificationTyping
-	*message.Message.From = user.Name
+	*message.Message.From = user.username
 
 	// notify members
 	for member := range conversation.Members {
-		if member != user.Name { json.NewEncoder(conns[member]).Encode(message) }
+		if member != user.username { json.NewEncoder(conns[member]).Encode(message) }
 	}
 }
 
@@ -397,6 +404,33 @@ func handleFunc(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
 	
 }
 */
+
+func sendOnlineNotificationToOnlineContacts(username string, online bool) {
+	// get slice of user's contacts
+	usrKey := datastore.NameKey(KindUser, username, nil)
+	usr := new(DSUser)
+	err := client.Get(c, usrKey, usr)
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	// create notification message
+	msg := new(ServerMessage)
+	msg.Status = NotificationUserOnlineStatus
+	*msg.Online = online
+	*msg.Username = username
+
+	// send notification to online contacts
+	for _, contact := range usr.Contacts {
+		bufrw, contains := conns[contact]
+		if contains {
+			err := json.NewEncoder(bufrw).Encode(msg)
+			if err != nil {
+				fmt.Print(err)
+			}
+		}
+	}
+}
 
 type Connections map[string] *bufio.ReadWriter
 
@@ -409,10 +443,12 @@ func (conns Connections) contains(username string) bool {
 
 func (conns *Connections) add(username string, readWriter *bufio.ReadWriter) {
 	(*conns)[username] = readWriter
+	sendOnlineNotificationToOnlineContacts(username, true)
 }
 
 func (conns *Connections) remove(username string) {
 	delete(*conns, username)
+	sendOnlineNotificationToOnlineContacts(username, false)
 }
 
 func remove(s []string, r string) []string {
@@ -494,6 +530,7 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 				continue
 			}
 
+			lu.username = *msg.Username
 			msg = m
 			usr = lu
 			loggedIn = true
@@ -537,6 +574,7 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 				continue
 			}
 
+			lu.username = *m.Username
 			msg = m
 			usr = lu
 			loggedIn = true
@@ -550,17 +588,23 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 	}
 
 	// add connection to connections map
-	conns[usr.Name] = bufrw
-	defer conns.remove(usr.Name)
+	conns.add(usr.username, bufrw)
+	defer conns.remove(usr.username)
 
 	// return logged in message with user
 	rsp.Status = NotificationLoggedIn
-	*rsp.Username = *msg.Username
+	*rsp.Username = usr.username
 	*rsp.Email = usr.Email
 	if usr.Phone != nil {
 		*rsp.Phone = *usr.Phone
 	}
-	*rsp.Contacts = usr.Contacts
+
+	for _, dsContact := range usr.Contacts {
+		contact := new(Contact)
+		contact.Username = dsContact
+		contact.Online = conns.contains(dsContact)
+		rsp.Contacts = append(rsp.Contacts, *contact)
+	}
 
 	// get conversations from datastore
 	for _, conversationKey := range usr.Conversations {
