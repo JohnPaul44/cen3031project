@@ -11,9 +11,12 @@ import (
 	"encoding/json"
 	"bufio"
 	"time"
+	"google.golang.org/api/iterator"
 )
 
 const ProjectID = "cen3031-192414"
+
+// TODO: implement support for multiple connections on the same account - use a map of arrays for the connections
 
 type Reaction struct {
 	Reactions	[]int	`json:"type"`
@@ -21,6 +24,7 @@ type Reaction struct {
 }
 
 type Message struct {
+	Time			*time.Time		`json:"time,omitempty"`
 	To				*[]string		`json:"to,omitempty"`
 	MessageKey		*datastore.Key	`json:"message_key,omitempty"`
 	ConversationKey	*datastore.Key	`json:"conversation_key,omitempty"`
@@ -30,9 +34,15 @@ type Message struct {
 	Typing			*bool			`json:"typing,omitempty"`
 }
 
+type Status struct {
+	Read	*bool	`json:"read,omitempty"`
+	Typing	*bool	`json:"typing,omitempty"`
+}
+
 type Conversation struct {
-	Members		[]string	`json:"members"`
-	Messages	[]Message	`json:"messages"`
+	Time		time.Time			`json:"time"`
+	Members		map[string] Status	`json:"read"`
+	Messages	[]Message			`json:"messages"`
 }
 
 type ServerMessage struct {
@@ -50,12 +60,12 @@ type ServerMessage struct {
 }
 
 func (msg *ServerMessage) setError(err error) {
-	msg.Status = StatusError
+	msg.Status = NotificationError
 	*msg.ErrorDetails = err.Error()
 }
 
 func (msg *ServerMessage) setCustomError(err int) {
-	msg.Status = StatusError
+	msg.Status = NotificationError
 	*msg.Error = err
 }
 
@@ -76,24 +86,317 @@ const (
 )
 
 const (
-	StatusError         	= iota
-	StatusRegister      	= iota 	// requires username, password, name, and email
-	StatusLogin         	= iota 	// requires username and password
-	StatusLoggedIn      	= iota 	// returns username, email, phone, contacts, conversations
-	StatusLogOut        	= iota	// request to end session, requires nothing
-	StatusLoggedOut     	= iota	// notification that the session has ended, returns nothing
-	StatusAddContact    	= iota 	// requires username
-	StatusContactAdded  	= iota	// returns username
-	StatusRemoveContact 	= iota	// requires username
-	StatusContactRemoved	= iota	// returns username
-	StatusUpdateProfile	  	= iota 	// requires profile fields
-	StatusSendMessage	  	= iota	// requires Message
-	StatusMessageDelivered	= iota	// returns Message
-	StatusMessageRead		= iota	// returns Message
-	StatusTyping			= iota	// returns Message
-	StatusMessageReceived 	= iota 	// returns Message
-	StatusSearchUser      	= iota 	// requires username, email, or phone
+	// Notifications are sent to devices
+	NotificationError     			 = iota	// returns Error
+	NotificationLoggedIn             = iota // returns Username, Email, Phone, Contacts, Conversations
+	NotificationLoggedOut            = iota // session has ended
+	NotificationContactAdded         = iota // returns Username
+	NotificationContactRemoved       = iota // returns Username
+	NotificationMessageDelivered     = iota // returns Message.ConversationKey and Message.MessageKey
+	NotificationMessageRead          = iota // returns Message.ConversationKey and Message.From
+	NotificationTyping               = iota // returns Message.ConversationKey, Message.From and Message.Typing
+	NotificationMessageReceived      = iota // returns Message
+
+	// Actions are received from client devices
+	ActionRegister                   = iota // requires Username, Password, Name, and Email
+	ActionLogIn                      = iota // requires Username and Password
+	ActionLogOut                     = iota // request to end session
+	ActionAddContact                 = iota // requires Username
+	ActionRemoveContact              = iota // requires Username
+	ActionUpdateProfile              = iota // requires profile fields
+	ActionSendMessage                = iota // requires Message
+	ActionUpdateMessage              = iota // returns Message
+	ActionAddUserToConversation      = iota // requires Username
+	ActionRemoveUserFromConversation = iota // requires Username
+	ActionReadMessage                = iota // requires ConversationKey
+	ActionSetTyping                  = iota // requires Message.ConversationKey and Message.Typing
+	ActionSearchUser                 = iota // requires Username, Email, or Phone
 )
+
+func userToKey(user *DSUser) *datastore.Key {
+	return datastore.NameKey(KindUser, user.Name, nil)
+}
+
+type ServerMessageHandler func(*DSUser, *json.Encoder, *ServerMessage)
+
+var handlerMap = map[int]ServerMessageHandler {
+	ActionLogOut:			handleLogOut,
+	ActionAddContact:		handleAddContact,
+	ActionRemoveContact:	handleRemoveContact,
+	ActionSendMessage:		handleSendMessage,
+	ActionReadMessage:		handleReadMessage,
+	ActionSetTyping:		handleSetTyping,
+}
+
+func handleServerMessage(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
+	handlerMap[message.Status](user, encoder, message)
+}
+
+func handleLogOut(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
+	rsp := new(ServerMessage)
+	conns.remove(user.Name)
+	rsp.Status = NotificationLoggedOut
+	encoder.Encode(rsp)
+}
+
+func handleAddContact(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
+	rsp := new(ServerMessage)
+	if message.Username == nil {
+		rsp.setCustomError(ErrorMissingParameter)
+		encoder.Encode(rsp)
+		return
+	}
+
+	err := client.Get(c, userToKey(user), user)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+
+	contactExists := false
+	for _, u := range user.Contacts {
+		if u == *message.Username {
+			contactExists = true
+			break
+		}
+	}
+	if contactExists { return }
+
+	user.Contacts = append(user.Contacts, *message.Username)
+	_, err = client.Put(c, userToKey(user), user)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+	rsp.Status = NotificationContactAdded
+	*rsp.Username = *message.Username
+	encoder.Encode(rsp)
+	return
+}
+
+func handleRemoveContact(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
+	rsp := new(ServerMessage)
+	if message.Username == nil {
+		rsp.setCustomError(ErrorMissingParameter)
+		encoder.Encode(rsp)
+		return
+	}
+
+	err := client.Get(c, userToKey(user), user)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+
+	remove(user.Contacts, *message.Username)
+	rsp.Status = NotificationContactRemoved
+	*rsp.Username = *message.Username
+	encoder.Encode(rsp)
+}
+
+func handleSendMessage(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
+	rsp := new(ServerMessage)
+	if message.Message == nil {
+		rsp.setCustomError(ErrorMissingParameter)
+		encoder.Encode(rsp)
+		return
+	}
+
+	if message.Message.To == nil && message.Message.ConversationKey == nil || message.Message.Text == nil {
+		rsp.setCustomError(ErrorMissingParameter)
+		encoder.Encode(rsp)
+		return
+	}
+
+	// remove any extra parameters
+	tmp := new(ServerMessage)
+	tmp.Status = message.Status
+	tmp.Message = message.Message
+	message = tmp
+
+	*message.Message.From = user.Name
+	conversation := new(DSConversation)
+
+	if message.Message.ConversationKey == nil {
+		// new conversation
+		// create conversation entity and get key
+		conversation.Time = time.Now()
+
+		*conversation.Members[user.Name].Read = true // the user who sent the message has already read it and is done typing
+		for _, member := range *message.Message.To {
+			*conversation.Members[member].Read = false	// reset user read status
+		}
+
+		conversationKey := datastore.IncompleteKey(KindConversation, nil)
+		conversationKey, err := client.Put(c, conversationKey, conversation)
+		if err != nil {
+			rsp.setError(err)
+			encoder.Encode(rsp)
+			return
+		}
+
+		message.Message.ConversationKey = conversationKey
+
+		// add conversation key to every member's conversation list (including this account)
+
+		for member := range conversation.Members {
+			uKey := datastore.NameKey(KindUser, member, nil)
+			u := new(DSUser)
+			err = client.Get(c, uKey, u)
+			if err != nil {
+				rsp.setError(err)
+				encoder.Encode(rsp)
+				break
+			}
+
+			u.Conversations = append(u.Conversations, conversationKey)
+			_, err = client.Put(c, uKey, u)
+			if err != nil {
+				rsp.setError(err)
+				encoder.Encode(rsp)
+				break
+			}
+		}
+		if err != nil { return }
+	}
+
+	// add message to datastore and get key
+	m := new(DSMessage)
+	m.Time = time.Now()
+	m.Text = *message.Message.Text
+	m.From = user.Name
+	if message.Message.Reactions != nil {
+		for _, r := range *message.Message.Reactions {
+			*m.Reactions = append(*m.Reactions, r)
+		}
+	}
+
+	err := client.Get(c, message.Message.ConversationKey, conversation)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+
+	// update time in conversation to reflect most recent message
+	conversation.Time = m.Time
+	_, err = client.Put(c, message.Message.ConversationKey, conversation)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+
+	mKey := datastore.IncompleteKey(KindMessage, message.Message.ConversationKey)
+	mKey, err = client.Put(c, mKey, m)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+
+	message.Message.MessageKey = mKey
+	message.Status = NotificationMessageReceived
+
+	// send message to all users in conversation
+	for _, member := range *message.Message.To {
+		json.NewEncoder(conns[member]).Encode(message)
+	}
+
+	// notify client that message was delivered
+	message.Status = NotificationMessageDelivered
+	encoder.Encode(message)
+}
+
+func handleReadMessage(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
+	rsp := new(ServerMessage)
+	if message.Message == nil {
+		rsp.setCustomError(ErrorMissingParameter)
+		encoder.Encode(rsp)
+		return
+	}
+
+	if message.Message.ConversationKey == nil {
+		rsp.setCustomError(ErrorMissingParameter)
+		encoder.Encode(rsp)
+		return
+	}
+
+	// update conversation in datastore
+	conversation := new(DSConversation)
+	err := client.Get(c, message.Message.ConversationKey, conversation)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+
+	*conversation.Members[user.Name].Read = true
+	_, err = client.Put(c, message.Message.ConversationKey, conversation)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+
+	message.Status = NotificationMessageRead
+	*message.Message.From = user.Name
+
+	// notify members
+	for member := range conversation.Members {
+		if member != user.Name { json.NewEncoder(conns[member]).Encode(message) }
+	}
+}
+
+func handleSetTyping(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
+	rsp := new(ServerMessage)
+	if message.Message == nil {
+		rsp.setCustomError(ErrorMissingParameter)
+		encoder.Encode(rsp)
+		return
+	}
+
+	if message.Message.ConversationKey == nil || message.Message.Typing == nil {
+		rsp.setCustomError(ErrorMissingParameter)
+		encoder.Encode(rsp)
+		return
+	}
+
+	// get conversation from datastore
+	conversation := new(DSConversation)
+	err := client.Get(c, message.Message.ConversationKey, conversation)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+
+	// update conversation status in datastore
+	*conversation.Members[user.Name].Typing = *message.Message.Typing
+	_, err = client.Put(c, message.Message.ConversationKey, conversation)
+	if err != nil {
+		rsp.setError(err)
+		encoder.Encode(rsp)
+		return
+	}
+
+	message.Status = NotificationTyping
+	*message.Message.From = user.Name
+
+	// notify members
+	for member := range conversation.Members {
+		if member != user.Name { json.NewEncoder(conns[member]).Encode(message) }
+	}
+}
+
+/*
+func handleFunc(user *DSUser, encoder *json.Encoder, message *ServerMessage) {
+	
+}
+*/
 
 type Connections map[string] *bufio.ReadWriter
 
@@ -122,7 +425,7 @@ func remove(s []string, r string) []string {
 }
 
 func handleConnect(w http.ResponseWriter, req *http.Request) {
-	c := context.Background()
+	c = context.Background()
 	client, err := datastore.NewClient(c, ProjectID)
 	if err != nil {
 		http.Error(w, "Could not create datastore client", http.StatusInternalServerError)
@@ -143,9 +446,9 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 
 	defer s.Close()
 
-	d := json.NewDecoder(bufrw)
-	e := json.NewEncoder(bufrw)
-
+	decoder := json.NewDecoder(bufrw)
+	encoder := json.NewEncoder(bufrw)
+	
 	usr := new(DSUser)
 	rsp := new(ServerMessage)
 	msg := new(ServerMessage)
@@ -155,15 +458,16 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 	for !loggedIn {
 		// first message received is either a Login or Register
 		m := new(ServerMessage)
-		d.Decode(m)
+		decoder.Decode(m)
+
 		r := new(ServerMessage)
 
 		switch m.Status {
-		case StatusLogin:
+		case ActionLogIn:
 			// verify credentials
 			if m.Username == nil || m.Password == nil {
 				r.setCustomError(ErrorMissingParameter)
-				e.Encode(r)
+				encoder.Encode(r)
 				continue
 			}
 
@@ -175,10 +479,10 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 					// user doesn't exist, return invalid username
 					r.setCustomError(ErrorInvalidUsername)
 					*r.Username = *m.Username
-					e.Encode(r)
+					encoder.Encode(r)
 				} else {
 					r.setError(err)
-					e.Encode(r)
+					encoder.Encode(r)
 				}
 			}
 
@@ -186,7 +490,7 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 			if err != nil {
 				// invalid password
 				r.setCustomError(ErrorInvalidPassword)
-				e.Encode(r)
+				encoder.Encode(r)
 				continue
 			}
 
@@ -194,11 +498,11 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 			usr = lu
 			loggedIn = true
 			break
-		case StatusRegister:
+		case ActionRegister:
 			// verify new username
 			if m.Username == nil || m.Password == nil || m.Email == nil || m.Name == nil {
 				r.setCustomError(ErrorMissingParameter)
-				e.Encode(r)
+				encoder.Encode(r)
 				continue
 			}
 
@@ -208,11 +512,11 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 			if err == nil {
 				// user account already exists
 				r.setCustomError(ErrorExistingAccount)
-				e.Encode(r)
+				encoder.Encode(r)
 				continue
 			} else if err != datastore.ErrNoSuchEntity {
 				r.setError(err)
-				e.Encode(r)
+				encoder.Encode(r)
 				continue
 			}
 
@@ -222,14 +526,14 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 			lu.PassHash, err = bcrypt.GenerateFromPassword([]byte(*m.Password), 10)
 			if err != nil {
 				r.setError(err)
-				e.Encode(r)
+				encoder.Encode(r)
 				continue
 			}
 
 			_, err = client.Put(c, userKey, lu)
 			if err != nil {
 				r.setError(err)
-				e.Encode(r)
+				encoder.Encode(r)
 				continue
 			}
 
@@ -240,7 +544,7 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 		default:
 			// any other message requires the user to be logged in
 			r.Status = ErrorNotLoggedIn
-			e.Encode(r)
+			encoder.Encode(r)
 			continue
 		}
 	}
@@ -249,8 +553,8 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 	conns[usr.Name] = bufrw
 	defer conns.remove(usr.Name)
 
-	// return logged in message
-	rsp.Status = StatusLoggedIn
+	// return logged in message with user
+	rsp.Status = NotificationLoggedIn
 	*rsp.Username = *msg.Username
 	*rsp.Email = usr.Email
 	if usr.Phone != nil {
@@ -258,260 +562,54 @@ func handleConnect(w http.ResponseWriter, req *http.Request) {
 	}
 	*rsp.Contacts = usr.Contacts
 
-	e.Encode(rsp)
-
-	userKey := datastore.NameKey(KindUser, usr.Name, nil)
-
-	for {
-		d.Decode(msg)
-		rsp = new(ServerMessage)
-
-		switch msg.Status {
-		case StatusLogOut:
-			rsp.Status = StatusLoggedOut
-			e.Encode(rsp)
-			return
-		case StatusAddContact:
-			if msg.Username == nil {
-				rsp.setCustomError(ErrorMissingParameter)
-				e.Encode(rsp)
-				break
-			}
-
-			err = client.Get(c, userKey, usr)
-			if err != nil {
-				rsp.setError(err)
-				e.Encode(rsp)
-				break
-			}
-
-			contactExists := false
-			for _, u := range usr.Contacts {
-				if u == *msg.Username {
-					contactExists = true
-					break
-				}
-			}
-			if contactExists { break }
-
-			usr.Contacts = append(usr.Contacts, *msg.Username)
-			_, err = client.Put(c, userKey, usr)
-			if err != nil {
-				rsp.setError(err)
-				e.Encode(rsp)
-				break
-			}
-			rsp.Status = StatusContactAdded
-			*rsp.Username = *msg.Username
-			e.Encode(rsp)
-			break
-		case StatusRemoveContact:
-			if msg.Username == nil {
-				rsp.setCustomError(ErrorMissingParameter)
-				e.Encode(rsp)
-				break
-			}
-
-			err = client.Get(c, userKey, usr)
-			if err != nil {
-				rsp.setError(err)
-				e.Encode(rsp)
-				break
-			}
-
-			remove(usr.Contacts, *msg.Username)
-			rsp.Status = StatusContactRemoved
-			*rsp.Username = *msg.Username
-			e.Encode(rsp)
-			break
-		case StatusUpdateProfile:
+	// get conversations from datastore
+	for _, conversationKey := range usr.Conversations {
+		dsConversation := new(DSConversation)
+		err = client.Get(c, conversationKey, dsConversation)
+		if err != nil {
 			// TODO
-			break
-		case StatusSendMessage:
-			if msg.Message == nil {
-				rsp.setCustomError(ErrorMissingParameter)
-				e.Encode(rsp)
-				break
-			}
-
-			if msg.Message.To == nil && msg.Message.ConversationKey == nil || msg.Message.Text == nil {
-				rsp.setCustomError(ErrorMissingParameter)
-				e.Encode(rsp)
-				break
-			}
-
-			// remove any extra parameters
-			tmp := new(ServerMessage)
-			tmp.Status = msg.Status
-			tmp.Message = msg.Message
-			msg = tmp
-
-			*msg.Message.From = usr.Name
-			conversation := new(DSConversation)
-
-			if msg.Message.ConversationKey == nil {
-				// new conversation
-				// create conversation entity and get key
-				conversation.Time = time.Now()
-				conversation.Read[usr.Name] = true // the user who sent the message has already read it
-				for _, member := range *msg.Message.To { conversation.Read[member] = false }
-
-				conversationKey := datastore.IncompleteKey(KindConversation, nil)
-				conversationKey, err = client.Put(c, conversationKey, conversation)
-				if err != nil {
-					rsp.setError(err)
-					e.Encode(rsp)
-					break
-				}
-
-				msg.Message.ConversationKey = conversationKey
-
-				// add conversation key to every member's conversation list (including this account)
-
-				for member := range conversation.Read {
-					uKey := datastore.NameKey(KindUser, member, nil)
-					u := new(DSUser)
-					err = client.Get(c, uKey, u)
-					if err != nil {
-						rsp.setError(err)
-						e.Encode(rsp)
-						break
-					}
-
-					u.Conversations = append(u.Conversations, conversationKey)
-					_, err = client.Put(c, uKey, u)
-					if err != nil {
-						rsp.setError(err)
-						e.Encode(rsp)
-						break
-					}
-				}
-				if err != nil { break }
-			}
-
-			// add message to datastore and get key
-			m := new(DSMessage)
-			m.Time = time.Now()
-			m.Text = *msg.Message.Text
-			m.From = usr.Name
-			if msg.Message.Reactions != nil {
-				for _, r := range *msg.Message.Reactions {
-					*m.Reactions = append(*m.Reactions, r)
-				}
-			}
-
-			err = client.Get(c, msg.Message.ConversationKey, conversation)
-			if err != nil {
-				rsp.setError(err)
-				e.Encode(rsp)
-				break
-			}
-
-			// update time in conversation to reflect most recent message
-			conversation.Time = m.Time
-			_, err = client.Put(c, msg.Message.ConversationKey, conversation)
-			if err != nil {
-				rsp.setError(err)
-				e.Encode(rsp)
-				break
-			}
-
-			mKey := datastore.IncompleteKey(KindMessage, msg.Message.ConversationKey)
-			mKey, err = client.Put(c, mKey, m)
-			if err != nil {
-				rsp.setError(err)
-				e.Encode(rsp)
-				break
-			}
-
-			msg.Message.MessageKey = mKey
-			msg.Status = StatusMessageReceived
-
-			// send message to all users in conversation
-			for _, member := range *msg.Message.To {
-				json.NewEncoder(conns[member]).Encode(msg)
-			}
-
-			// notify client that message was delivered
-			msg.Status = StatusMessageDelivered
-			e.Encode(msg)
-			break
-		case StatusSearchUser:
-			// TODO
-			break
-		case StatusMessageRead:
-			if msg.Message == nil {
-				rsp.setCustomError(ErrorMissingParameter)
-				e.Encode(rsp)
-				break
-			}
-
-			if msg.Message.ConversationKey == nil {
-				rsp.setCustomError(ErrorMissingParameter)
-				e.Encode(rsp)
-				break
-			}
-
-			// update conversation in datastore
-			conversation := new(DSConversation)
-			err = client.Get(c, msg.Message.ConversationKey, conversation)
-			if err != nil {
-				rsp.setError(err)
-				e.Encode(rsp)
-				break
-			}
-
-			conversation.Read[usr.Name] = true
-			_, err = client.Put(c, msg.Message.ConversationKey, conversation)
-			if err != nil {
-				rsp.setError(err)
-				e.Encode(rsp)
-				break
-			}
-
-			*msg.Message.From = usr.Name
-
-			// notify members
-			for member := range conversation.Read {
-				if member != usr.Name { json.NewEncoder(conns[member]).Encode(msg) }
-			}
-			break
-		case StatusTyping:
-			if msg.Message == nil {
-				rsp.setCustomError(ErrorMissingParameter)
-				e.Encode(rsp)
-				break
-			}
-
-			if msg.Message.ConversationKey == nil || msg.Message.Typing == nil {
-				rsp.setCustomError(ErrorMissingParameter)
-				e.Encode(rsp)
-				break
-			}
-
-			// get conversation from datastore
-			conversation := new(DSConversation)
-			err = client.Get(c, msg.Message.ConversationKey, conversation)
-			if err != nil {
-				rsp.setError(err)
-				e.Encode(rsp)
-				break
-			}
-
-			*msg.Message.From = usr.Name
-
-			// notify members
-			for member := range conversation.Read {
-				if member != usr.Name { json.NewEncoder(conns[member]).Encode(msg) }
-			}
-			break
-		default:
-			// some messages won't be received by the server (e.g. notifications)
-			break
 		}
+
+		conversation := new(Conversation)
+		conversation.Time = dsConversation.Time
+		conversation.Members = dsConversation.Members
+
+		q := datastore.NewQuery(KindMessage).Ancestor(conversationKey).Order("time")
+		it := client.Run(c, q)
+		dsMessage := new(DSMessage)
+		messageKey, err := it.Next(dsMessage)
+		for err != nil {
+			message := new(Message)
+			message.MessageKey = messageKey
+			message.ConversationKey = conversationKey
+			*message.From = dsMessage.From
+			*message.Text = dsMessage.Text
+			*message.Time = dsMessage.Time
+			message.Reactions = dsMessage.Reactions
+
+			conversation.Messages = append(conversation.Messages, )
+			_, err = it.Next(dsMessage)
+		}
+
+		if err != iterator.Done {
+			// TODO
+		}
+
+		*rsp.Conversations = append(*rsp.Conversations, *conversation)
+	}
+
+	encoder.Encode(rsp)
+
+	// event loop
+	for {
+		decoder.Decode(msg)
+		handleServerMessage(usr, encoder, msg)
 	}
 
 }
+
+var c context.Context
+var client datastore.Client
 
 func main() {
 	var r = mux.NewRouter()
