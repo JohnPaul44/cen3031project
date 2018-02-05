@@ -6,33 +6,32 @@ import (
 )
 
 const (
-	KindUser = "User"
+	KindUser         = "User"
 	KindConversation = "Conversation"
-	KindMessage = "Message"
+	KindMessage      = "Message"
 )
 
 type DSUser struct {
 	// key: username, parent: nil
-	Name			string				`json:"name,omitempty"`
-	PassHash		[]byte				`json:"pass_hash,omitempty"`
-	Email			string				`json:"email,omitempty"`
-	username		string				// unexported
-	Phone			*string				`json:"phone,omitempty"`
-	Contacts		[]string			`json:"contacts,omitempty"`
-	Conversations	[]*datastore.Key	`json:"conversations"`
+	username      string      // unexported
+	connection    *Connection // unexported
+	PassHash      []byte           `json:"pass_hash,omitempty"`
+	Profile       Profile          `json:"profile"`
+	Contacts      []string         `json:"contacts,omitempty"`
+	Conversations []*datastore.Key `json:"conversations"`
 }
 
 type DSMessage struct {
 	// type: KindMessage, key: random, parent: KindConversation
-	Time		time.Time	`json:"time"`
-	From		string		`json:"from"`
-	Text		string		`json:"text"`
-	Reactions	*[]Reaction	`json:"reactions"`
+	Time      time.Time      `json:"time"`
+	From      string         `json:"from"`
+	Text      string         `json:"text"`
+	Reactions []UserReaction `json:"reactions"`
 	// add additional fields for reactions
 }
 
 type DSConversation struct {
 	// type: KindConversation, key: random, parent: nil
-	Time	time.Time            `json:"time"`    // time of last message, used for ordering conversations in client
-	Members	map[string]Status `json:"members"` // members of conversation and their read/typing statuses
+	Time    time.Time         `json:"time"`    // time of last message, used for ordering conversations in client
+	Members map[string]Status `json:"members"` // members of conversation and their read/typing statuses
 }
