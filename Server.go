@@ -239,20 +239,20 @@ func handleServerMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 	handler(user, bufrw, message)
 }
 
-func register(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) bool {
+func register(user *DSUser, message *ServerMessage) bool {
 	rsp := new(ServerMessage)
 	// verify new username
 	if message.Username == nil || message.Password == nil || message.Profile == nil {
 		fmt.Println("cannot register: missing Username, Password and/or Profile")
 		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.[Username | Password | Profile]")
-		sendServerMessage(bufrw, rsp)
+		sendServerMessage(user.connection.bufrw, rsp)
 		return false
 	}
 
 	if len(*message.Username) == 0 || len(*message.Password) == 0 || len(message.Profile.Name) == 0 || len(message.Profile.Email) == 0 {
 		fmt.Println("cannot register: empty Username, Password, Name, and/or Email")
 		rsp.setCustomError(ErrorEmptyParameter, "empty ServerMessage.[Username | Password | Name | Email]")
-		sendServerMessage(bufrw, rsp)
+		sendServerMessage(user.connection.bufrw, rsp)
 		return false
 	}
 
@@ -262,12 +262,12 @@ func register(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) boo
 		// user account already exists
 		fmt.Printf("cannot register as %s: username taken\n", *message.Username)
 		rsp.setDefaultCustomError(ErrorExistingAccount)
-		sendServerMessage(bufrw, rsp)
+		sendServerMessage(user.connection.bufrw, rsp)
 		return false
 	} else if err != datastore.ErrNoSuchEntity {
 		fmt.Printf("cannot register as %s: %s\n", *message.Username, err)
 		rsp.setError(err)
-		sendServerMessage(bufrw, rsp)
+		sendServerMessage(user.connection.bufrw, rsp)
 		return false
 	}
 
@@ -279,7 +279,7 @@ func register(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) boo
 	if err != nil {
 		fmt.Printf("cannot register as %s: %s\n", *message.Username, err)
 		rsp.setError(err)
-		sendServerMessage(bufrw, rsp)
+		sendServerMessage(user.connection.bufrw, rsp)
 		return false
 	}
 
@@ -287,7 +287,7 @@ func register(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) boo
 	if err != nil {
 		fmt.Errorf("cannot register as %s: cannot add user to datastore\n", *message.Username)
 		rsp.setError(err)
-		sendServerMessage(bufrw, rsp)
+		sendServerMessage(user.connection.bufrw, rsp)
 		return false
 	}
 
@@ -349,13 +349,13 @@ func getConversations(user *DSUser) *[]Conversation {
 	return conversations
 }
 
-func logIn(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) bool {
+func logIn(user *DSUser, message *ServerMessage) bool {
 	rsp := new(ServerMessage)
 	// verify credentials
 	if message.Username == nil || message.Password == nil {
 		fmt.Println("cannot log in: missing Username and/or Password")
 		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.[Username | Password]")
-		sendServerMessage(bufrw, rsp)
+		sendServerMessage(user.connection.bufrw, rsp)
 		return false
 	}
 
@@ -372,12 +372,12 @@ func logIn(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) bool {
 			fmt.Printf("cannot log in as %s: invalid username\n", *message.Username)
 			rsp.setDefaultCustomError(ErrorInvalidUsername)
 			rsp.Username = message.Username
-			sendServerMessage(bufrw, rsp)
+			sendServerMessage(user.connection.bufrw, rsp)
 			return false
 		} else {
 			fmt.Errorf("cannot log in as %s: %s\n", *message.Username, err)
 			rsp.setError(err)
-			sendServerMessage(bufrw, rsp)
+			sendServerMessage(user.connection.bufrw, rsp)
 			return false
 		}
 	}
@@ -387,7 +387,7 @@ func logIn(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) bool {
 		// invalid password
 		fmt.Printf("cannot log in as %s: invalid password\n", *message.Username)
 		rsp.setDefaultCustomError(ErrorInvalidPassword)
-		sendServerMessage(bufrw, rsp)
+		sendServerMessage(user.connection.bufrw, rsp)
 		return false
 	}
 
@@ -843,10 +843,10 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 
 			switch msg.Status {
 			case ActionLogIn:
-				loggedIn = logIn(usr, bufrw, msg)
+				loggedIn = logIn(usr, msg)
 				break
 			case ActionRegister:
-				loggedIn = register(usr, bufrw, msg)
+				loggedIn = register(usr, msg)
 				break
 			default:
 				// any other message requires the user to be logged in

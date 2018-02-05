@@ -15,9 +15,9 @@ type DSUser struct {
 	// key: username, parent: nil
 	username      string      // unexported
 	connection    *Connection // unexported
-	PassHash      []byte           `json:"pass_hash,omitempty"`
+	PassHash      []byte           `json:"pass_hash"`
 	Profile       Profile          `json:"profile"`
-	Contacts      []string         `json:"contacts,omitempty"`
+	Contacts      []string         `json:"contacts"`
 	Conversations []*datastore.Key `json:"conversations"`
 }
 
