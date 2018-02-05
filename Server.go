@@ -129,7 +129,7 @@ const (
 	NotificationContactRemoved              = iota // returns Username
 	NotificationProfileUpdated              = iota // returns Profile
 	NotificationMessageReceived             = iota // returns Message.[ConversationKey, MessageKey, Time, From, Text, Reactions]
-	NotificationMessageUpdated              = iota // returns Message
+	NotificationMessageUpdated              = iota // returns Message.[ConversationKey, MessageKey, Text]
 	NotificationUserAddedToConversation     = iota // returns Username, Message.ConversationKey
 	NotificationUserRemovedFromConversation = iota // returns Username, Message.ConversationKey
 	NotificationMessageRead                 = iota // returns Message.[ConversationKey, From]
@@ -185,11 +185,10 @@ func errorToString(errorNumber int) *string {
 }
 
 func getServerMessage(bufrw *bufio.ReadWriter, message *ServerMessage) bool {
-	bytes, err := json.Marshal(message)
+	err := json.NewDecoder(bufrw).Decode(message)
 	if err != nil {
 		fmt.Errorf("cannot decode JSON message: %s", err)
 	}
-	_, err = bufrw.Write(bytes)
 	return err == nil
 }
 
