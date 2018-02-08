@@ -17,6 +17,7 @@ import (
 
 const ProjectID = "cen3031-192414"
 
+// TODO: camel-case JSON tags
 // TODO: implement ability to update messages (and a toggle switch for the conversation) and add/remove user(s) to/from conversations
 // TODO: implement authorization tokens
 
@@ -26,10 +27,11 @@ type UserReaction struct {
 }
 
 type Message struct {
-	Time            *time.Time      `json:"time,omitempty"`
+	ServerTime      *time.Time      `json:"serverTime,omitempty"`
+	ClientTime      *time.Time      `json:"clientTime,omitempty"`
 	To              *[]string       `json:"to,omitempty"`
-	MessageKey      *datastore.Key  `json:"message_key,omitempty"`
-	ConversationKey *datastore.Key  `json:"conversation_key,omitempty"`
+	MessageKey      *datastore.Key  `json:"messageKey,omitempty"`
+	ConversationKey *datastore.Key  `json:"conversationKey,omitempty"`
 	From            *string         `json:"from,omitempty"`
 	Text            *string         `json:"text,omitempty"`
 	Reactions       *[]UserReaction `json:"reactions,omitempty"`
@@ -43,7 +45,7 @@ type Status struct {
 
 type Conversation struct {
 	Time     time.Time         `json:"time"`
-	MemberStatus  map[string]Status `json:"member_status"`
+	MemberStatus  map[string]Status `json:"memberStatus"`
 	Messages []Message         `json:"messages"`
 }
 
@@ -109,7 +111,7 @@ func (msg *ServerMessage) setDefaultCustomError(errorNumber int) {
 	*msg.ErrorString = defaultErrorStrings[errorNumber]
 }
 
-// TODO: receive time from ActionSendMessage request and return exact string in response
+// TODO: receive time from ActionSendMessage request
 
 const (
 	ReactionExclamation = iota
@@ -131,7 +133,7 @@ const (
 	NotificationContactAdded                = iota // returns Username
 	NotificationContactRemoved              = iota // returns Username
 	NotificationProfileUpdated              = iota // returns Profile
-	NotificationMessageReceived             = iota // returns Message.[ConversationKey, MessageKey, Time, From, Text (, Reactions)]
+	NotificationMessageReceived             = iota // returns Message.[ConversationKey, MessageKey, ServerTime, From, Text (, Reactions)]
 	NotificationMessageUpdated              = iota // returns Message.[ConversationKey, MessageKey, Text]
 	NotificationUserAddedToConversation     = iota // returns Username, Message.ConversationKey (, Message.Conversations (returned only to new user))
 	NotificationUserRemovedFromConversation = iota // returns Username, Message.ConversationKey
@@ -145,7 +147,7 @@ const (
 	ActionAddContact                 = iota // requires Username
 	ActionRemoveContact              = iota // requires Username
 	ActionUpdateProfile              = iota // requires Profile
-	ActionSendMessage                = iota // requires Message.[(To | ConversationKey), Text]
+	ActionSendMessage                = iota // requires Message.[(To | ConversationKey), ServerTime, Text]
 	ActionUpdateMessage              = iota // requires Message.[ConversationKey, MessageKey, Text]
 	ActionAddUserToConversation      = iota // requires Username, Message.ConversationKey
 	ActionRemoveUserFromConversation = iota // requires Username, Message.ConversationKey
@@ -350,7 +352,7 @@ func getConversations(user *DSUser) *[]Conversation {
 			message.ConversationKey = conversationKey
 			message.From = &dsMessage.From
 			message.Text = &dsMessage.Text
-			message.Time = &dsMessage.Time
+			message.ServerTime = &dsMessage.Time
 			message.Reactions = &dsMessage.Reactions
 
 			conversation.Messages = append(conversation.Messages, )
@@ -734,7 +736,7 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 	rsp.Status = NotificationMessageReceived
 	rsp.Message.MessageKey = mKey
 	rsp.Message.ConversationKey = message.Message.ConversationKey
-	rsp.Message.Time = &m.Time
+	rsp.Message.ServerTime = &m.Time
 	rsp.Message.From = &m.From
 	rsp.Message.Text = &m.Text
 	rsp.Message.Reactions = message.Message.Reactions
@@ -909,7 +911,7 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 	(*rsp.Conversations)[0].MemberStatus = conv.MemberStatus
 	(*rsp.Conversations)[0].Time = conv.Time
 
-	q := datastore.NewQuery(KindMessage).Ancestor(convKey).Order("Time")
+	q := datastore.NewQuery(KindMessage).Ancestor(convKey).Order("ServerTime")
 	dsMsgs := new([]DSMessage)
 	_, err = client.GetAll(c, q, dsMsgs)
 	if err != nil {
@@ -923,7 +925,7 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 
 	for _, dsMsg := range *dsMsgs {
 		msg := new(Message)
-		msg.Time = &dsMsg.Time
+		msg.ServerTime = &dsMsg.Time
 		msg.From = &dsMsg.From
 		msg.Text = &dsMsg.Text
 		msg.Reactions = &dsMsg.Reactions
@@ -939,24 +941,24 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 
 func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) {
 	// TODO: implement
-	/*
+
 	rsp := new(ServerMessage)
 	if message.Message == nil {
-		fmt.Printf("%s (%s) cannot add %s to conversation: missing Message\n", user.Profile.Name, user.username, *message.Username)
+		fmt.Printf("%s (%s) cannot remove %s from conversation: missing Message\n", user.Profile.Name, user.username, *message.Username)
 		rsp.setCustomError(ErrorMissingParameter, "missing Message")
 		sendServerMessage(bufrw, rsp)
 		return
 	}
 
 	if message.Message.ConversationKey == nil || message.Username == nil {
-		fmt.Printf("%s (%s) cannot add %s to conversation: missing ConversationKey and/or Username\n", user.Profile.Name, user.username, *message.Username)
+		fmt.Printf("%s (%s) cannot remove %s from conversation: missing ConversationKey and/or Username\n", user.Profile.Name, user.username, *message.Username)
 		rsp.setCustomError(ErrorMissingParameter, "missing ConversationKey and/or Username")
 		sendServerMessage(bufrw, rsp)
 		return
 	}
 
 	if len(*message.Username) == 0 {
-		fmt.Printf("%s (%s) cannot add %s to conversation: empty Username\n", user.Profile.Name, user.username, *message.Username)
+		fmt.Printf("%s (%s) cannot remove %s from conversation: empty Username\n", user.Profile.Name, user.username, *message.Username)
 		rsp.setCustomError(ErrorEmptyParameter, "empty Username")
 		sendServerMessage(bufrw, rsp)
 		return
@@ -967,7 +969,7 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 	convKey := message.Message.ConversationKey
 	err := client.Get(c, convKey, conv)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot add %s to conversation: cannot get conversation from datastore: %s\n", user.Profile.Name, user.username, *message.Username, err)
+		fmt.Errorf("%s (%s) cannot remove %s from conversation: cannot get conversation from datastore: %s\n", user.Profile.Name, user.username, *message.Username, err)
 		rsp.setError(err)
 		sendServerMessage(bufrw, rsp)
 		return
@@ -986,36 +988,48 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 		}
 	}
 
-	if user.username == *message.Username {
-		if usr {
-			// remove usr from conversation
-		}
-	} else {
-		if usr && delUsr {
-			// remove delUsr from conversation
-		} else if !usr {
-			// error usr not in conversation
+	if usr {
+		if delUsr || user.username == *message.Username {
+			// update Conversation (remove message.Username from MemberStatus)
+			delete(conv.MemberStatus, *message.Username)
 		} else {
 			// error delUsr not in conversation
+			fmt.Printf("%s (%s) cannot remove %s from conversation: %s not in conversation\n", user.Profile.Name, user.username, *message.Username, user.username)
+			rsp.setCustomError(ErrorDefault, "user not in conversation")
+			sendServerMessage(bufrw, rsp)
+			return
 		}
-	}
-
-	if !contains {
-		fmt.Printf("%s (%s) cannot add %s to conversation: %s not in conversation\n", user.Profile.Name, user.username, *message.Username, user.username)
+	} else {
+		// error usr not in conversation
+		fmt.Printf("%s (%s) cannot remove %s from conversation: %s not in conversation\n", user.Profile.Name, user.username, user.username, user.username)
 		rsp.setCustomError(ErrorDefault, "user not in conversation")
 		sendServerMessage(bufrw, rsp)
 		return
 	}
 
-	// ensure *message.Username is in Conversation
-
-
-	// update Conversation (remove message.Username from MemberStatus)
-
 	// put Conversation into datastore
+	_, err = client.Put(c, convKey, conv)
+	if err != nil {
+		fmt.Errorf("%s (%s) cannot remove %s from conversation: cannot update conversation in datastore: %s\n", user.Profile.Name, user.username, *message.Username, err)
+		rsp.setError(err)
+		sendServerMessage(bufrw, rsp)
+		return
+	}
 
 	// notify all users in Conversation (NotificationUserRemovedFromConversation)
-*/
+	rsp.Status = NotificationUserRemovedFromConversation
+	rsp.Message = new(Message)
+	rsp.Message.ConversationKey = message.Message.ConversationKey
+	rsp.Username = message.Username
+
+	for member := range conv.MemberStatus {
+		sendServerMessageToUser(member, rsp)
+	}
+
+	// send notification to user that was removed
+	sendServerMessageToUser(*message.Username, rsp)
+
+	fmt.Printf("%s was removed from a conversation\n", *message.Username)
 }
 
 func handleReadMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) {
