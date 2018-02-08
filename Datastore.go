@@ -32,6 +32,6 @@ type DSMessage struct {
 
 type DSConversation struct {
 	// type: KindConversation, key: random, parent: nil
-	Time    time.Time         `json:"time"`    // time of last message, used for ordering conversations in client
-	Members map[string]Status `json:"members"` // members of conversation and their read/typing statuses
+	Time         time.Time         `json:"time"`    // time of last message, used for ordering conversations in client
+	MemberStatus map[string]Status `json:"member_status"` // members of conversation and their read/typing statuses
 }
