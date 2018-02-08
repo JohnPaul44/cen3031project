@@ -4,7 +4,7 @@ import java.io.*;
 import java.net.*;
 
 import com.google.gson.Gson;
-import sample.LoginMessage;
+import sample.LoginServerMessage;
 
 public class ServerConnection {
 
@@ -31,9 +31,8 @@ public class ServerConnection {
             try {
                 while ((userInput = in.readLine()) != null) {
                     Gson gson = new Gson();
-                    LoginMessage m = gson.fromJson(userInput, LoginMessage.class);
+                    LoginServerMessage m = gson.fromJson(userInput, LoginServerMessage.class);
                     System.out.println(userInput);
-                    m.printUsername();
                 }
             } catch (IOException e) {
                 System.out.println("Error while receiving a message from server: " + e);

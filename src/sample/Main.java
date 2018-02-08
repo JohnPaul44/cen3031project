@@ -23,7 +23,7 @@ public class Main extends Application {
         ServerConnection conn = new ServerConnection("localhost", 500);
         conn.startListeningToServer();
 
-        LoginMessage m = new LoginMessage("thead9", "bogus");
+        LoginServerMessage m = new LoginServerMessage("thead9","bogus");
         Gson gson = new Gson();
         String jsonString = gson.toJson(m);
 

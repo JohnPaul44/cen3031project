@@ -1,6 +1,6 @@
 package sample;
 
-abstract class Message {
+abstract class ServerMessage {
     enum Status { LOGIN };
     int status;
 }
