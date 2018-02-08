@@ -9,4 +9,8 @@ public class LoginMessage extends Message {
         this.username = username;
         this.password = password;
     }
+
+    public void printUsername() {
+        System.out.println(username);
+    }
 }

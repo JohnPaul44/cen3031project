@@ -1,5 +1,7 @@
 package sample;
 
+import Connection.ServerConnection;
+import com.google.gson.Gson;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,6 +20,15 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        launch(args);
+        ServerConnection conn = new ServerConnection("localhost", 500);
+        conn.startListeningToServer();
+
+        LoginMessage m = new LoginMessage("thead9", "bogus");
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(m);
+
+        conn.getOut().println(jsonString);
+
+        //launch(args);
     }
 }
