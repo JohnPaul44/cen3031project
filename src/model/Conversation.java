@@ -1,6 +1,5 @@
-package Model;
+package model;
 
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ public class Conversation implements Comparable<Conversation> {
     public int compareTo(Conversation anotherConversation) {
         Date thisConversationDate = null;
         Date anotherConversationDate = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat sdf = new SimpleDateFormat(Globals.simpldDateFormat);
 
         try {
             thisConversationDate = sdf.parse(this.time);

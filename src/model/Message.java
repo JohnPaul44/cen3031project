@@ -1,4 +1,4 @@
-package Model;
+package model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,8 +21,8 @@ public class Message implements Comparable<Message> {
     private String conversationKey;
     private String from;
     private String text;
-    public enum Reaction {  };
-    private Reaction reaction;
+    private enum Reaction {  }
+    private Reaction reactions;
     private boolean typing;
 
     // New Conversation
@@ -39,17 +39,9 @@ public class Message implements Comparable<Message> {
         this.clientTime = clientTime;
     }
 
-    public String getClientTime() {
-        return clientTime;
-    }
-
-    public String[] getTo() {
-        return to;
-    }
-
-    public String getFrom() {
-        return from;
-    }
+    public String getClientTime() { return clientTime; }
+    public String[] getTo() { return to; }
+    public String getFrom() { return from; }
 
     // Sorts messages by time.
     // If there is a serverTime, that time will be used.  If there is no serverTime, clientTime will be used.
@@ -57,7 +49,7 @@ public class Message implements Comparable<Message> {
     public int compareTo(Message anotherMessage) {
         Date thisMessageDate = null;
         Date anotherMessageDate = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        SimpleDateFormat sdf = new SimpleDateFormat(Globals.simpldDateFormat);
 
         if (this.serverTime != null) {
             try {

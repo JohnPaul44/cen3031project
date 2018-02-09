@@ -1,10 +1,13 @@
-package Connection;
+package connection;
 
 import java.net.*;
 import java.io.*;
 
 public class Server {
-    public static void main(String[] args) throws IOException {
+
+    public Server() {};
+
+    public void startServer() throws IOException {
 
         int portNumber = 500;
 
@@ -19,7 +22,7 @@ public class Server {
         ) {
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                System.out.println(inputLine);
+                System.out.println("Server: " + inputLine);
                 out.println(inputLine);
             }
         } catch (IOException e) {

@@ -1,10 +1,10 @@
-package Connection;
+package connection;
 
 import java.io.*;
 import java.net.*;
 
 import com.google.gson.Gson;
-import sample.LoginServerMessage;
+import connection.serverMessaging.ActionLogInMessage;
 
 public class ServerConnection {
 
@@ -31,8 +31,8 @@ public class ServerConnection {
             try {
                 while ((userInput = in.readLine()) != null) {
                     Gson gson = new Gson();
-                    LoginServerMessage m = gson.fromJson(userInput, LoginServerMessage.class);
-                    System.out.println(userInput);
+                    ActionLogInMessage m = gson.fromJson(userInput, ActionLogInMessage.class);
+                    System.out.println("Client: " + userInput);
                 }
             } catch (IOException e) {
                 System.out.println("Error while receiving a message from server: " + e);
