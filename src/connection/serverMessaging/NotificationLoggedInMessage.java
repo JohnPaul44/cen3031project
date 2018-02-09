@@ -19,4 +19,17 @@ public class NotificationLoggedInMessage extends ServerMessage {
         this.contacts = contacts;
         this.conversations = conversations;
     }
+
+    public String getUsername() {
+        return username;
+    }
+    public Profile getProfile() {
+        return profile;
+    }
+    public ArrayList<Contact> getContacts() {
+        return contacts;
+    }
+    public ArrayList<Conversation> getConversations() {
+        return conversations;
+    }
 }

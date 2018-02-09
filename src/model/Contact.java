@@ -12,4 +12,11 @@ public class Contact {
         this.username = username;
         this.online = online;
     }
+
+    public String getUsername() {
+        return username;
+    }
+    public boolean getOnline() {
+        return online;
+    }
 }

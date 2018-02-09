@@ -40,6 +40,10 @@ public class Conversation implements Comparable<Conversation> {
 
     }
 
+    public Map<String, Status> getMemberStatus() {
+        return memberStatus;
+    }
+
     @Override
     public int compareTo(Conversation anotherConversation) {
         Date thisConversationDate = null;

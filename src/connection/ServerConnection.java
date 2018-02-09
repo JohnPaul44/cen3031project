@@ -5,8 +5,11 @@ import java.net.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import connection.serverMessaging.NotificationErrorMessage;
+import connection.serverMessaging.NotificationLoggedInMessage;
+import model.Profile;
 
 public class ServerConnection {
 
@@ -41,14 +44,14 @@ public class ServerConnection {
                         case 0: // Uninitialized
                             break;
                         case 1: // Error Message
-                            NotificationErrorMessage m = gson.fromJson(userInput, NotificationErrorMessage.class);
-                            System.out.println("\nAttributes from message object");
-                            System.out.println("errorNumber: " + m.getErrorNumber());
-                            System.out.println("errorString: " + m.getErrorString());
+                            NotificationErrorMessage errorMessage = gson.fromJson(messageFromServer, NotificationErrorMessage.class);
+                            break;
+                        case 2: // Logged In Message
+                            NotificationLoggedInMessage loggedInMessage = gson.fromJson(messageFromServer, NotificationLoggedInMessage.class);
                             break;
                     }
 
-                    System.out.println("Client Received: " + userInput);
+                    System.out.println("\nClient Received: " + userInput);
                 }
             } catch (IOException e) {
                 System.out.println("Error while receiving a message from server: " + e);

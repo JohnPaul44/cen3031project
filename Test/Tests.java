@@ -1,12 +1,16 @@
 import connection.Server;
 import connection.ServerConnection;
 import connection.serverMessaging.*;
-import model.Profile;
+import model.*;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class Tests {
 
@@ -176,6 +180,64 @@ public class Tests {
 
         NotificationErrorMessage m = new NotificationErrorMessage(5, "Error #5");
         conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveLoggedInMessage() throws InterruptedException {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        Contact c1 = new Contact("thead9", true);
+        Contact c2 = new Contact("suzy", false);
+        Contact c3 = new Contact("barney", true);
+        ArrayList<Contact> contactList = new ArrayList<>();
+        contactList.add(c1);
+        contactList.add(c2);
+        contactList.add(c3);
+
+        Map<String, Status> memberStatus1 = new HashMap<>();
+        memberStatus1.put("thead9", new Status(true, true));
+        memberStatus1.put("suzy", new Status(false, false));
+        UserReaction ur1 = new UserReaction(new int[] {1, 2}, "thead9");
+        UserReaction ur2 = new UserReaction(new int[] {3, 4}, "suzy");
+        Message m1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
+                new String[] {"thead9", "suzy"}, "34f", "cn47", "thead9", "hello",
+                new UserReaction[] {ur1, ur2}, true);
+        Message m2 = new Message("2018-02-8 03:00:21.012", "2018-02-8 03:00:22.012",
+                new String[] {"thead9", "suzy"}, "999", "cn47", "thead9", "hello",
+                new UserReaction[] {ur1, ur2}, true);
+        ArrayList<Message> mList1 = new ArrayList<>();
+        mList1.add(m1);
+        mList1.add(m2);
+        Conversation conv1 = new Conversation("2018-03-9 03:00:22.012", memberStatus1, mList1);
+
+        Map<String, Status> memberStatus2 = new HashMap<>();
+        memberStatus2.put("thead9", new Status(true, true));
+        memberStatus2.put("barney", new Status(false, false));
+        UserReaction ur3 = new UserReaction(new int[] {1, 2}, "thead9");
+        UserReaction ur4 = new UserReaction(new int[] {3, 4}, "barney");
+        Message m3 = new Message("2018-01-9 03:00:21.012", "2018-01-9 03:00:22.012",
+                new String[] {"thead9", "barney"}, "8ch", "nvj4", "thead9", "hi",
+                new UserReaction[] {ur3, ur4}, true);
+        Message m4 = new Message("2018-01-8 03:00:21.012", "2018-01-8 03:00:22.012",
+                new String[] {"thead9", "suzy"}, "888", "nvj4", "thead9", "hi",
+                new UserReaction[] {ur3, ur4}, true);
+        ArrayList<Message> mList2 = new ArrayList<>();
+        mList2.add(m3);
+        mList2.add(m4);
+        Conversation conv2 = new Conversation("2018-03-9 03:00:22.012", memberStatus2, mList2);
+
+        ArrayList<Conversation> cList = new ArrayList<>();
+        cList.add(conv1);
+        cList.add(conv2);
+
+        NotificationLoggedInMessage m = new NotificationLoggedInMessage("thead9",
+                new Profile("Thomas Headley", "thead9@ufl.edu", "4074086638"), contactList, cList);
+
+        conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(5);
     }
 
 

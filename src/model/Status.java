@@ -12,4 +12,11 @@ public class Status {
         this.read = read;
         this.typing = typing;
     }
+
+    public boolean getRead() {
+        return read;
+    }
+    public boolean getTyping() {
+        return typing;
+    }
 }
