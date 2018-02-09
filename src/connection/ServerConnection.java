@@ -4,16 +4,18 @@ import java.io.*;
 import java.net.*;
 
 import com.google.gson.Gson;
-import connection.serverMessaging.ActionLogInMessage;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import connection.serverMessaging.NotificationErrorMessage;
 
 public class ServerConnection {
 
     private PrintWriter out;
     private BufferedReader in;
 
-    public ServerConnection(String hostName, int portNumber) {
+    public ServerConnection() {
         try {
-            Socket socket = new Socket(hostName, portNumber);
+            Socket socket = new Socket(Server.hostname, Server.portNumber);
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch(IOException e) {
@@ -31,8 +33,22 @@ public class ServerConnection {
             try {
                 while ((userInput = in.readLine()) != null) {
                     Gson gson = new Gson();
-                    ActionLogInMessage m = gson.fromJson(userInput, ActionLogInMessage.class);
-                    System.out.println("Client: " + userInput);
+                    JsonParser parser = new JsonParser();
+                    JsonObject messageFromServer = parser.parse(userInput).getAsJsonObject();
+                    int status = messageFromServer.get("status").getAsInt();
+
+                    switch (status) {
+                        case 0: // Uninitialized
+                            break;
+                        case 1: // Error Message
+                            NotificationErrorMessage m = gson.fromJson(userInput, NotificationErrorMessage.class);
+                            System.out.println("\nAttributes from message object");
+                            System.out.println("errorNumber: " + m.getErrorNumber());
+                            System.out.println("errorString: " + m.getErrorString());
+                            break;
+                    }
+
+                    System.out.println("Client Received: " + userInput);
                 }
             } catch (IOException e) {
                 System.out.println("Error while receiving a message from server: " + e);

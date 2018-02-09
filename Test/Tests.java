@@ -1,4 +1,3 @@
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import connection.Server;
 import connection.ServerConnection;
 import connection.serverMessaging.*;
@@ -23,9 +22,9 @@ public class Tests {
 
     @Test
     public void sendRegisterMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionRegisterMessage m = new ActionRegisterMessage("thead9", "bogus,", "Thomas Headley", "thead9@ufl.edu");
@@ -35,9 +34,9 @@ public class Tests {
 
     @Test
     public void sendLogInMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionLogInMessage m = new ActionLogInMessage("thead9", "bogus,");
@@ -47,9 +46,9 @@ public class Tests {
 
     @Test
     public void sendLogOutMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionLogOutMessage m = new ActionLogOutMessage();
@@ -59,9 +58,9 @@ public class Tests {
 
     @Test
     public void sendAddContactMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionAddContactMessage m = new ActionAddContactMessage("thead9");
@@ -71,9 +70,9 @@ public class Tests {
 
     @Test
     public void sendRemoveContactMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionRemoveContactMessage m = new ActionRemoveContactMessage("thead9");
@@ -83,9 +82,9 @@ public class Tests {
 
     @Test
     public void sendUpdateProfileMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         Profile p = new Profile("Thomas Headley", "thead9", "4074086638");
@@ -96,9 +95,9 @@ public class Tests {
 
     @Test
     public void sendSendMessageMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionSendMessageMessage m = new ActionSendMessageMessage(ActionSendMessageMessage.ActionSendMessageMessageType.TO, "suzy", "Hi Suzy!");
@@ -110,9 +109,9 @@ public class Tests {
 
     @Test
     public void sendUpdateMessageMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionUpdateMessageMessage m = new ActionUpdateMessageMessage("14dv", "8dco", "Hello Suzy");
@@ -122,9 +121,9 @@ public class Tests {
 
     @Test
     public void sendAddUserToConversationMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionAddUserToConversationMessage m = new ActionAddUserToConversationMessage("thead9", "dcn4");
@@ -134,9 +133,9 @@ public class Tests {
 
     @Test
     public void sendRemoveUserFromConversationMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionRemoveUserFromConversationMessage m = new ActionRemoveUserFromConversationMessage("thead9", "dcn4");
@@ -146,9 +145,9 @@ public class Tests {
 
     @Test
     public void sendReadMessageMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionReadMessageMessage m = new ActionReadMessageMessage("thead9");
@@ -158,9 +157,9 @@ public class Tests {
 
     @Test
     public void sendSetTypingMessage() {
-        startTestServer();
+        startTestServerEcho();
 
-        ServerConnection conn = new ServerConnection("localhost", 500);
+        ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionSetTypingMessage m = new ActionSetTypingMessage("thead9", true);
@@ -168,18 +167,27 @@ public class Tests {
         conn.getOut().println(m.toJsonString());
     }
 
+    @Test
+    public void receiveErrorMessage() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationErrorMessage m = new NotificationErrorMessage(5, "Error #5");
+        conn.getOut().println(m.toJsonString());
+    }
 
 
-    private void startTestServer(){
+    private void startTestServerEcho(){
         Thread thread = new Thread(() -> {
             try {
                 Server s = new Server();
-                s.startServer();
+                s.startServerEcho();
             } catch (IOException e) {
                 System.out.println("Error starting server in test: " + e);
             }
         });
         thread.start();
     }
-
 }
