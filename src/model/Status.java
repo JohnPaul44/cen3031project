@@ -7,6 +7,7 @@ public class Status {
     private boolean read;
     private boolean typing;
 
+    // Test Constructor
     public Status(boolean read, boolean typing) {
         this.read = read;
         this.typing = typing;

@@ -16,6 +16,13 @@ public class Conversation implements Comparable<Conversation> {
     private Map<String, Status> memberStatus;
     private ArrayList<Message> messages;
 
+    // Test Constructor
+    public Conversation(String time, Map<String, Status> memberStatus, ArrayList<Message> messages) {
+        this.time = time;
+        this.memberStatus = memberStatus;
+        this.messages = messages;
+    }
+
     public Conversation(Message firstMessage) {
 
         Map<String, Status> memberStatusMap = new HashMap<>();

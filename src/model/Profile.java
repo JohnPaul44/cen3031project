@@ -9,6 +9,7 @@ public class Profile {
     private String email;
     private String phone;
 
+    // Test Constructor
     public Profile(String name, String email, String phone) {
         this.name = name;
         this.email = email;

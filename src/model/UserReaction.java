@@ -6,4 +6,10 @@ public class UserReaction {
 
     private int[] reaction;
     private String user;
+
+    // Test Constructor
+    public UserReaction(int[] reaction, String user) {
+        this.reaction = reaction;
+        this.user = user;
+    }
 }

@@ -22,8 +22,22 @@ public class Message implements Comparable<Message> {
     private String from;
     private String text;
     private enum Reaction {  }
-    private Reaction reactions;
+    private UserReaction[] userReactions;
     private boolean typing;
+
+    // Test Constructor
+    public Message(String serverTime, String clientTime, String[] to, String messageKey, String conversationKey,
+                   String from, String text, UserReaction[] userReactions, boolean typing) {
+        this.serverTime = serverTime;
+        this.clientTime = clientTime;
+        this.to = to;
+        this.messageKey = messageKey;
+        this.conversationKey = conversationKey;
+        this.from = from;
+        this.text = text;
+        this.userReactions = userReactions;
+        this.typing = typing;
+    }
 
     // New Conversation
     public Message(String[] to, String text, String clientTime) {

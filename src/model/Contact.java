@@ -6,4 +6,10 @@ public class Contact {
 
     private String username;
     private boolean online;
+
+    // Test Constructor
+    public Contact(String username, boolean online) {
+        this.username = username;
+        this.online = online;
+    }
 }
