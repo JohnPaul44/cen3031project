@@ -9,7 +9,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import model.Contact;
+import model.Conversation;
+import model.LoggedInUser;
 import model.Profile;
+
+import java.util.ArrayList;
 
 public class Main extends Application {
 
@@ -23,6 +28,9 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
+
         //launch(args);
     }
 }

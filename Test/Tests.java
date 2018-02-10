@@ -26,10 +26,12 @@ public class Tests {
 
     @Test
     public void sendRegisterMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionRegisterMessage m = new ActionRegisterMessage("thead9", "bogus,", "Thomas Headley", "thead9@ufl.edu");
 
@@ -38,10 +40,12 @@ public class Tests {
 
     @Test
     public void sendLogInMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionLogInMessage m = new ActionLogInMessage("thead9", "bogus,");
 
@@ -50,10 +54,12 @@ public class Tests {
 
     @Test
     public void sendLogOutMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionLogOutMessage m = new ActionLogOutMessage();
 
@@ -62,10 +68,12 @@ public class Tests {
 
     @Test
     public void sendAddContactMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionAddContactMessage m = new ActionAddContactMessage("thead9");
 
@@ -74,10 +82,12 @@ public class Tests {
 
     @Test
     public void sendRemoveContactMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionRemoveContactMessage m = new ActionRemoveContactMessage("thead9");
 
@@ -86,10 +96,12 @@ public class Tests {
 
     @Test
     public void sendUpdateProfileMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         Profile p = new Profile("Thomas Headley", "thead9", "4074086638");
         ActionUpdateProfileMessage m = new ActionUpdateProfileMessage(p);
@@ -99,10 +111,12 @@ public class Tests {
 
     @Test
     public void sendSendMessageMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionSendMessageMessage m = new ActionSendMessageMessage(ActionSendMessageMessage.ActionSendMessageMessageType.TO, "suzy", "Hi Suzy!");
         ActionSendMessageMessage m2 = new ActionSendMessageMessage(ActionSendMessageMessage.ActionSendMessageMessageType.CONVERSATIONKEY, "51dcj", "Hi Suzy!");
@@ -113,10 +127,12 @@ public class Tests {
 
     @Test
     public void sendUpdateMessageMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionUpdateMessageMessage m = new ActionUpdateMessageMessage("14dv", "8dco", "Hello Suzy");
 
@@ -125,10 +141,12 @@ public class Tests {
 
     @Test
     public void sendAddUserToConversationMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionAddUserToConversationMessage m = new ActionAddUserToConversationMessage("thead9", "dcn4");
 
@@ -137,10 +155,12 @@ public class Tests {
 
     @Test
     public void sendRemoveUserFromConversationMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionRemoveUserFromConversationMessage m = new ActionRemoveUserFromConversationMessage("thead9", "dcn4");
 
@@ -149,10 +169,12 @@ public class Tests {
 
     @Test
     public void sendReadMessageMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionReadMessageMessage m = new ActionReadMessageMessage("thead9");
 
@@ -161,10 +183,12 @@ public class Tests {
 
     @Test
     public void sendSetTypingMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         ActionSetTypingMessage m = new ActionSetTypingMessage("thead9", true);
 
@@ -173,10 +197,12 @@ public class Tests {
 
     @Test
     public void receiveErrorMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationErrorMessage m = new NotificationErrorMessage(5, "Error #5");
         conn.getOut().println(m.toJsonString());
@@ -184,10 +210,12 @@ public class Tests {
 
     @Test
     public void receiveLoggedInMessage() throws InterruptedException {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         Contact c1 = new Contact("thead9", true);
         Contact c2 = new Contact("suzy", false);
@@ -242,10 +270,12 @@ public class Tests {
 
     @Test
     public void receiveUserOnlineStatusMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationUserOnlineStatusMessage m = new NotificationUserOnlineStatusMessage(true, "thead9");
         conn.getOut().println(m.toJsonString());
@@ -253,10 +283,12 @@ public class Tests {
 
     @Test
     public void receiveLoggedOutMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationLoggedOutMessage m = new NotificationLoggedOutMessage();
         conn.getOut().println(m.toJsonString());
@@ -264,10 +296,12 @@ public class Tests {
 
     @Test
     public void receiveContactAddedMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationContactAddedMessage m = new NotificationContactAddedMessage("thead9");
         conn.getOut().println(m.toJsonString());
@@ -275,10 +309,12 @@ public class Tests {
 
     @Test
     public void receiveContactRemovedMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationContactRemovedMessage m = new NotificationContactRemovedMessage("thead9");
         conn.getOut().println(m.toJsonString());
@@ -286,10 +322,12 @@ public class Tests {
 
     @Test
     public void receiveProfileUpdatedMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationProfileUpdatedMessage m = new NotificationProfileUpdatedMessage(new Profile("Thomas Headley", "thead9", "4074086638"));
         conn.getOut().println(m.toJsonString());
@@ -297,10 +335,12 @@ public class Tests {
 
     @Test
     public void receiveMessageReceivedMessage() throws InterruptedException {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         UserReaction u1 = new UserReaction(new int[] {1, 6}, "thead9");
         UserReaction u2 = new UserReaction(new int[] {5, 4}, "suzy");
@@ -312,10 +352,12 @@ public class Tests {
 
     @Test
     public void receiveMessageUpdatedMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationMessageUpdatedMessage m = new NotificationMessageUpdatedMessage("kcn4", "nc4l", "Hello");
         conn.getOut().println(m.toJsonString());
@@ -323,10 +365,12 @@ public class Tests {
 
     @Test
     public void receiveUserAddedToConversationMessage() throws InterruptedException {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         Map<String, Status> memberStatus1 = new HashMap<>();
         memberStatus1.put("thead9", new Status(true, true));
@@ -352,10 +396,12 @@ public class Tests {
 
     @Test
     public void receiveUserRemovedFromConversation() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationUserRemovedFromConversationMessage m = new NotificationUserRemovedFromConversationMessage("thead9", "4jv8");
         conn.getOut().println(m.toJsonString());
@@ -363,10 +409,12 @@ public class Tests {
 
     @Test
     public void receiveMessageReadConversation() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationMessageReadMessage m = new NotificationMessageReadMessage("uh4h", "thead9");
         conn.getOut().println(m.toJsonString());
@@ -374,10 +422,12 @@ public class Tests {
 
     @Test
     public void receiveTypingMessage() {
+        LoggedInUser loggedInUser = new LoggedInUser();
+
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.startListeningToServer(loggedInUser);
 
         NotificationTypingMessage m = new NotificationTypingMessage("kj4n", "thead9", true);
         conn.getOut().println(m.toJsonString());

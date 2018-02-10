@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import connection.serverMessaging.*;
+import model.LoggedInUser;
 
 public class ServerConnection {
 
@@ -27,7 +28,7 @@ public class ServerConnection {
         return out;
     }
 
-    public void startListeningToServer() {
+    public void startListeningToServer(LoggedInUser loggedInUser) {
         Thread thread = new Thread(() -> {
             String userInput;
             try {
@@ -45,6 +46,9 @@ public class ServerConnection {
                             break;
                         case 2: // Logged In Message
                             NotificationLoggedInMessage loggedInMessage = gson.fromJson(messageFromServer, NotificationLoggedInMessage.class);
+                            loggedInUser.setContactList(loggedInMessage.getContacts());
+                            loggedInUser.setConversationList(loggedInMessage.getConversations());
+                            loggedInUser.setProfile(loggedInMessage.getProfile());
                             break;
                         case 3: // User Online Status
                             NotificationUserOnlineStatusMessage userOnlineStatusMessage = gson.fromJson(messageFromServer, NotificationUserOnlineStatusMessage.class);
