@@ -13,7 +13,7 @@ abstract class ServerMessage {
         NOTIFICATIONCONTACTREMOVED,
         NOTIFICATIONPROFILEUPDATED,
         NOTIFICATIONMESSAGERECEIVED,
-        NOTIFICIATIONMESSAGEUPDATED,
+        NOTIFICATIONMESSAGEUPDATED,
         NOTIFICATIONUSERADDEDTOCONVERSATION,
         NOTIFICATIONUSERREMOVEDFROMCONVERSATION,
         NOTIFICATIONMESSAGEREAD,
@@ -33,6 +33,10 @@ abstract class ServerMessage {
         ACTIONSETTYPING
     }
     int status;
+
+    public int getStatus() {
+        return status;
+    }
 
     public String toJsonString() {
         Gson gson = new Gson();

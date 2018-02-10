@@ -240,6 +240,148 @@ public class Tests {
         TimeUnit.SECONDS.sleep(5);
     }
 
+    @Test
+    public void receiveUserOnlineStatusMessage() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationUserOnlineStatusMessage m = new NotificationUserOnlineStatusMessage(true, "thead9");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveLoggedOutMessage() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationLoggedOutMessage m = new NotificationLoggedOutMessage();
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveContactAddedMessage() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationContactAddedMessage m = new NotificationContactAddedMessage("thead9");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveContactRemovedMessage() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationContactRemovedMessage m = new NotificationContactRemovedMessage("thead9");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveProfileUpdatedMessage() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationProfileUpdatedMessage m = new NotificationProfileUpdatedMessage(new Profile("Thomas Headley", "thead9", "4074086638"));
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveMessageReceivedMessage() throws InterruptedException {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        UserReaction u1 = new UserReaction(new int[] {1, 6}, "thead9");
+        UserReaction u2 = new UserReaction(new int[] {5, 4}, "suzy");
+        NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("jhc5", "8cj4", "2018-03-9 03:00:22.012",
+                "thead9", "Hello", new UserReaction[] {u1, u2});
+
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveMessageUpdatedMessage() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationMessageUpdatedMessage m = new NotificationMessageUpdatedMessage("kcn4", "nc4l", "Hello");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveUserAddedToConversationMessage() throws InterruptedException {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        Map<String, Status> memberStatus1 = new HashMap<>();
+        memberStatus1.put("thead9", new Status(true, true));
+        memberStatus1.put("suzy", new Status(false, false));
+        UserReaction ur1 = new UserReaction(new int[] {1, 2}, "thead9");
+        UserReaction ur2 = new UserReaction(new int[] {3, 4}, "suzy");
+        Message m1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
+                new String[] {"thead9", "suzy"}, "34f", "cn47", "thead9", "hello",
+                new UserReaction[] {ur1, ur2}, true);
+        Message m2 = new Message("2018-02-8 03:00:21.012", "2018-02-8 03:00:22.012",
+                new String[] {"thead9", "suzy"}, "999", "cn47", "thead9", "hello",
+                new UserReaction[] {ur1, ur2}, true);
+        ArrayList<Message> mList1 = new ArrayList<>();
+        mList1.add(m1);
+        mList1.add(m2);
+        Conversation conv1 = new Conversation("2018-03-9 03:00:22.012", memberStatus1, mList1);
+
+        NotificationUserAddedToConversationMessage m = new NotificationUserAddedToConversationMessage("thead9", "4hyd", conv1);
+        conn.getOut().println(m.toJsonString());
+
+        TimeUnit.SECONDS.sleep(5);
+    }
+
+    @Test
+    public void receiveUserRemovedFromConversation() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationUserRemovedFromConversationMessage m = new NotificationUserRemovedFromConversationMessage("thead9", "4jv8");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveMessageReadConversation() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationMessageReadMessage m = new NotificationMessageReadMessage("uh4h", "thead9");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveTypingMessage() {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationTypingMessage m = new NotificationTypingMessage("kj4n", "thead9", true);
+        conn.getOut().println(m.toJsonString());
+    }
 
     private void startTestServerEcho(){
         Thread thread = new Thread(() -> {
