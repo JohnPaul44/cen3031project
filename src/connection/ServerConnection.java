@@ -6,15 +6,18 @@ import java.net.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import connection.MessageHandlers.*;
 import connection.serverMessaging.*;
-import model.LoggedInUser;
+import model.CurrentUser;
 
 public class ServerConnection {
 
     private PrintWriter out;
     private BufferedReader in;
+    private CurrentUser currentUser;
 
     public ServerConnection() {
+        this.currentUser = new CurrentUser();
         try {
             Socket socket = new Socket(Server.hostname, Server.portNumber);
             this.out = new PrintWriter(socket.getOutputStream(), true);
@@ -28,7 +31,9 @@ public class ServerConnection {
         return out;
     }
 
-    public void startListeningToServer(LoggedInUser loggedInUser) {
+    public CurrentUser getCurrentUser() { return currentUser; }
+
+    public void startListeningToServer() {
         Thread thread = new Thread(() -> {
             String userInput;
             try {
@@ -40,21 +45,24 @@ public class ServerConnection {
 
                     switch (status) {
                         case 0: // Uninitialized
+                            UninitializedMessageHandler uninitializedHandler = new UninitializedMessageHandler();
+                            uninitializedHandler.handle();
                             break;
                         case 1: // Error Message
-                            NotificationErrorMessage errorMessage = gson.fromJson(messageFromServer, NotificationErrorMessage.class);
+                            ErrorMessageHandler errorHandler = new ErrorMessageHandler(messageFromServer);
+                            errorHandler.handle();
                             break;
                         case 2: // Logged In Message
-                            NotificationLoggedInMessage loggedInMessage = gson.fromJson(messageFromServer, NotificationLoggedInMessage.class);
-                            loggedInUser.setContactList(loggedInMessage.getContacts());
-                            loggedInUser.setConversationList(loggedInMessage.getConversations());
-                            loggedInUser.setProfile(loggedInMessage.getProfile());
+                            LoggedInMessageHandler loggedInMessageHandler = new LoggedInMessageHandler(messageFromServer, currentUser);
+                            loggedInMessageHandler.handle();
                             break;
                         case 3: // User Online Status
-                            NotificationUserOnlineStatusMessage userOnlineStatusMessage = gson.fromJson(messageFromServer, NotificationUserOnlineStatusMessage.class);
+                            UserOnlineStatusMessageHandler userOnlineStatusMessageHandler = new UserOnlineStatusMessageHandler(messageFromServer, currentUser);
+                            userOnlineStatusMessageHandler.handle();
                             break;
                         case 4: // Logged Out Message
-                            NotificationLoggedOutMessage loggedOutMessage = gson.fromJson(messageFromServer, NotificationLoggedOutMessage.class);
+                            LoggedOutMessageHandler loggedOutMessageHandler = new LoggedOutMessageHandler(messageFromServer, currentUser);
+                            loggedOutMessageHandler.handle();
                             break;
                         case 5: // Contact Added
                             NotificationContactAddedMessage contactAddedMessage = gson.fromJson(messageFromServer, NotificationContactAddedMessage.class);

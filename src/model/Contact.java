@@ -19,4 +19,6 @@ public class Contact {
     public boolean getOnline() {
         return online;
     }
+
+    public void setOnline(boolean online) { this.online = online; }
 }

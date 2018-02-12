@@ -2,7 +2,9 @@ import connection.Server;
 import connection.ServerConnection;
 import connection.serverMessaging.*;
 import model.*;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.google.gson.Gson;
 
@@ -26,12 +28,12 @@ public class Tests {
 
     @Test
     public void sendRegisterMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionRegisterMessage m = new ActionRegisterMessage("thead9", "bogus,", "Thomas Headley", "thead9@ufl.edu");
 
@@ -40,12 +42,12 @@ public class Tests {
 
     @Test
     public void sendLogInMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionLogInMessage m = new ActionLogInMessage("thead9", "bogus,");
 
@@ -54,12 +56,12 @@ public class Tests {
 
     @Test
     public void sendLogOutMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionLogOutMessage m = new ActionLogOutMessage();
 
@@ -68,12 +70,12 @@ public class Tests {
 
     @Test
     public void sendAddContactMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionAddContactMessage m = new ActionAddContactMessage("thead9");
 
@@ -82,12 +84,12 @@ public class Tests {
 
     @Test
     public void sendRemoveContactMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionRemoveContactMessage m = new ActionRemoveContactMessage("thead9");
 
@@ -96,12 +98,12 @@ public class Tests {
 
     @Test
     public void sendUpdateProfileMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         Profile p = new Profile("Thomas Headley", "thead9", "4074086638");
         ActionUpdateProfileMessage m = new ActionUpdateProfileMessage(p);
@@ -111,12 +113,12 @@ public class Tests {
 
     @Test
     public void sendSendMessageMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionSendMessageMessage m = new ActionSendMessageMessage(ActionSendMessageMessage.ActionSendMessageMessageType.TO, "suzy", "Hi Suzy!");
         ActionSendMessageMessage m2 = new ActionSendMessageMessage(ActionSendMessageMessage.ActionSendMessageMessageType.CONVERSATIONKEY, "51dcj", "Hi Suzy!");
@@ -127,12 +129,12 @@ public class Tests {
 
     @Test
     public void sendUpdateMessageMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionUpdateMessageMessage m = new ActionUpdateMessageMessage("14dv", "8dco", "Hello Suzy");
 
@@ -141,12 +143,12 @@ public class Tests {
 
     @Test
     public void sendAddUserToConversationMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionAddUserToConversationMessage m = new ActionAddUserToConversationMessage("thead9", "dcn4");
 
@@ -155,12 +157,12 @@ public class Tests {
 
     @Test
     public void sendRemoveUserFromConversationMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionRemoveUserFromConversationMessage m = new ActionRemoveUserFromConversationMessage("thead9", "dcn4");
 
@@ -169,12 +171,12 @@ public class Tests {
 
     @Test
     public void sendReadMessageMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionReadMessageMessage m = new ActionReadMessageMessage("thead9");
 
@@ -183,12 +185,12 @@ public class Tests {
 
     @Test
     public void sendSetTypingMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         ActionSetTypingMessage m = new ActionSetTypingMessage("thead9", true);
 
@@ -197,12 +199,12 @@ public class Tests {
 
     @Test
     public void receiveErrorMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
         NotificationErrorMessage m = new NotificationErrorMessage(5, "Error #5");
         conn.getOut().println(m.toJsonString());
@@ -210,20 +212,213 @@ public class Tests {
 
     @Test
     public void receiveLoggedInMessage() throws InterruptedException {
-        LoggedInUser loggedInUser = new LoggedInUser();
+        CurrentUser currentUser = new CurrentUser();
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
+        conn.startListeningToServer();
 
+        NotificationLoggedInMessage m = createLoggedInMessage();
+
+        conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(5);
+    }
+
+    @Test
+    public void receiveUserOnlineStatusMessage() throws InterruptedException {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
+        conn.getOut().println(loggedInMessage.toJsonString());
+        NotificationUserOnlineStatusMessage m = new NotificationUserOnlineStatusMessage(true, "suzy");
+        conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(4);
+        assertTrue(conn.getCurrentUser().getContactList().get("suzy").getOnline());
+    }
+
+    @Test
+    public void receiveLoggedOutMessage() throws InterruptedException {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
+        conn.getOut().println(loggedInMessage.toJsonString());
+        NotificationLoggedOutMessage m = new NotificationLoggedOutMessage();
+        conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(4);
+        assertNull(conn.getCurrentUser().getUserName());
+        assertNull(conn.getCurrentUser().getContactList());
+        assertNull(conn.getCurrentUser().getConversationList());
+        assertNull(conn.getCurrentUser().getProfile());
+    }
+
+    @Test
+    public void receiveContactAddedMessage() {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationContactAddedMessage m = new NotificationContactAddedMessage("thead9");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveContactRemovedMessage() {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationContactRemovedMessage m = new NotificationContactRemovedMessage("thead9");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveProfileUpdatedMessage() {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationProfileUpdatedMessage m = new NotificationProfileUpdatedMessage(new Profile("Thomas Headley", "thead9", "4074086638"));
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveMessageReceivedMessage() throws InterruptedException {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        UserReaction u1 = new UserReaction(new int[] {1, 6}, "thead9");
+        UserReaction u2 = new UserReaction(new int[] {5, 4}, "suzy");
+        NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("jhc5", "8cj4", "2018-03-9 03:00:22.012",
+                "thead9", "Hello", new UserReaction[] {u1, u2});
+
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveMessageUpdatedMessage() {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationMessageUpdatedMessage m = new NotificationMessageUpdatedMessage("kcn4", "nc4l", "Hello");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveUserAddedToConversationMessage() throws InterruptedException {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        Map<String, Status> memberStatus1 = new HashMap<>();
+        memberStatus1.put("thead9", new Status(true, true));
+        memberStatus1.put("suzy", new Status(false, false));
+        UserReaction ur1 = new UserReaction(new int[] {1, 2}, "thead9");
+        UserReaction ur2 = new UserReaction(new int[] {3, 4}, "suzy");
+        Message m1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
+                new String[] {"thead9", "suzy"}, "34f", "cn47", "thead9", "hello",
+                new UserReaction[] {ur1, ur2}, true);
+        Message m2 = new Message("2018-02-8 03:00:21.012", "2018-02-8 03:00:22.012",
+                new String[] {"thead9", "suzy"}, "999", "cn47", "thead9", "hello",
+                new UserReaction[] {ur1, ur2}, true);
+        ArrayList<Message> mList1 = new ArrayList<>();
+        mList1.add(m1);
+        mList1.add(m2);
+        Conversation conv1 = new Conversation("2018-03-9 03:00:22.012", memberStatus1, mList1);
+
+        NotificationUserAddedToConversationMessage m = new NotificationUserAddedToConversationMessage("thead9", "4hyd", conv1);
+        conn.getOut().println(m.toJsonString());
+
+        TimeUnit.SECONDS.sleep(5);
+    }
+
+    @Test
+    public void receiveUserRemovedFromConversation() {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationUserRemovedFromConversationMessage m = new NotificationUserRemovedFromConversationMessage("thead9", "4jv8");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveMessageReadConversation() {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationMessageReadMessage m = new NotificationMessageReadMessage("uh4h", "thead9");
+        conn.getOut().println(m.toJsonString());
+    }
+
+    @Test
+    public void receiveTypingMessage() {
+        CurrentUser currentUser = new CurrentUser();
+
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationTypingMessage m = new NotificationTypingMessage("kj4n", "thead9", true);
+        conn.getOut().println(m.toJsonString());
+    }
+
+    private void startTestServerEcho(){
+        Thread thread = new Thread(() -> {
+            try {
+                Server s = new Server();
+                s.startServerEcho();
+            } catch (IOException e) {
+                System.out.println("Error starting server in test: " + e);
+            }
+        });
+        thread.start();
+    }
+
+    private NotificationLoggedInMessage createLoggedInMessage() {
         Contact c1 = new Contact("thead9", true);
         Contact c2 = new Contact("suzy", false);
         Contact c3 = new Contact("barney", true);
-        ArrayList<Contact> contactList = new ArrayList<>();
-        contactList.add(c1);
-        contactList.add(c2);
-        contactList.add(c3);
+        HashMap<String, Contact> contactList = new HashMap<>();
+        contactList.put(c1.getUsername(), c1);
+        contactList.put(c2.getUsername(), c2);
+        contactList.put(c3.getUsername(), c3);
 
         Map<String, Status> memberStatus1 = new HashMap<>();
         memberStatus1.put("thead9", new Status(true, true));
@@ -264,184 +459,6 @@ public class Tests {
         NotificationLoggedInMessage m = new NotificationLoggedInMessage("thead9",
                 new Profile("Thomas Headley", "thead9@ufl.edu", "4074086638"), contactList, cList);
 
-        conn.getOut().println(m.toJsonString());
-        TimeUnit.SECONDS.sleep(5);
-    }
-
-    @Test
-    public void receiveUserOnlineStatusMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        NotificationUserOnlineStatusMessage m = new NotificationUserOnlineStatusMessage(true, "thead9");
-        conn.getOut().println(m.toJsonString());
-    }
-
-    @Test
-    public void receiveLoggedOutMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        NotificationLoggedOutMessage m = new NotificationLoggedOutMessage();
-        conn.getOut().println(m.toJsonString());
-    }
-
-    @Test
-    public void receiveContactAddedMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        NotificationContactAddedMessage m = new NotificationContactAddedMessage("thead9");
-        conn.getOut().println(m.toJsonString());
-    }
-
-    @Test
-    public void receiveContactRemovedMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        NotificationContactRemovedMessage m = new NotificationContactRemovedMessage("thead9");
-        conn.getOut().println(m.toJsonString());
-    }
-
-    @Test
-    public void receiveProfileUpdatedMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        NotificationProfileUpdatedMessage m = new NotificationProfileUpdatedMessage(new Profile("Thomas Headley", "thead9", "4074086638"));
-        conn.getOut().println(m.toJsonString());
-    }
-
-    @Test
-    public void receiveMessageReceivedMessage() throws InterruptedException {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        UserReaction u1 = new UserReaction(new int[] {1, 6}, "thead9");
-        UserReaction u2 = new UserReaction(new int[] {5, 4}, "suzy");
-        NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("jhc5", "8cj4", "2018-03-9 03:00:22.012",
-                "thead9", "Hello", new UserReaction[] {u1, u2});
-
-        conn.getOut().println(m.toJsonString());
-    }
-
-    @Test
-    public void receiveMessageUpdatedMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        NotificationMessageUpdatedMessage m = new NotificationMessageUpdatedMessage("kcn4", "nc4l", "Hello");
-        conn.getOut().println(m.toJsonString());
-    }
-
-    @Test
-    public void receiveUserAddedToConversationMessage() throws InterruptedException {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        Map<String, Status> memberStatus1 = new HashMap<>();
-        memberStatus1.put("thead9", new Status(true, true));
-        memberStatus1.put("suzy", new Status(false, false));
-        UserReaction ur1 = new UserReaction(new int[] {1, 2}, "thead9");
-        UserReaction ur2 = new UserReaction(new int[] {3, 4}, "suzy");
-        Message m1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
-                new String[] {"thead9", "suzy"}, "34f", "cn47", "thead9", "hello",
-                new UserReaction[] {ur1, ur2}, true);
-        Message m2 = new Message("2018-02-8 03:00:21.012", "2018-02-8 03:00:22.012",
-                new String[] {"thead9", "suzy"}, "999", "cn47", "thead9", "hello",
-                new UserReaction[] {ur1, ur2}, true);
-        ArrayList<Message> mList1 = new ArrayList<>();
-        mList1.add(m1);
-        mList1.add(m2);
-        Conversation conv1 = new Conversation("2018-03-9 03:00:22.012", memberStatus1, mList1);
-
-        NotificationUserAddedToConversationMessage m = new NotificationUserAddedToConversationMessage("thead9", "4hyd", conv1);
-        conn.getOut().println(m.toJsonString());
-
-        TimeUnit.SECONDS.sleep(5);
-    }
-
-    @Test
-    public void receiveUserRemovedFromConversation() {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        NotificationUserRemovedFromConversationMessage m = new NotificationUserRemovedFromConversationMessage("thead9", "4jv8");
-        conn.getOut().println(m.toJsonString());
-    }
-
-    @Test
-    public void receiveMessageReadConversation() {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        NotificationMessageReadMessage m = new NotificationMessageReadMessage("uh4h", "thead9");
-        conn.getOut().println(m.toJsonString());
-    }
-
-    @Test
-    public void receiveTypingMessage() {
-        LoggedInUser loggedInUser = new LoggedInUser();
-
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer(loggedInUser);
-
-        NotificationTypingMessage m = new NotificationTypingMessage("kj4n", "thead9", true);
-        conn.getOut().println(m.toJsonString());
-    }
-
-    private void startTestServerEcho(){
-        Thread thread = new Thread(() -> {
-            try {
-                Server s = new Server();
-                s.startServerEcho();
-            } catch (IOException e) {
-                System.out.println("Error starting server in test: " + e);
-            }
-        });
-        thread.start();
+        return m;
     }
 }
