@@ -6,7 +6,7 @@ import java.net.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import connection.MessageHandlers.*;
+import connection.messageHandlers.*;
 import connection.serverMessaging.*;
 import model.CurrentUser;
 
@@ -65,16 +65,20 @@ public class ServerConnection {
                             loggedOutMessageHandler.handle();
                             break;
                         case 5: // Contact Added
-                            NotificationContactAddedMessage contactAddedMessage = gson.fromJson(messageFromServer, NotificationContactAddedMessage.class);
+                            ContactAddedMessageHandler contactAddedMessageHandler = new ContactAddedMessageHandler(messageFromServer, currentUser);
+                            contactAddedMessageHandler.handle();
                             break;
                         case 6: // Contact Removed
-                            NotificationContactRemovedMessage contactRemovedMessage = gson.fromJson(messageFromServer, NotificationContactRemovedMessage.class);
+                            ContactRemovedMessageHandler contactRemovedMessageHandler = new ContactRemovedMessageHandler(messageFromServer, currentUser);
+                            contactRemovedMessageHandler.handle();
                             break;
                         case 7: // Profile Updated
-                            NotificationProfileUpdatedMessage profileUpdatedMessage = gson.fromJson(messageFromServer, NotificationProfileUpdatedMessage.class);
+                            ProfileUpdatedMessageHandler profileUpdatedMessageHandler = new ProfileUpdatedMessageHandler(messageFromServer, currentUser);
+                            profileUpdatedMessageHandler.handle();
                             break;
                         case 8: // Message Received
-                            NotificationMessageReceivedMessage messageReceivedMessage = gson.fromJson(messageFromServer, NotificationMessageReceivedMessage.class);
+                            MessageReceivedMessageHandler messageReceivedMessageHandler = new MessageReceivedMessageHandler(messageFromServer, currentUser);
+                            messageReceivedMessageHandler.handle();
                             break;
                         case 9: // Message Updated
                             NotificationMessageUpdatedMessage messageUpdatedMessage = gson.fromJson(messageFromServer, NotificationMessageUpdatedMessage.class);

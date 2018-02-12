@@ -1,4 +1,4 @@
-package connection.MessageHandlers;
+package connection.messageHandlers;
 
 import com.google.gson.JsonObject;
 import connection.serverMessaging.NotificationLoggedOutMessage;
@@ -15,7 +15,6 @@ public class LoggedOutMessageHandler implements NotificationMessageHandler {
 
     @Override
     public void handle() {
-        System.out.println("Logged out message received from Server");
         currentUser.clearUser();
     }
 

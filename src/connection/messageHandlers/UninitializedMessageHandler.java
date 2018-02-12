@@ -1,4 +1,4 @@
-package connection.MessageHandlers;
+package connection.messageHandlers;
 
 public class UninitializedMessageHandler implements NotificationMessageHandler {
     @Override

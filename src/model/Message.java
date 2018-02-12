@@ -1,5 +1,7 @@
 package model;
 
+import connection.serverMessaging.NotificationMessageReceivedMessage;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,6 +41,17 @@ public class Message implements Comparable<Message> {
         this.typing = typing;
     }
 
+    public Message(NotificationMessageReceivedMessage messageFromServer) {
+        this.conversationKey = messageFromServer.getConversationKey();
+        this.messageKey = messageFromServer.getMessageKey();
+        this.serverTime = messageFromServer.getServerTime();
+        this.from = messageFromServer.getFrom();
+        this.text = messageFromServer.getText();
+        if (messageFromServer.getReactions() != null) {
+            this.userReactions = messageFromServer.getReactions();
+        }
+    }
+
     // New Conversation
     public Message(String[] to, String text, String clientTime) {
         this.to = to;
@@ -54,8 +67,10 @@ public class Message implements Comparable<Message> {
     }
 
     public String getClientTime() { return clientTime; }
+    public String getServerTime() { return serverTime; }
     public String[] getTo() { return to; }
     public String getFrom() { return from; }
+    public String getConversationKey() { return conversationKey; }
 
     // Sorts messages by time.
     // If there is a serverTime, that time will be used.  If there is no serverTime, clientTime will be used.

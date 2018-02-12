@@ -1,12 +1,11 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CurrentUser {
     private String userName;
     private HashMap<String, Contact> contactList;
-    private ArrayList<Conversation> conversationList;
+    private HashMap<String, Conversation> conversationList;
     private Profile profile;
 
     public CurrentUser() {
@@ -18,7 +17,7 @@ public class CurrentUser {
     public HashMap<String, Contact> getContactList() {
         return contactList;
     }
-    public ArrayList<Conversation> getConversationList() {
+    public HashMap<String, Conversation> getConversationList() {
         return conversationList;
     }
     public Profile getProfile() {
@@ -31,7 +30,7 @@ public class CurrentUser {
     public void setContactList(HashMap<String, Contact> contactList) {
         this.contactList = contactList;
     }
-    public void setConversationList(ArrayList<Conversation> conversationList) {
+    public void setConversationList(HashMap<String, Conversation> conversationList) {
         this.conversationList = conversationList;
     }
     public void setProfile(Profile profile) {

@@ -4,16 +4,15 @@ import model.Contact;
 import model.Conversation;
 import model.Profile;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class NotificationLoggedInMessage extends ServerMessage {
     private String username;
     private Profile profile;
     private HashMap<String, Contact> contacts;
-    private ArrayList<Conversation> conversations;
+    private HashMap<String, Conversation> conversations;
 
-    public NotificationLoggedInMessage(String username, Profile profile, HashMap<String, Contact> contacts, ArrayList<Conversation> conversations) {
+    public NotificationLoggedInMessage(String username, Profile profile, HashMap<String, Contact> contacts, HashMap<String, Conversation> conversations) {
         this.status = Status.NOTIFICATIONLOGGEDIN.ordinal();
         this.username = username;
         this.profile = profile;
@@ -30,7 +29,7 @@ public class NotificationLoggedInMessage extends ServerMessage {
     public HashMap<String, Contact> getContacts() {
         return contacts;
     }
-    public ArrayList<Conversation> getConversations() {
+    public HashMap<String, Conversation> getConversations() {
         return conversations;
     }
 }

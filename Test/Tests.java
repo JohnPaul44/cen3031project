@@ -3,6 +3,8 @@ import connection.ServerConnection;
 import connection.serverMessaging.*;
 import model.*;
 import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -15,6 +17,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class Tests {
+
+    // TODO create test for sorting messages
+    // TODO create test for sorting conversations
 
     @Test
     public void toJsonStringTest() {
@@ -212,8 +217,6 @@ public class Tests {
 
     @Test
     public void receiveLoggedInMessage() throws InterruptedException {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
@@ -242,8 +245,6 @@ public class Tests {
 
     @Test
     public void receiveLoggedOutMessage() throws InterruptedException {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
@@ -261,59 +262,99 @@ public class Tests {
     }
 
     @Test
-    public void receiveContactAddedMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
+    public void receiveContactAddedMessage() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
-        NotificationContactAddedMessage m = new NotificationContactAddedMessage("thead9");
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+        NotificationContactAddedMessage m = new NotificationContactAddedMessage("fred");
         conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(4);
+        assertTrue(conn.getCurrentUser().getContactList().get("fred").getUsername().equals("fred"));
+        assertFalse(conn.getCurrentUser().getContactList().get("fred").getOnline());
     }
 
     @Test
-    public void receiveContactRemovedMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
+    public void receiveContactRemovedMessage() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
-        NotificationContactRemovedMessage m = new NotificationContactRemovedMessage("thead9");
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+        NotificationContactRemovedMessage m = new NotificationContactRemovedMessage("suzy");
         conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(4);
+        assertNull(conn.getCurrentUser().getContactList().get("suzy"));
     }
 
     @Test
-    public void receiveProfileUpdatedMessage() {
-        CurrentUser currentUser = new CurrentUser();
+    public void receiveProfileUpdatedMessage() throws InterruptedException {
 
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
-        NotificationProfileUpdatedMessage m = new NotificationProfileUpdatedMessage(new Profile("Thomas Headley", "thead9", "4074086638"));
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+        NotificationProfileUpdatedMessage m = new NotificationProfileUpdatedMessage(new Profile("Thomas Headley", "thead9@ufl.edu", "4074086638"));
         conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(4);
+        assertTrue(conn.getCurrentUser().getProfile().getName().equals("Thomas Headley"));
+        assertTrue(conn.getCurrentUser().getProfile().getEmail().equals("thead9@ufl.edu"));
+        assertTrue(conn.getCurrentUser().getProfile().getPhone().equals("4074086638"));
     }
 
     @Test
-    public void receiveMessageReceivedMessage() throws InterruptedException {
-        CurrentUser currentUser = new CurrentUser();
-
+    public void receiveMessageReceivedForExistingConversationMessage() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
         UserReaction u1 = new UserReaction(new int[] {1, 6}, "thead9");
         UserReaction u2 = new UserReaction(new int[] {5, 4}, "suzy");
-        NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("jhc5", "8cj4", "2018-03-9 03:00:22.012",
+
+        // without user reactions
+        //NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv3", "8cj4", "2018-03-9 03:00:22.012",
+        //       "thead9", "Hello");
+        NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv1", "8cj4", "2018-03-9 03:00:22.012",
                 "thead9", "Hello", new UserReaction[] {u1, u2});
 
         conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(4);
+        assertTrue(conn.getCurrentUser().getConversationList().get("conv1").getTime().equals("2018-03-9 03:00:22.012"));
+    }
+
+    @Test
+    public void receiveMessageReceivedForNewConversationMessage() throws InterruptedException {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+        UserReaction u1 = new UserReaction(new int[] {1, 6}, "thead9");
+        UserReaction u2 = new UserReaction(new int[] {5, 4}, "suzy");
+
+        // without user reactions
+        NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv3", "8cj4", "2018-03-9 03:00:22.012",
+                "thead9", "Hello");
+        // with user reactions
+        //NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv1", "8cj4", "2018-03-9 03:00:22.012",
+        //        "thead9", "Hello", new UserReaction[] {u1, u2});
+
+        conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(4);
+        assertTrue(conn.getCurrentUser().getConversationList().get("conv3").getTime().equals("2018-03-9 03:00:22.012"));
     }
 
     @Test
@@ -349,10 +390,10 @@ public class Tests {
         Message m2 = new Message("2018-02-8 03:00:21.012", "2018-02-8 03:00:22.012",
                 new String[] {"thead9", "suzy"}, "999", "cn47", "thead9", "hello",
                 new UserReaction[] {ur1, ur2}, true);
-        ArrayList<Message> mList1 = new ArrayList<>();
-        mList1.add(m1);
-        mList1.add(m2);
-        Conversation conv1 = new Conversation("2018-03-9 03:00:22.012", memberStatus1, mList1);
+        HashMap<String, Message> mList1 = new HashMap<>();
+        mList1.put(m1.getConversationKey(), m1);
+        mList1.put(m2.getConversationKey(), m2);
+        Conversation conv1 = new Conversation("conv1", "2018-03-9 03:00:22.012", memberStatus1, mList1);
 
         NotificationUserAddedToConversationMessage m = new NotificationUserAddedToConversationMessage("thead9", "4hyd", conv1);
         conn.getOut().println(m.toJsonString());
@@ -431,10 +472,10 @@ public class Tests {
         Message m2 = new Message("2018-02-8 03:00:21.012", "2018-02-8 03:00:22.012",
                 new String[] {"thead9", "suzy"}, "999", "cn47", "thead9", "hello",
                 new UserReaction[] {ur1, ur2}, true);
-        ArrayList<Message> mList1 = new ArrayList<>();
-        mList1.add(m1);
-        mList1.add(m2);
-        Conversation conv1 = new Conversation("2018-03-9 03:00:22.012", memberStatus1, mList1);
+        HashMap<String, Message> mList1 = new HashMap<>();
+        mList1.put(m1.getConversationKey(), m1);
+        mList1.put(m2.getConversationKey(), m2);
+        Conversation conv1 = new Conversation("conv1", "2018-03-9 03:00:22.012", memberStatus1, mList1);
 
         Map<String, Status> memberStatus2 = new HashMap<>();
         memberStatus2.put("thead9", new Status(true, true));
@@ -447,14 +488,14 @@ public class Tests {
         Message m4 = new Message("2018-01-8 03:00:21.012", "2018-01-8 03:00:22.012",
                 new String[] {"thead9", "suzy"}, "888", "nvj4", "thead9", "hi",
                 new UserReaction[] {ur3, ur4}, true);
-        ArrayList<Message> mList2 = new ArrayList<>();
-        mList2.add(m3);
-        mList2.add(m4);
-        Conversation conv2 = new Conversation("2018-03-9 03:00:22.012", memberStatus2, mList2);
+        HashMap<String, Message> mList2 = new HashMap<>();
+        mList2.put(m3.getConversationKey(), m3);
+        mList2.put(m4.getConversationKey(), m4);
+        Conversation conv2 = new Conversation("conv2", "2017-03-9 03:00:22.012", memberStatus2, mList2);
 
-        ArrayList<Conversation> cList = new ArrayList<>();
-        cList.add(conv1);
-        cList.add(conv2);
+        HashMap<String, Conversation> cList = new HashMap<>();
+        cList.put(conv1.getConversationKey(), conv1);
+        cList.put(conv2.getConversationKey(), conv2);
 
         NotificationLoggedInMessage m = new NotificationLoggedInMessage("thead9",
                 new Profile("Thomas Headley", "thead9@ufl.edu", "4074086638"), contactList, cList);

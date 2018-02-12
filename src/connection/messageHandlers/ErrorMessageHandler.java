@@ -1,4 +1,4 @@
-package connection.MessageHandlers;
+package connection.messageHandlers;
 
 import com.google.gson.JsonObject;
 import connection.serverMessaging.NotificationErrorMessage;

@@ -20,6 +20,15 @@ public class NotificationMessageReceivedMessage extends ServerMessage {
         this.reactions = reactions;
     }
 
+    public NotificationMessageReceivedMessage(String conversationKey, String messageKey, String serverTime, String from, String text) {
+        this.status = Status.NOTIFICATIONMESSAGERECEIVED.ordinal();
+        this.conversationKey = conversationKey;
+        this.messageKey = messageKey;
+        this.serverTime = serverTime;
+        this.from = from;
+        this.text = text;
+    }
+
     public String getConversationKey() {
         return conversationKey;
     }
