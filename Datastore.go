@@ -13,8 +13,8 @@ const (
 
 type DSUser struct {
 	// key: username, parent: nil
-	username      string      // unexported
-	connection    *Connection // unexported
+	username      string      // unexported, used internally
+	connection    *Connection // unexported, used internally
 	PassHash      []byte           `json:"pass_hash"`
 	Profile       Profile          `json:"profile"`
 	Contacts      []string         `json:"contacts"`
