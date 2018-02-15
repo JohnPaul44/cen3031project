@@ -13,15 +13,13 @@ import (
 	"time"
 	"google.golang.org/api/iterator"
 	"sync"
-	"errors"
 	"io"
+	"errors"
 )
 
 const ProjectID = "cen3031-192414"
 
-// TODO: create error variables
-// TODO: replace all "fmt." occurrences with "log." alternative
-// TOOD: ensure .Print and .Error are used properly
+// TODO: write tests
 // TODO: implement a toggle switch for editing messages in the conversation
 // TODO: implement authorization tokens
 
@@ -34,8 +32,8 @@ type Message struct {
 	ServerTime      *time.Time      `json:"serverTime,omitempty"`
 	ClientTime      *string         `json:"clientTime,omitempty"`
 	To              *[]string       `json:"to,omitempty"`
-	MessageKey      *datastore.Key  `json:"messageKey,omitempty"`
-	ConversationKey *datastore.Key  `json:"conversationKey,omitempty"`
+	MessageKey      *string         `json:"messageKey,omitempty"`
+	ConversationKey *string         `json:"conversationKey,omitempty"`
 	From            *string         `json:"from,omitempty"`
 	Text            *string         `json:"text,omitempty"`
 	Reactions       *[]UserReaction `json:"reactions,omitempty"`
@@ -58,10 +56,17 @@ type Contact struct {
 	Online   bool   `json:"online"`
 }
 
+const (
+	GenderFemale = iota
+	GenderMale   = iota
+	GenderOther  = iota
+)
+
 type Profile struct {
-	Name  string  `json:"name"`
-	Email string  `json:"email"`
-	Phone *string `json:"phone,omitempty"`
+	Name   string  `json:"name"`
+	Email  string  `json:"email"`
+	Phone  *string `json:"phone,omitempty"`
+	Gender *int    `json:"gender,omitempty"`
 }
 
 type ServerMessage struct {
@@ -90,29 +95,10 @@ func (msg *ServerMessage) clear() {
 	msg.Message = nil
 }
 
-func (msg *ServerMessage) setError(err error) {
+func (msg *ServerMessage) setError(err ServerError) {
 	msg.Status = NotificationError
-	msg.ErrorNumber = errorToNumber(ErrorDefault)
-	msg.ErrorString = new(string)
-	*msg.ErrorString = err.Error()
-}
-
-func (msg *ServerMessage) setCustomError(errorNumber int, errorString string) {
-	msg.Status = NotificationError
-	msg.ErrorNumber = &errorNumber
-	if len(errorString) != 0 {
-		msg.ErrorString = &errorString
-	} else {
-		msg.ErrorString = errorToString(errorNumber)
-	}
-}
-
-func (msg *ServerMessage) setDefaultCustomError(errorNumber int) {
-	msg.Status = NotificationError
-	msg.ErrorNumber = new(int)
-	*msg.ErrorNumber = errorNumber
-	msg.ErrorString = new(string)
-	*msg.ErrorString = defaultErrorStrings[errorNumber]
+	msg.ErrorNumber = &err.id
+	msg.ErrorString = &err.error
 }
 
 const (
@@ -158,54 +144,65 @@ const (
 )
 
 const (
-	ErrorDefault          = iota
-	ErrorNotLoggedIn      = iota
-	ErrorExistingAccount  = iota // returns username
-	ErrorMissingParameter = iota
-	ErrorEmptyParameter   = iota
-	ErrorInvalidUsername  = iota // returns username
-	ErrorInvalidPassword  = iota
-	ErrorUserDoesNotExist = iota
+	ErrorInternalServer         = iota
+	ErrorInvalidJSON            = iota
+	ErrorUnauthorized           = iota
+	ErrorExistingAccount        = iota // returns username
+	ErrorMissingParameter       = iota
+	ErrorEmptyParameter         = iota
+	ErrorInvalidUsername        = iota // returns username
+	ErrorInvalidLogin           = iota
+	ErrorInvalidConversationKey = iota
+	ErrorInvalidMessageKey      = iota
+	ErrorInvalidStatus          = iota
 )
 
-type ErrorStrings = map[int]string
-
-var defaultErrorStrings = ErrorStrings{
-	ErrorDefault:          "default",
-	ErrorNotLoggedIn:      "not logged in",
-	ErrorExistingAccount:  "account already exists",
-	ErrorMissingParameter: "missing parameter",
-	ErrorEmptyParameter:   "empty parameter",
-	ErrorInvalidUsername:  "invalid username",
-	ErrorInvalidPassword:  "invalid password",
-	ErrorUserDoesNotExist: "user does not exist",
+type ServerError struct {
+	error string
+	id    int
 }
 
-func errorToNumber(errorNumber int) *int {
-	i := new(int)
-	*i = errorNumber
-	return i
+func NewError(error string, errType int) ServerError {
+	return ServerError{error, errType}
 }
 
-func errorToString(errorNumber int) *string {
-	/// convert error custom error number to string pointer
-	errorString := new(string)
-	*errorString = defaultErrorStrings[errorNumber]
-	return errorString
+func (err ServerError) Error() string {
+	return err.error
 }
+
+func (err ServerError) Id() int {
+	return err.id
+}
+
+const ErrorTag = "ERROR:"
+
+var (
+	ErrInternalServer         = NewError("internal server error", ErrorInternalServer)
+	ErrInvalidJSON            = NewError("invalid JSON", ErrorInvalidJSON)
+	ErrExistingAccount        = NewError("account already exists", ErrorExistingAccount)
+	ErrMissingParameter       = NewError("missing parameter", ErrorMissingParameter)
+	ErrEmptyParameter         = NewError("empty parameter", ErrorEmptyParameter)
+	ErrInvalidUsername        = NewError("invalid username", ErrorInvalidUsername)
+	ErrInvalidLogin           = NewError("invalid login credentials", ErrorInvalidLogin)
+	ErrInvalidConversationKey = NewError("invalid conversationKey", ErrorInvalidConversationKey)
+	ErrInvalidMessageKey      = NewError("invalid messageKey", ErrorInvalidMessageKey)
+	ErrInvalidStatus          = NewError("invalid Status", ErrorInvalidStatus)
+
+	ErrInvalidPassword = errors.New("invalid password")
+)
 
 func getServerMessage(bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	err := json.NewDecoder(bufrw).Decode(message)
 	if err != nil {
-		log.Printf("getServerMessage: cannot decode JSON message: %s", err)
+		log.Println("cannot decode JSON message:", err)
 	}
-	return err
+	return nil
 }
 
 func sendServerMessage(bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	bytes, err := json.Marshal(message)
 	if err != nil {
-		log.Printf("cannot encode JSON message: %s", err)
+		log.Println(ErrorTag, "cannot encode JSON message:", err)
 		return err
 	}
 	_, err = bufrw.Write(bytes)
@@ -221,27 +218,39 @@ func sendServerMessageToUser(username string, message *ServerMessage) {
 	if contains {
 		for _, conn := range conns[username] {
 			err := sendServerMessage(conn.bufrw, message)
-			if socketClosed(err) {
-				conn.done <- true	// stop conn's event loop
+			if err != nil {
+				if socketClosed(err) {
+					log.Printf("socket closed for '%s'\n", username)
+				} else {
+					log.Println(ErrorTag, "error sending message to client:", err)
+				}
 			}
 		}
 	}
 }
 
-func usernameToKey(username string) *datastore.Key {
+func usernameStringToKey(username string) *datastore.Key {
 	return datastore.NameKey(KindUser, username, nil)
+}
+
+func conversationStringToKey(conversation string) *datastore.Key {
+	return datastore.NameKey(KindConversation, conversation, nil)
+}
+
+func messageStringToKey(message string, conversationKey *datastore.Key) *datastore.Key {
+	return datastore.NameKey(KindMessage, message, conversationKey)
 }
 
 func userExists(username string) (bool, error) {
 	user := new(DSUser)
-	err := client.Get(c, usernameToKey(username), user)
+	err := client.Get(c, usernameStringToKey(username), user)
 	if err == nil {
 		return true, nil
-	} else if err == datastore.ErrNoSuchEntity {
+	}
+	if err == datastore.ErrNoSuchEntity {
 		return false, nil
 	}
-
-	return false, nil
+	return false, err
 }
 
 type ServerMessageHandler func(*DSUser, *bufio.ReadWriter, *ServerMessage) error
@@ -262,52 +271,72 @@ var handlerMap = map[int]ServerMessageHandler{
 func handleServerMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	handler, contains := handlerMap[message.Status]
 	if !contains {
-		fmt.Println("invalid ServerMessage.Status")
-		return errors.New("invalid ServerMessage.Status")
+		rsp := new(ServerMessage)
+		e := ErrInvalidStatus
+		log.Println(e)
+		rsp.setError(e)
+		serr := sendServerMessage(bufrw, rsp)
+		if serr != nil {
+			return serr
+		}
+		return e
 	}
 	return handler(user, bufrw, message)
 }
 
 func register(user *DSUser, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := "cannot register user:"
+
 	// verify new username
 	if message.Username == nil || message.Password == nil || message.Profile == nil {
-		log.Println("cannot register: missing Username, Password and/or Profile")
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.[Username | Password | Profile]")
-		err := sendServerMessage(user.connection.bufrw, rsp)
-		if err != nil {
-			return err
+		e := NewError("missing username, password and/or profile", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
+
+		serr := sendServerMessage(user.connection.bufrw, rsp)
+		if serr != nil {
+			return serr
 		}
-		return errors.New("missing Username, Password and/or Profile")
+		return ErrMissingParameter
 	}
 
 	if len(*message.Username) == 0 || len(*message.Password) == 0 || len(message.Profile.Name) == 0 || len(message.Profile.Email) == 0 {
-		log.Println("cannot register: empty Username, Password, Name, and/or Email")
-		rsp.setCustomError(ErrorEmptyParameter, "empty ServerMessage.[Username | Password | Name | Email]")
-		err := sendServerMessage(user.connection.bufrw, rsp)
-		if err != nil {
-			return err
+		e := NewError("empty username, password, profile.name and/or profile.email", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
+
+		serr := sendServerMessage(user.connection.bufrw, rsp)
+		if serr != nil {
+			return serr
 		}
-		return errors.New("empty Username, Password, Name and/or Email")
+		return ErrEmptyParameter
 	}
 
-	userKey := usernameToKey(*message.Username)
+	errStr = fmt.Sprintf("cannot register %s as '%s':", message.Profile.Name, *message.Username)
+
+	userKey := usernameStringToKey(*message.Username)
 	err := client.Get(c, userKey, user)
 	if err == nil {
 		// user account already exists
-		log.Printf("cannot register as %s: username taken\n", *message.Username)
-		rsp.setDefaultCustomError(ErrorExistingAccount)
-		err := sendServerMessage(user.connection.bufrw, rsp)
-		if err != nil {
-			return err
+		e := NewError(fmt.Sprintf("username '%s' is already taken", *message.Username), ErrorExistingAccount)
+		log.Println(errStr, e)
+		rsp.setError(e)
+
+		serr := sendServerMessage(user.connection.bufrw, rsp)
+		if serr != nil {
+			return serr
 		}
-		return errors.New("username already exists")
-	} else if err != datastore.ErrNoSuchEntity {
-		log.Printf("cannot register as %s: %s\n", *message.Username, err)
-		rsp.setError(err)
-		err := sendServerMessage(user.connection.bufrw, rsp)
-		if err != nil {
-			return err
+		return ErrExistingAccount
+	}
+
+	if err != datastore.ErrNoSuchEntity {
+		log.Println(ErrorTag, errStr, "cannot determine if user already exists:", err)
+		rsp.setError(ErrInternalServer)
+
+		serr := sendServerMessage(user.connection.bufrw, rsp)
+		if serr != nil {
+			return serr
 		}
 		return err
 	}
@@ -318,8 +347,9 @@ func register(user *DSUser, message *ServerMessage) error {
 	user.Profile.Email = message.Profile.Email
 	user.PassHash, err = bcrypt.GenerateFromPassword([]byte(*message.Password), 10)
 	if err != nil {
-		log.Printf("%s (%s) cannot register account: %s\n", user.Profile.Name, *message.Username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot generate password hash:", err)
+		rsp.setError(ErrInternalServer)
+
 		serr := sendServerMessage(user.connection.bufrw, rsp)
 		if serr != nil {
 			return serr
@@ -329,8 +359,9 @@ func register(user *DSUser, message *ServerMessage) error {
 
 	_, err = client.Put(c, userKey, user)
 	if err != nil {
-		log.Printf("%s (%s) cannot register account: cannot add user to datastore\n", user.Profile.Name, *message.Username)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot add user to datastore:", err)
+		rsp.setError(ErrInternalServer)
+
 		serr := sendServerMessage(user.connection.bufrw, rsp)
 		if serr != nil {
 			return serr
@@ -351,16 +382,20 @@ func getContacts(user *DSUser) *[]Contact {
 		contact.Online = conns.contains(dsContact)
 		*contacts = append(*contacts, *contact)
 	}
+
 	return contacts
 }
 
 func getConversations(user *DSUser) (*[]Conversation, error) {
+	errStr := "cannot get conversations:"
+
 	conversations := new([]Conversation)
 	for _, conversationKey := range user.Conversations {
 		dsConversation := new(DSConversation)
-		err := client.Get(c, conversationKey, dsConversation)
+		convKey := conversationStringToKey(conversationKey)
+		err := client.Get(c, convKey, dsConversation)
 		if err != nil {
-			fmt.Errorf("cannot get conversation: %s\n", err)
+			log.Println(ErrorTag, errStr, "cannot get conversation from datastore:", err)
 			return nil, err
 		}
 
@@ -368,14 +403,15 @@ func getConversations(user *DSUser) (*[]Conversation, error) {
 		conversation.Time = dsConversation.Time
 		conversation.MemberStatus = dsConversation.MemberStatus
 
-		q := datastore.NewQuery(KindMessage).Ancestor(conversationKey).Order("time")
+		q := datastore.NewQuery(KindMessage).Ancestor(convKey).Order("time")
 		it := client.Run(c, q)
+
 		dsMessage := new(DSMessage)
 		messageKey, err := it.Next(dsMessage)
 		for err == nil {
 			message := new(Message)
-			message.MessageKey = messageKey
-			message.ConversationKey = conversationKey
+			message.MessageKey = &messageKey.Name
+			message.ConversationKey = &conversationKey
 			message.From = &dsMessage.From
 			message.Text = &dsMessage.Text
 			message.ServerTime = &dsMessage.Time
@@ -386,7 +422,7 @@ func getConversations(user *DSUser) (*[]Conversation, error) {
 		}
 
 		if err != iterator.Done {
-			fmt.Errorf("cannot get conversation: %s\n", err)
+			log.Println(ErrorTag, errStr, "cannot get message from datastore:", err)
 			return nil, err
 		}
 
@@ -398,56 +434,67 @@ func getConversations(user *DSUser) (*[]Conversation, error) {
 
 func logIn(user *DSUser, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := "cannot log user in:"
+
 	// verify credentials
 	if message.Username == nil || message.Password == nil {
-		log.Println("cannot log in: missing Username and/or Password")
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.[Username | Password]")
+		e := NewError("missing username and/or password", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
+
 		err := sendServerMessage(user.connection.bufrw, rsp)
 		if err != nil {
 			return err
 		}
-		return errors.New("missing Username and/or Password")
+		return ErrMissingParameter
 	}
 
 	if len(*message.Username) == 0 || len(*message.Password) == 0 {
-		log.Println("cannot log in: empty Username and/or Password")
-		rsp.setCustomError(ErrorEmptyParameter, "empty ServerMessage.[Username | Password]")
+		e := NewError("empty username and/or password", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
+
 		err := sendServerMessage(user.connection.bufrw, rsp)
 		if err != nil {
 			return err
 		}
-		return errors.New("empty Username and/or Password")
+		return ErrEmptyParameter
 	}
 
-	userKey := usernameToKey(*message.Username)
+	errStr = fmt.Sprintf("cannot log in as '%s':", *message.Username)
+
+	userKey := usernameStringToKey(*message.Username)
 	err := client.Get(c, userKey, user)
 	if err != nil {
 		if err == datastore.ErrNoSuchEntity {
-			// user doesn't exist, return invalid username
-			log.Printf("cannot log in as %s: invalid username\n", *message.Username)
-			rsp.setDefaultCustomError(ErrorInvalidUsername)
+			// user doesn't exist
+			log.Println(errStr, ErrInvalidUsername)
+			rsp.setError(ErrInvalidLogin)
 			rsp.Username = message.Username
+
 			serr := sendServerMessage(user.connection.bufrw, rsp)
 			if serr != nil {
 				return serr
 			}
-			return errors.New("invalid Username")
-		} else {
-			log.Printf("cannot log in as %s: %s\n", *message.Username, err)
-			rsp.setError(err)
-			serr := sendServerMessage(user.connection.bufrw, rsp)
-			if serr != nil {
-				return serr
-			}
-			return err
+			return ErrInvalidUsername
 		}
+
+		log.Println(ErrorTag, errStr, "cannot get user from datastore:", err)
+		rsp.setError(ErrInternalServer)
+
+		serr := sendServerMessage(user.connection.bufrw, rsp)
+		if serr != nil {
+			return serr
+		}
+		return err
 	}
 
 	err = bcrypt.CompareHashAndPassword(user.PassHash, []byte(*message.Password))
 	if err != nil {
 		// invalid password
-		log.Printf("%s (%s) cannot log in: invalid password\n", user.Profile.Name, *message.Username)
-		rsp.setDefaultCustomError(ErrorInvalidPassword)
+		log.Println(errStr, ErrInvalidPassword)
+		rsp.setError(ErrInvalidLogin)
+
 		serr := sendServerMessage(user.connection.bufrw, rsp)
 		if serr != nil {
 			return serr
@@ -456,7 +503,6 @@ func logIn(user *DSUser, message *ServerMessage) error {
 	}
 
 	user.username = *message.Username
-
 	log.Printf("%s (%s) logged in\n", user.Profile.Name, user.username)
 
 	return nil
@@ -474,47 +520,64 @@ func updateOnlineStatus(user *DSUser, online bool) {
 		sendServerMessageToUser(contact, msg)
 	}
 
-	if online {
-		fmt.Printf("%s (%s) is online\n", user.Profile.Name, user.username)
-	} else {
-		fmt.Printf("%s (%s) is offline\n", user.Profile.Name, user.username)
-	}
+	log.Printf("%s (%s) is %s\n", user.Profile.Name, user.username, func() string {
+		if online {
+			return "online"
+		} else {
+			return "offline"
+		}
+	}())
 }
 
 func handleLogOut(user *DSUser, bufrw *bufio.ReadWriter, _ *ServerMessage) error {
 	rsp := new(ServerMessage)
 	conns.remove(user)
 	rsp.Status = NotificationLoggedOut
-	fmt.Printf("%s (%s) logged out\n", user.Profile.Name, user.username)
+
+	log.Printf("%s (%s) logged out\n", user.Profile.Name, user.username)
+
 	return sendServerMessage(bufrw, rsp)
 }
 
 func handleAddContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := fmt.Sprintf("%s (%s) cannot add contact:", user.Profile.Name, user.username)
+
 	if message.Username == nil {
-		fmt.Printf("%s (%s) cannot add contact: missing Username\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.Username")
+		e := NewError("missing username", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
+	if len(*message.Username) == 0 {
+		e := NewError("empty username", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
+		return sendServerMessage(bufrw, rsp)
+	}
+
+	errStr = fmt.Sprintf("%s (%s) cannot add '%s' as a contact:", user.Profile.Name, user.username, *message.Username)
+
 	exists, err := userExists(*message.Username)
 	if err != nil {
-		fmt.Errorf("datastore error: %s\n", err)
-		rsp.setError(err)
+		log.Printf("%s %s cannot get user '%s' from datastore: %s\n", ErrorTag, errStr, *message.Username, err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	if !exists {
-		fmt.Printf("%s (%s) cannot add contact: %s does not exist\n", user.Profile.Name, user.username, *message.Username)
-		rsp.setCustomError(ErrorUserDoesNotExist, "")
+		e := NewError(fmt.Sprintf("user '%s' does not exist", *message.Username), ErrorInvalidUsername)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		rsp.Username = message.Username
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	err = client.Get(c, usernameToKey(user.username), user)
+	err = client.Get(c, usernameStringToKey(user.username), user)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot add contact: cannot get user from datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Printf("%s %s cannot get user '%s' from datastore: %s\n", ErrorTag, errStr, user.username, err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
@@ -526,76 +589,95 @@ func handleAddContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMess
 		}
 	}
 	if contactExists {
-		fmt.Printf("%s (%s) cannot add contact: user already has contact %s: %s\n", user.Profile.Name, user.username, *message.Username, *message.Username)
+		log.Println(errStr, "user is already a contact")
 		// intentionally not sending error to client if contact already exists
 		return nil
 	}
 
 	user.Contacts = append(user.Contacts, *message.Username)
-	_, err = client.Put(c, usernameToKey(user.username), user)
+	_, err = client.Put(c, usernameStringToKey(user.username), user)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot add contact: cannot update user in datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot update contacts in datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
+
 	rsp.Status = NotificationContactAdded
 	rsp.Username = message.Username
-	fmt.Printf("%s (%s) added contact: %s\n", user.Profile.Name, user.username, *message.Username)
+
 	sendServerMessageToUser(user.username, rsp)
+	log.Printf("%s (%s) added user '%s' as a contact\n", user.Profile.Name, user.username, *message.Username)
+
 	return nil
 }
 
 func handleRemoveContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := fmt.Sprintf("%s (%s) cannot remove contact:", user.Profile.Name, user.username)
+
 	if message.Username == nil {
-		fmt.Printf("%s (%s) cannot remove contact: missing Username\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.Username")
+		e := NewError("missing username", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	err := client.Get(c, usernameToKey(user.username), user)
+	if len(*message.Username) == 0 {
+		e := NewError("empty username", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
+		return sendServerMessage(bufrw, rsp)
+	}
+
+	errStr = fmt.Sprintf("%s (%s) cannot remove user '%s' from contacts:", user.Profile.Name, user.username, *message.Username)
+
+	err := client.Get(c, usernameStringToKey(user.username), user)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot remove contact: cannot get user from datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Printf("%s %s cannot get user '%s' from datastore: %s\n", ErrorTag, errStr, user.username, err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	contacts, ok := remove(user.Contacts, *message.Username)
-	if !ok {
-		fmt.Printf("%s (%s) cannot remove contact: %s not in contacts\n", user.Profile.Name, user.username, *message.Username)
-		rsp.Status = NotificationError
-		rsp.ErrorString = new(string)
-		*rsp.ErrorString = user.username + " cannot remove contact: " + *message.Username + " not in contacts"
-		return sendServerMessage(bufrw, rsp)
+	contacts, contains := remove(user.Contacts, *message.Username)
+	if !contains {
+		log.Println(errStr, "user is not a contact")
+		// intentionally not sending error to client if user is not a contact
+		return nil
 	}
 
 	user.Contacts = contacts
 
 	rsp.Status = NotificationContactRemoved
 	rsp.Username = message.Username
-	fmt.Printf("%s (%s) removed contact: %s\n", user.Profile.Name, user.username, *message.Username)
+
 	sendServerMessageToUser(user.username, rsp)
+	log.Printf("%s (%s) removed '%s' from contacts\n", user.Profile.Name, user.username, *message.Username)
+
 	return nil
 }
 
 func handleUpdateProfile(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := fmt.Sprintf("%s (%s) cannot update profile:", user.Profile.Name, user.username)
+
 	if message.Profile == nil {
-		fmt.Printf("%s (%s) cannot update profile: missing Profile\n", user.Profile.Name, user.Profile)
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.Profile")
+		e := NewError("missing profile", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	if len(message.Profile.Name) == 0 || len(message.Profile.Email) == 0 {
-		fmt.Printf("%s (%s) cannot update profile: empty ServerMessage.Profile.[Name | Email]\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorEmptyParameter, "empty ServerMessage.Profile.[Name | Email]")
+		e := NewError("empty profile.name and/or profile.email", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	_, err := client.Put(c, usernameToKey(user.username), message.Profile)
+	_, err := client.Put(c, usernameStringToKey(user.username), message.Profile)
 	if err != nil {
-		fmt.Printf("%s (%s) cannot update profile: cannot update profile in datastore: %s", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot update profile in datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
@@ -605,40 +687,71 @@ func handleUpdateProfile(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 	rsp.Status = NotificationProfileUpdated
 	rsp.Profile = &user.Profile
 
-	fmt.Printf("%s (%s) updated his/her profile\n", user.Profile.Name, user.username)
 	sendServerMessageToUser(user.username, rsp)
+	log.Printf("%s (%s) updated %s profile\n", user.Profile.Name, func() string {
+		if user.Profile.Gender == nil {
+			return "his/her"
+		}
+		switch *user.Profile.Gender {
+		case GenderFemale:
+			return "her"
+		case GenderMale:
+			return "his"
+		default:
+			return "their"
+		}
+	}(), user.username)
+
 	return nil
 }
 
 func handleSetTyping(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := fmt.Sprintf("%s (%s) cannot update typing status:", user.Profile.Name, user.username)
+
 	if message.Message == nil {
-		fmt.Printf("%s (%s) cannot update typing status: missing Message\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.Message")
+		e := NewError("missing message", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	if message.Message.ConversationKey == nil || message.Message.Typing == nil {
-		fmt.Printf("%s (%s) cannot update typing status: missing ConversationKey and/or Typing\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.Message.[ConversationKey | Typing]")
+		e := NewError("missing message.conversationKey and/or message.typing", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
+		return sendServerMessage(bufrw, rsp)
+	}
+
+	if len(*message.Message.ConversationKey) == 0 {
+		e := NewError("empty message.conversationKey", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	// get conversation from datastore
+	convKey := conversationStringToKey(*message.Message.ConversationKey)
 	conversation := new(DSConversation)
-	err := client.Get(c, message.Message.ConversationKey, conversation)
+	err := client.Get(c, convKey, conversation)
 	if err != nil {
-		fmt.Printf("%s (%s) cannot update typing status: cannot get conversation from datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		if err == datastore.ErrNoSuchEntity {
+			e := ErrInvalidConversationKey
+			log.Println(errStr, e)
+			rsp.setError(e)
+		} else {
+			log.Println(ErrorTag, errStr, "cannot get conversation from datastore:", err)
+			rsp.setError(ErrInternalServer)
+		}
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	// update conversation status in datastore
 	conversation.MemberStatus[user.username] = Status{conversation.MemberStatus[user.username].Read, *message.Message.Typing}
-	_, err = client.Put(c, message.Message.ConversationKey, conversation)
+	_, err = client.Put(c, convKey, conversation)
 	if err != nil {
-		fmt.Printf("%s (%s) cannot update typing status: cannot update conversation in datastore: %s", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot update conversation in datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
@@ -652,31 +765,43 @@ func handleSetTyping(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessa
 		sendServerMessageToUser(member, rsp)
 	}
 
-	if *message.Message.Typing {
-		fmt.Printf("%s (%s) started typing\n", user.Profile.Name, user.username)
-	} else {
-		fmt.Printf("%s (%s) stopped typing\n", user.Profile.Name, user.username)
-	}
+	log.Printf("%s (%s) %s typing\n", user.Profile.Name, user.username, func() string {
+		if *message.Message.Typing {
+			return "started"
+		} else {
+			return "stopped"
+		}
+	}())
 
 	return nil
 }
 
 func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := fmt.Sprintf("%s (%s) cannot send message:", user.Profile.Name, user.username)
+
 	if message.Message == nil {
-		fmt.Printf("%s (%s) cannot send message: missing Message\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.Message")
+		e := NewError("missing Message", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	if (message.Message.To == nil && message.Message.ConversationKey == nil) || message.Message.Text == nil || message.Message.ClientTime == nil {
-		fmt.Printf("%s (%s) cannot send message: missing To, ConversationKey, and/or Text\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.Message.[To | ConversationKey | Text | ClientTime]")
+		e := NewError("missing message.to, message.conversationKey, message.text and/or message.clientTime", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
+		return sendServerMessage(bufrw, rsp)
+	}
+
+	if ((len(*message.Message.To) == 0 || len((*message.Message.To)[0]) == 0) && len(*message.Message.ConversationKey) == 0) || len(*message.Message.Text) == 0 || len(*message.Message.ClientTime) == 0 {
+		e := NewError("empty message.to, message.conversationKey, message.text and/or message.clientTime", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	conversation := new(DSConversation)
-
 	isNewConversation := message.Message.ConversationKey == nil
 
 	if isNewConversation {
@@ -687,38 +812,39 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 		for _, member := range *message.Message.To {
 			conversation.MemberStatus[member] = Status{false, conversation.MemberStatus[member].Typing} // reset user read status
 		}
-		conversation.MemberStatus[user.username] = Status{true, false} // the user who sent the message has already read it and is done typing
+		conversation.MemberStatus[user.username] = Status{true, false} // the user who sent the message has already read it and is socketClosed typing
 
 		conversationKey := datastore.IncompleteKey(KindConversation, nil)
 		conversationKey, err := client.Put(c, conversationKey, conversation)
 		if err != nil {
-			fmt.Errorf("%s (%s) cannot send message: cannot add conversation to datastore: %s\n", user.Profile.Name, user.username, err)
-			rsp.setError(err)
+			log.Println(ErrorTag, errStr, "cannot add conversation to datastore:", err)
+			rsp.setError(ErrInternalServer)
 			return sendServerMessage(bufrw, rsp)
 		}
 
-		message.Message.ConversationKey = conversationKey
+		message.Message.ConversationKey = &conversationKey.Name
 
 		// add conversation key to every member's conversation list (including this account)
 		for member := range conversation.MemberStatus {
-			uKey := usernameToKey(member)
+			usrKey := usernameStringToKey(member)
 			u := new(DSUser)
-			err = client.Get(c, uKey, u)
+			err = client.Get(c, usrKey, u)
 			if err != nil {
-				fmt.Errorf("%s (%s) cannot send message: cannot get %s from datastore: %s\n", user.Profile.Name, user.username, member, err)
-				rsp.setError(err)
+				log.Println(ErrorTag, errStr, "cannot get user from datastore:", err)
+				rsp.setError(ErrInternalServer)
 				return sendServerMessage(bufrw, rsp)
 			}
 
-			u.Conversations = append(u.Conversations, conversationKey)
-			_, err = client.Put(c, uKey, u)
+			u.Conversations = append(u.Conversations, conversationKey.Name)
+			_, err = client.Put(c, usrKey, u)
 			if err != nil {
-				fmt.Errorf("%s (%s) cannot send message: cannot update %s's conversations: %s\n", user.Profile.Name, user.username, member, err)
-				rsp.setError(err)
+				log.Println(ErrorTag, errStr, "cannot update user's conversations in datastore:", err)
+				rsp.setError(ErrInternalServer)
 				return sendServerMessage(bufrw, rsp)
 			}
 		}
-		fmt.Printf("%s (%s) created new conversation with %s\n", user.Profile.Name, user.username, *message.Message.To)
+
+		log.Printf("%s (%s) created new conversation with: %s\n", user.Profile.Name, user.username, *message.Message.To)
 	}
 
 	// add message to datastore and get key
@@ -730,34 +856,36 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 		m.Reactions = *message.Message.Reactions
 	}
 
-	err := client.Get(c, message.Message.ConversationKey, conversation)
+	convKey := conversationStringToKey(*message.Message.ConversationKey)
+
+	err := client.Get(c, convKey, conversation)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot send message: cannot get conversation from datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot get conversation from datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	// update time in conversation to reflect most recent message
 	conversation.Time = m.Time
-	_, err = client.Put(c, message.Message.ConversationKey, conversation)
+	_, err = client.Put(c, convKey, conversation)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot send message: cannot update conversation: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot update conversation in datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	mKey := datastore.IncompleteKey(KindMessage, message.Message.ConversationKey)
+	mKey := datastore.IncompleteKey(KindMessage, convKey)
 	mKey, err = client.Put(c, mKey, m)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot send message: cannot add message to datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot add message to datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	// notify members that message was received
 	rsp.Status = NotificationMessageReceived
 	msg := new(Message)
-	msg.MessageKey = mKey
+	msg.MessageKey = &mKey.Name
 	msg.ConversationKey = message.Message.ConversationKey
 	msg.ServerTime = &m.Time
 	msg.From = &m.From
@@ -790,74 +918,109 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 		if t != user.connection.time {
 			conn := conns[user.username][t]
 			err = sendServerMessage(conn.bufrw, rsp)
-			if socketClosed(err) {
-				conn.done <- true	// stop event loop since socket is broken
+			if err != nil {
+				if socketClosed(err) {
+					log.Printf("socket closed for '%s'\n", user.username)
+				} else {
+					log.Println(ErrorTag, "error sending message to client:", err)
+				}
 			}
 		}
 	}
 
 	// set ClientTime to the time sent by the client (for identifying message internally)
 	rsp.Message.ClientTime = message.Message.ClientTime
-	fmt.Printf("%s (%s) sent message to %s\n", user.Profile.Name, user.username, *message.Message.To)
+	log.Printf("%s (%s) sent message to: %s\n", user.Profile.Name, user.username, *message.Message.To)
 
 	return sendServerMessage(bufrw, rsp)
 }
 
 func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := fmt.Sprintf("%s (%s) cannot update message:", user.Profile.Name, user.username)
+
 	if message.Message == nil {
-		fmt.Printf("%s (%s) cannot update message: missing Message\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing Message")
+		e := NewError("missing Message", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	if message.Message.ConversationKey == nil || message.Message.MessageKey == nil || message.Message.Text == nil {
-		fmt.Printf("%s (%s) cannot update message: missing ConversationKey, MessageKey, and/or Text\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ConversationKey, MessageKey, and/or Text")
+		e := NewError("missing message.conversationKey, message.messageKey and/or message.text", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	if len(*message.Message.Text) == 0 {
-		fmt.Printf("%s (%s) cannot update message: empty Text\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "empty Text")
+	if len(*message.Message.ConversationKey) == 0 || len(*message.Message.MessageKey) == 0 || len(*message.Message.Text) == 0 {
+		e := NewError("empty message.conversationKey, message.messageKey and/or message.text", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
+
+	convKey := conversationStringToKey(*message.Message.ConversationKey)
 
 	// get Message (MessageKey) from datastore
-	dsmsgKey := message.Message.MessageKey
-	dsmsg := new(DSMessage)
-	err := client.Get(c, dsmsgKey, dsmsg)
+	dsMsgKey := messageStringToKey(*message.Message.MessageKey, convKey)
+	dsMsg := new(DSMessage)
+	err := client.Get(c, dsMsgKey, dsMsg)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot update message: cannot get message from datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		if err == datastore.ErrNoSuchEntity {
+			e := ErrInvalidMessageKey
+			log.Println(errStr, e)
+			rsp.setError(e)
+		} else {
+			log.Println(ErrorTag, errStr, "cannot get message from datastore:", err)
+			rsp.setError(ErrInternalServer)
+		}
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	// ensure that the user who wrote the message is the same one trying to update it
-	if dsmsg.From != user.username {
-		fmt.Printf("%s (%s) cannot update message: user can only update messages he/she has sent\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorDefault, "user can only update messages he/she has sent")
+	if dsMsg.From != user.username {
+		e := NewError(fmt.Sprintf("user can only update messages %s sent", func() string {
+			if user.Profile.Gender == nil {
+				return "he/she has"
+			}
+			switch *user.Profile.Gender {
+			case GenderFemale:
+				return "she has"
+			case GenderMale:
+				return "he has"
+			default:
+				return "they have"
+			}
+		}()), ErrorUnauthorized)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	// update message
-	dsmsg.Text = *message.Message.Text
+	dsMsg.Text = *message.Message.Text
 
 	// put Message (MessageKey) into datastore
-	_, err = client.Put(c, dsmsgKey, dsmsg)
+	_, err = client.Put(c, dsMsgKey, dsMsg)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot update message: cannot update Message in datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot update Message in datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	// get Conversation (ConversationKey) from datastore
-	convKey := message.Message.ConversationKey
 	conv := new(DSConversation)
 	err = client.Get(c, convKey, conv)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot update message: cannot get conversation from datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		if err == datastore.ErrNoSuchEntity {
+			e := ErrInvalidMessageKey
+			log.Println(errStr, e)
+			rsp.setError(e)
+		} else {
+			log.Println(ErrorTag, errStr, "cannot get conversation from datastore:", err)
+			rsp.setError(ErrInternalServer)
+		}
 		return sendServerMessage(bufrw, rsp)
 	}
 
@@ -872,54 +1035,79 @@ func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 		sendServerMessageToUser(member, rsp)
 	}
 
-	fmt.Printf("%s (%s) updated a message\n", user.Profile.Name, user.username)
+	log.Printf("%s (%s) updated a message\n", user.Profile.Name, user.username)
 
 	return nil
 }
 
 func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := fmt.Sprintf("%s (%s) cannot add user to conversation:", user.Profile.Name, user.username)
+
 	if message.Message == nil {
-		fmt.Printf("%s (%s) cannot add %s to conversation: missing Message\n", user.Profile.Name, user.username, *message.Username)
-		rsp.setCustomError(ErrorMissingParameter, "missing Message")
+		e := NewError("missing Message", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	if message.Message.ConversationKey == nil || message.Username == nil {
-		fmt.Printf("%s (%s) cannot add %s to conversation: missing ConversationKey and/or Username\n", user.Profile.Name, user.username, *message.Username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ConversationKey and/or Username")
+	if message.Username == nil || message.Message.ConversationKey == nil {
+		e := NewError("missing username and/or message.conversationKey", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	if len(*message.Username) == 0 {
-		fmt.Printf("%s (%s) cannot add %s to conversation: empty Username\n", user.Profile.Name, user.username, *message.Username)
-		rsp.setCustomError(ErrorEmptyParameter, "empty Username")
+	if len(*message.Username) == 0 || len(*message.Message.ConversationKey) == 0 {
+		e := NewError("empty username and/or message.conversationKey", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
+
+	errStr = fmt.Sprintf("%s (%s) cannot add user '%s' to conversation:", user.Profile.Name, user.username, *message.Username)
 
 	// get Conversation from datastore (ConversationKey)
 	conv := new(DSConversation)
-	convKey := message.Message.ConversationKey
+	convKey := conversationStringToKey(*message.Message.ConversationKey)
 	err := client.Get(c, convKey, conv)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot add %s to conversation: cannot get conversation from datastore: %s\n", user.Profile.Name, user.username, *message.Username, err)
-		rsp.setError(err)
+		if err == datastore.ErrNoSuchEntity {
+			e := ErrInvalidConversationKey
+			log.Println(errStr, e)
+			rsp.setError(e)
+		} else {
+			log.Println(ErrorTag, errStr, "cannot get conversation from datastore:", err)
+			rsp.setError(ErrInternalServer)
+		}
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	// ensure user.username is in Conversation
-	contains := false
+	var members []string
+
+	usr := false
+	newUsr := false
 	for member := range conv.MemberStatus {
+		members = append(members, member)
 		if member == user.username {
-			contains = true
-			break
+			usr = true
+		} else if member == *message.Username {
+			newUsr = true
 		}
 	}
 
-	if !contains {
-		fmt.Printf("%s (%s) cannot add %s to conversation: %s not in conversation\n", user.Profile.Name, user.username, *message.Username, user.username)
-		rsp.setCustomError(ErrorDefault, "user not in conversation")
+	// ensure usr is in conversation
+	if !usr {
+		e := NewError(fmt.Sprintf("'%s' is not in conversation", user.username), ErrorUnauthorized)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
+	}
+
+	// ensure newUsr is not already in Conversation
+	if newUsr {
+		// intentionally not sending response to client, since there is nothing to do if the user is already in the conversation
+		return nil
 	}
 
 	// update Conversation (add message.Username to MemberStatus status={false, false})
@@ -928,8 +1116,8 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 	// put Conversation into datastore
 	_, err = client.Put(c, convKey, conv)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot add %s to conversation: cannot update conversation in datastore: %s\n", user.Profile.Name, user.username, *message.Username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot update conversation in datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
@@ -952,8 +1140,8 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 	dsMsgs := new([]DSMessage)
 	_, err = client.GetAll(c, q, dsMsgs)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot add %s to conversation: cannot get messages from datastore: %s\n", user.Profile.Name, user.username, *message.Username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot get messages from datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
@@ -971,39 +1159,51 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 	(*rsp.Conversations)[0].Messages = messages
 
 	sendServerMessageToUser(*message.Username, rsp)
-
-	fmt.Printf("%s was added to a conversation\n", *message.Username)
+	log.Printf("%s (%s) added '%s' to conversation with: %s\n", user.Profile.Name, user.username, *message.Username, members)
 
 	return nil
 }
 
 func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	if message.Message == nil {
-		fmt.Printf("%s (%s) cannot remove %s from conversation: missing Message\n", user.Profile.Name, user.username, *message.Username)
-		rsp.setCustomError(ErrorMissingParameter, "missing Message")
+	errStr := fmt.Sprintf("%s (%s) cannot remove user from conversation:", user.Profile.Name, user.username)
+
+	if message.Message == nil || message.Username == nil {
+		e := NewError("missing message and/or username", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	if message.Message.ConversationKey == nil || message.Username == nil {
-		fmt.Printf("%s (%s) cannot remove %s from conversation: missing ConversationKey and/or Username\n", user.Profile.Name, user.username, *message.Username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ConversationKey and/or Username")
+	if message.Message.ConversationKey == nil {
+		e := NewError("missing message.conversationKey", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	if len(*message.Username) == 0 {
-		fmt.Printf("%s (%s) cannot remove %s from conversation: empty Username\n", user.Profile.Name, user.username, *message.Username)
-		rsp.setCustomError(ErrorEmptyParameter, "empty Username")
+	if len(*message.Username) == 0 || len(*message.Message.ConversationKey) == 0 {
+		e := NewError("empty username and/or message.conversationKey", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
+
+	errStr = fmt.Sprintf("%s (%s) cannot remove '%s' from conversation:", user.Profile.Name, user.username, *message.Username)
 
 	// get Conversation from datastore
 	conv := new(DSConversation)
-	convKey := message.Message.ConversationKey
+	convKey := conversationStringToKey(*message.Message.ConversationKey)
 	err := client.Get(c, convKey, conv)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot remove %s from conversation: cannot get conversation from datastore: %s\n", user.Profile.Name, user.username, *message.Username, err)
-		rsp.setError(err)
+		if err == datastore.ErrNoSuchEntity {
+			e := ErrInvalidConversationKey
+			log.Println(errStr, e)
+			rsp.setError(e)
+		} else {
+			log.Println(ErrorTag, errStr, "cannot get conversation from datastore:", err)
+			rsp.setError(ErrInternalServer)
+		}
 		return sendServerMessage(bufrw, rsp)
 	}
 
@@ -1020,28 +1220,25 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 		}
 	}
 
-	if usr {
-		if delUsr || user.username == *message.Username {
-			// update Conversation (remove message.Username from MemberStatus)
-			delete(conv.MemberStatus, *message.Username)
-		} else {
-			// error delUsr not in conversation
-			fmt.Printf("%s (%s) cannot remove %s from conversation: %s not in conversation\n", user.Profile.Name, user.username, *message.Username, user.username)
-			rsp.setCustomError(ErrorDefault, "user not in conversation")
-			return sendServerMessage(bufrw, rsp)
-		}
-	} else {
-		// error usr not in conversation
-		fmt.Printf("%s (%s) cannot remove %s from conversation: %s not in conversation\n", user.Profile.Name, user.username, user.username, user.username)
-		rsp.setCustomError(ErrorDefault, "user not in conversation")
+	// ensure usr is in conversation
+	if !usr {
+		e := NewError(fmt.Sprintf("'%s' is not in conversation", user.username), ErrorUnauthorized)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
+	}
+
+	// ensure delUsr is already in conversation
+	if !delUsr {
+		// intentionally not sending a response to client, since there is nothing to do if the user isn't in the conversation
+		return nil
 	}
 
 	// put Conversation into datastore
 	_, err = client.Put(c, convKey, conv)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot remove %s from conversation: cannot update conversation in datastore: %s\n", user.Profile.Name, user.username, *message.Username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot update conversation in datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
@@ -1051,46 +1248,66 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 	rsp.Message.ConversationKey = message.Message.ConversationKey
 	rsp.Username = message.Username
 
+	var members []string
+
 	for member := range conv.MemberStatus {
+		members = append(members, member)
 		sendServerMessageToUser(member, rsp)
 	}
 
 	// send notification to user that was removed
 	sendServerMessageToUser(*message.Username, rsp)
-
-	fmt.Printf("%s was removed from a conversation\n", *message.Username)
+	log.Printf("'%s' was removed from conversation with: %s\n", *message.Username, members)
 
 	return nil
 }
 
 func handleReadMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
 	rsp := new(ServerMessage)
+	errStr := fmt.Sprintf("%s (%s) cannot read message:", user.Profile.Name, user.username)
+
 	if message.Message == nil {
-		fmt.Printf("%s (%s) cannot read message: missing Message\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.Message")
+		e := NewError("missing message", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	if message.Message.ConversationKey == nil {
-		fmt.Printf("%s (%s) cannot read message: missing ConversationKey\n", user.Profile.Name, user.username)
-		rsp.setCustomError(ErrorMissingParameter, "missing ServerMessage.Message.ConversationKey")
+		e := NewError("missing message.conversationKey", ErrorMissingParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
+		return sendServerMessage(bufrw, rsp)
+	}
+
+	if len(*message.Message.ConversationKey) == 0 {
+		e := NewError("empty message.conversationKey", ErrorEmptyParameter)
+		log.Println(errStr, e)
+		rsp.setError(e)
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	// update conversation in datastore
+	convKey := conversationStringToKey(*message.Message.ConversationKey)
 	conversation := new(DSConversation)
-	err := client.Get(c, message.Message.ConversationKey, conversation)
+	err := client.Get(c, convKey, conversation)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot read message: cannot get user from datastore: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		if err == datastore.ErrNoSuchEntity {
+			e := ErrInvalidConversationKey
+			log.Println(errStr, e)
+			rsp.setError(e)
+		} else {
+			log.Println(ErrorTag, errStr, "cannot get user from datastore:", err)
+			rsp.setError(ErrInternalServer)
+		}
 		return sendServerMessage(bufrw, rsp)
 	}
 
 	conversation.MemberStatus[user.username] = Status{true, conversation.MemberStatus[user.username].Typing}
-	_, err = client.Put(c, message.Message.ConversationKey, conversation)
+	_, err = client.Put(c, convKey, conversation)
 	if err != nil {
-		fmt.Errorf("%s (%s) cannot read message: %s\n", user.Profile.Name, user.username, err)
-		rsp.setError(err)
+		log.Println(ErrorTag, errStr, "cannot update user in datastore:", err)
+		rsp.setError(ErrInternalServer)
 		return sendServerMessage(bufrw, rsp)
 	}
 
@@ -1103,15 +1320,14 @@ func handleReadMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 		sendServerMessageToUser(member, rsp)
 	}
 
-	fmt.Printf("%s (%s) read message\n", user.Profile.Name, user.username)
+	log.Printf("%s (%s) read a message\n", user.Profile.Name, user.username)
 
 	return nil
 }
 
 type Connection struct {
-	bufrw *bufio.ReadWriter	// interface for reading and writing to the connection
-	time  time.Time			// time that the connection was established (used for differentiating different connections with same username)
-	done chan bool			// channel for stopping the event loop when a connection is terminated
+	bufrw        *bufio.ReadWriter // interface for reading and writing to the connection
+	time         time.Time         // time that the connection was established (used for differentiating different connections with same username)
 }
 
 type Connections map[string]map[time.Time]*Connection
@@ -1175,7 +1391,6 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 	defer s.Close()
 
 	var loggedIn bool
-
 	sockClosed := false
 
 	for !sockClosed {
@@ -1187,58 +1402,45 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 			// first message received is either Login or Register
 			err = getServerMessage(bufrw, msg)
 			if err != nil {
-				log.Println("getServerMessage:", err)
-				rsp.setError(err)
-				serr := sendServerMessage(bufrw, rsp)
-				if socketClosed(serr) {
+				log.Println("cannot get message from client:", err)
+				err = sendServerMessage(bufrw, rsp)
+				if socketClosed(err) {
 					sockClosed = true
 					break
 				}
-				if err != nil {
-					log.Println(err)
-					rsp.setError(err)
-					serr := sendServerMessage(bufrw, rsp)
-					if socketClosed(serr) {
-						sockClosed = true
-						break
-					}
+
+				// if the socket is still open, the only other errors result from invalid JSON
+				rsp.setError(ErrInvalidJSON)
+				err = sendServerMessage(bufrw, rsp)
+				if socketClosed(err) {
+					sockClosed = true
+					break
 				}
 			}
 
 			switch msg.Status {
 			case ActionLogIn:
 				err = logIn(usr, msg)
-				if socketClosed(err) {
-					sockClosed = true
-					break
-				}
 				if err != nil {
-					log.Println("login: ", err)
-					rsp.setError(err)
-					serr := sendServerMessage(bufrw, rsp)
-					if socketClosed(serr) {
-						sockClosed = true
-						break
-					}
+					log.Println("cannot log user in:", err)
+					sockClosed = socketClosed(err)
+					break
 				}
 				loggedIn = true
 				break
 			case ActionRegister:
 				err = register(usr, msg)
-				if socketClosed(err) {
-					sockClosed = true
-					break
-				}
 				if err != nil {
-					log.Println("register:", err)
+					sockClosed = socketClosed(err)
 					break
 				}
 				loggedIn = true
 				break
 			default:
 				// any other message requires the user to be logged in
-				log.Println("cannot perform action: not logged in")
-				rsp.Status = ErrorNotLoggedIn
+				e := NewError("not logged in", ErrorUnauthorized)
+				log.Println("cannot perform action:", e)
+				rsp.setError(e)
 				serr := sendServerMessage(bufrw, rsp)
 				sockClosed = socketClosed(serr)
 				break
@@ -1259,11 +1461,9 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		connection := new(Connection)
 		connection.time = time.Now()
 		connection.bufrw = bufrw
-		connection.done = make(chan bool)
 		usr.connection = connection
 		conns.add(usr)
 
-		// return logged in message with user information
 		rsp.clear()
 		rsp.Status = NotificationLoggedIn
 		rsp.Username = &usr.username
@@ -1271,50 +1471,42 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		rsp.Contacts = getContacts(usr)
 		rsp.Conversations, err = getConversations(usr)
 		if err != nil {
-			// TODO: handle error
-		}
-
-		err = sendServerMessage(bufrw, rsp)
-		if socketClosed(err) {
 			break
 		}
+
+		// return logged in message with user information
+		err = sendServerMessage(bufrw, rsp)
 		if err != nil {
-			// TODO: handle error
+			break
 		}
 
 		// event loop
 		for loggedIn && !sockClosed {
-			select {
-			case err = getServerMessage(bufrw, msg):
-				if err != nil {
-					if socketClosed(err) {
-						log.Println("getServerMessage:", err)
-						sockClosed = true
-					}
-					continue
+			err = getServerMessage(bufrw, msg)
+			if err != nil {
+				if socketClosed(err) {
+					sockClosed = true
+					break
 				}
 
-				err = handleServerMessage(usr, bufrw, msg)
-				if err != nil {
-					if socketClosed(err) {
-						log.Println("handleServerMessage:", err)
-						sockClosed = true
-					}
-					continue
-				}
-
-				if msg.Status == ActionLogOut {
-					loggedIn = false
-					continue
-				}
-			case <- connection.done:
-				sockClosed = true
+				log.Println("error getting message from client:", err)
 				continue
 			}
-		}
 
-		if sockClosed {
-			break
+			err = handleServerMessage(usr, bufrw, msg)
+			if err != nil {
+				if socketClosed(err) {
+					sockClosed = true
+					break
+				}
+
+				log.Println("error handling message:", err)
+			}
+
+			if msg.Status == ActionLogOut {
+				loggedIn = false
+				break
+			}
 		}
 	}
 
@@ -1328,7 +1520,7 @@ func main() {
 	var err error
 	client, err = datastore.NewClient(c, ProjectID)
 	if err != nil {
-		log.Fatalf("cannot create datastore client: %s", err)
+		log.Fatal(ErrorTag, "cannot create datastore client:", err)
 	}
 
 	r := mux.NewRouter()

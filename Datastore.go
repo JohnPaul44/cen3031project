@@ -2,7 +2,6 @@ package main
 
 import (
 	"time"
-	"cloud.google.com/go/datastore"
 )
 
 const (
@@ -15,10 +14,10 @@ type DSUser struct {
 	// key: username, parent: nil
 	username      string      // unexported, used internally
 	connection    *Connection // unexported, used internally
-	PassHash      []byte           `json:"pass_hash"`
-	Profile       Profile          `json:"profile"`
-	Contacts      []string         `json:"contacts"`
-	Conversations []*datastore.Key `json:"conversations"`
+	PassHash      []byte   `json:"passHash"`
+	Profile       Profile  `json:"profile"`
+	Contacts      []string `json:"contacts"`
+	Conversations []string `json:"conversations"`
 }
 
 type DSMessage struct {
@@ -32,6 +31,6 @@ type DSMessage struct {
 
 type DSConversation struct {
 	// type: KindConversation, key: random, parent: nil
-	Time         time.Time         `json:"time"`    // time of last message, used for ordering conversations in client
-	MemberStatus map[string]Status `json:"member_status"` // members of conversation and their read/typing statuses
+	Time         time.Time         `json:"time"`          // time of last message, used for ordering conversations in client
+	MemberStatus map[string]Status `json:"memberStatus"` // members of conversation and their read/typing statuses
 }
