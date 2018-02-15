@@ -81,8 +81,7 @@ func register(user *DSUser, message *ServerMessage) error {
 
 	// create account
 	user.username = *message.Username
-	user.Profile.Name = message.Profile.Name
-	user.Profile.Email = message.Profile.Email
+	user.Profile = *message.Profile
 	user.PassHash, err = bcrypt.GenerateFromPassword([]byte(*message.Password), 10)
 	if err != nil {
 		log.Println(ErrorTag, errStr, "cannot generate password hash:", err)

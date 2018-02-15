@@ -29,13 +29,11 @@ type Status struct {
 	Typing bool `json:"typing"`
 }
 
-// TODO: add conversationKey to Conversation struct
-// TODO: send conversationKey in Conversation on login and addUserToConversation
-
 type Conversation struct {
-	Time         time.Time         `json:"time"`
-	MemberStatus map[string]Status `json:"memberStatus"`
-	Messages     []Message         `json:"messages"`
+	Time            time.Time         `json:"time"`
+	MemberStatus    map[string]Status `json:"memberStatus"`
+	ConversationKey string            `json:"conversationKey"`
+	Messages        []Message         `json:"messages"`
 }
 
 type Contact struct {

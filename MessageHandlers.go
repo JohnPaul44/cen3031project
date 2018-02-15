@@ -647,6 +647,7 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 	rsp.Conversations = new([]Conversation)
 	(*rsp.Conversations)[0].MemberStatus = conv.MemberStatus
 	(*rsp.Conversations)[0].Time = conv.Time
+	(*rsp.Conversations)[0].ConversationKey = convKey.Name
 
 	q := datastore.NewQuery(KindMessage).Ancestor(convKey).Order("ServerTime")
 	dsMsgs := new([]DSMessage)
@@ -746,6 +747,14 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 		return nil
 	}
 
+
+	// delete conversation if the last person is removed
+	if len(conv.MemberStatus) == 1 {
+		err = client.Delete(c, convKey)
+		// intentionally not sending a response to client
+		return nil
+	}
+
 	// put Conversation into datastore
 	_, err = client.Put(c, convKey, conv)
 	if err != nil {
@@ -767,9 +776,22 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 		sendServerMessageToUser(member, rsp)
 	}
 
-	// send notification to user that was removed
-	sendServerMessageToUser(*message.Username, rsp)
-	log.Printf("'%s' was removed from conversation with: %s\n", *message.Username, members)
+	// only send notification to user if he/she didn't remove himself/herself
+	if user.username == *message.Username {
+		log.Printf("'%s' removed %s from conversation with: %s\n", user.username, func() string {
+			if user.Profile.Gender == nil {
+				return "himself/herself"
+			}
+			switch *user.Profile.Gender {
+			case GenderFemale: return "herself"
+			case GenderMale: return "himself"
+			default: return "themself"
+			}
+		}(), members)
+	} else {
+		sendServerMessageToUser(*message.Username, rsp)
+		log.Printf("'%s' was removed from conversation with: %s\n", *message.Username, members)
+	}
 
 	return nil
 }

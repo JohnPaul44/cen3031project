@@ -90,6 +90,7 @@ func getConversations(user *DSUser) (*[]Conversation, error) {
 		conversation := new(Conversation)
 		conversation.Time = dsConversation.Time
 		conversation.MemberStatus = dsConversation.MemberStatus
+		conversation.ConversationKey = conversationKey
 
 		q := datastore.NewQuery(KindMessage).Ancestor(convKey).Order("time")
 		it := client.Run(c, q)
@@ -99,7 +100,6 @@ func getConversations(user *DSUser) (*[]Conversation, error) {
 		for err == nil {
 			message := new(Message)
 			message.MessageKey = &messageKey.Name
-			message.ConversationKey = &conversationKey
 			message.From = &dsMessage.From
 			message.Text = &dsMessage.Text
 			message.ServerTime = &dsMessage.Time
