@@ -6,17 +6,17 @@ import model.Contact;
 import model.CurrentUser;
 
 public class ContactAddedMessageHandler implements NotificationMessageHandler {
-    private NotificationContactAddedMessage message;
+    private NotificationContactAddedMessage serverMessage;
     private CurrentUser currentUser;
 
     public ContactAddedMessageHandler(JsonObject messageFromServer, CurrentUser currentUser) {
-        this.message = gson.fromJson(messageFromServer, NotificationContactAddedMessage.class);
+        this.serverMessage = gson.fromJson(messageFromServer, NotificationContactAddedMessage.class);
         this.currentUser = currentUser;
     }
 
     @Override
     public void handle(){
-        Contact contact = new Contact(message.getUsername(), false);
-        currentUser.getContactList().put(message.getUsername(), contact);
+        Contact contact = new Contact(serverMessage.getUsername(), false);
+        currentUser.getContactList().put(serverMessage.getUsername(), contact);
     }
 }

@@ -1,5 +1,6 @@
 package connection.serverMessaging;
 
+import model.Conversation;
 import model.UserReaction;
 
 public class NotificationMessageReceivedMessage extends ServerMessage {
@@ -9,7 +10,9 @@ public class NotificationMessageReceivedMessage extends ServerMessage {
     private String from;
     private String text;
     private UserReaction[] reactions;
+    private Conversation conversation;
 
+    // Test constructor for existing conversation
     public NotificationMessageReceivedMessage(String conversationKey, String messageKey, String serverTime, String from, String text, UserReaction[] reactions) {
         this.status = Status.NOTIFICATIONMESSAGERECEIVED.ordinal();
         this.conversationKey = conversationKey;
@@ -18,6 +21,11 @@ public class NotificationMessageReceivedMessage extends ServerMessage {
         this.from = from;
         this.text = text;
         this.reactions = reactions;
+    }
+    // Test constructor for new conversation
+    public NotificationMessageReceivedMessage(Conversation conversation) {
+        this.status = Status.NOTIFICATIONMESSAGERECEIVED.ordinal();
+        this.conversation = conversation;
     }
 
     public NotificationMessageReceivedMessage(String conversationKey, String messageKey, String serverTime, String from, String text) {
@@ -47,4 +55,5 @@ public class NotificationMessageReceivedMessage extends ServerMessage {
     public UserReaction[] getReactions() {
         return reactions;
     }
+    public Conversation getConversation() { return conversation; }
 }

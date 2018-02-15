@@ -7,17 +7,17 @@ import model.CurrentUser;
 
 
 public class UserOnlineStatusMessageHandler implements NotificationMessageHandler {
-    private NotificationUserOnlineStatusMessage message;
+    private NotificationUserOnlineStatusMessage serverMessage;
     private CurrentUser currentUser;
 
     public UserOnlineStatusMessageHandler(JsonObject messageFromServer, CurrentUser currentUser) {
-        this.message = gson.fromJson(messageFromServer, NotificationUserOnlineStatusMessage.class);
+        this.serverMessage = gson.fromJson(messageFromServer, NotificationUserOnlineStatusMessage.class);
         this.currentUser = currentUser;
     }
 
     @Override
     public void handle() {
-        Contact userToUpdateStatusOf = currentUser.getContactList().get(message.getUsername());
-        userToUpdateStatusOf.setOnline(message.getOnline());
+        Contact userToUpdateStatusOf = currentUser.getContactList().get(serverMessage.getUsername());
+        userToUpdateStatusOf.setOnline(serverMessage.getOnline());
     }
 }

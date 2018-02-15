@@ -342,19 +342,28 @@ public class Tests {
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
-        UserReaction u1 = new UserReaction(new int[] {1, 6}, "thead9");
-        UserReaction u2 = new UserReaction(new int[] {5, 4}, "suzy");
 
-        // without user reactions
-        NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv3", "8cj4", "2018-03-9 03:00:22.012",
-                "thead9", "Hello");
-        // with user reactions
-        //NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv1", "8cj4", "2018-03-9 03:00:22.012",
-        //        "thead9", "Hello", new UserReaction[] {u1, u2});
+        Map<String, Status> memberStatus2 = new HashMap<>();
+        memberStatus2.put("thead9", new Status(true, true));
+        memberStatus2.put("barney", new Status(false, false));
+        UserReaction ur3 = new UserReaction(new int[] {1, 2}, "thead9");
+        UserReaction ur4 = new UserReaction(new int[] {3, 4}, "barney");
+        Message m3 = new Message("2018-01-9 03:00:21.012", "2018-01-9 03:00:22.012",
+                new String[] {"thead9", "barney"}, "8ch", "nvj4", "thead9", "hi",
+                new UserReaction[] {ur3, ur4}, true);
+        Message m4 = new Message("2018-01-8 03:00:21.012", "2018-01-8 03:00:22.012",
+                new String[] {"thead9", "suzy"}, "888", "nvj4", "thead9", "hi",
+                new UserReaction[] {ur3, ur4}, true);
+        HashMap<String, Message> mList2 = new HashMap<>();
+        mList2.put(m3.getConversationKey(), m3);
+        mList2.put(m4.getConversationKey(), m4);
+        Conversation conv3 = new Conversation("conv3", "2017-03-9 03:00:22.012", memberStatus2, mList2);
+
+        NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage(conv3);
 
         conn.getOut().println(m.toJsonString());
         TimeUnit.SECONDS.sleep(4);
-        assertTrue(conn.getCurrentUser().getConversationList().get("conv3").getTime().equals("2018-03-9 03:00:22.012"));
+        assertTrue(conn.getCurrentUser().getConversationList().get("conv3").getTime().equals("2017-03-9 03:00:22.012"));
     }
 
     @Test

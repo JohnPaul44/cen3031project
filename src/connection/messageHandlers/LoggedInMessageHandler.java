@@ -5,19 +5,19 @@ import connection.serverMessaging.NotificationLoggedInMessage;
 import model.CurrentUser;
 
 public class LoggedInMessageHandler implements NotificationMessageHandler {
-    private NotificationLoggedInMessage message;
+    private NotificationLoggedInMessage serverMessage;
     private CurrentUser currentUser;
 
     public LoggedInMessageHandler(JsonObject messageFromServer, CurrentUser currentUser) {
-        this.message = gson.fromJson(messageFromServer, NotificationLoggedInMessage.class);
+        this.serverMessage = gson.fromJson(messageFromServer, NotificationLoggedInMessage.class);
         this.currentUser = currentUser;
     }
 
     @Override
     public void handle() {
-        currentUser.setUserName(message.getUsername());
-        currentUser.setContactList(message.getContacts());
-        currentUser.setConversationList(message.getConversations());
-        currentUser.setProfile(message.getProfile());
+        currentUser.setUserName(serverMessage.getUsername());
+        currentUser.setContactList(serverMessage.getContacts());
+        currentUser.setConversationList(serverMessage.getConversations());
+        currentUser.setProfile(serverMessage.getProfile());
     }
 }

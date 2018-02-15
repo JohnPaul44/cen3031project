@@ -4,15 +4,15 @@ import com.google.gson.JsonObject;
 import connection.serverMessaging.NotificationErrorMessage;
 
 public class ErrorMessageHandler implements NotificationMessageHandler{
-    private NotificationErrorMessage message;
+    private NotificationErrorMessage serverMessage;
 
     public ErrorMessageHandler(JsonObject messageFromServer) {
-        this.message = gson.fromJson(messageFromServer, NotificationErrorMessage.class);
+        this.serverMessage = gson.fromJson(messageFromServer, NotificationErrorMessage.class);
     }
 
     @Override
     public void handle() {
-        System.out.println("Error message received from server");
-        System.out.println("Error Number: " + message.getErrorNumber() + " Error String: ");
+        System.out.println("Error serverMessage received from server");
+        System.out.println("Error Number: " + serverMessage.getErrorNumber() + " Error String: ");
     }
 }

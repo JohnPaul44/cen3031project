@@ -9,26 +9,27 @@ import model.Message;
 import java.text.ParseException;
 
 public class MessageReceivedMessageHandler implements NotificationMessageHandler {
-    private NotificationMessageReceivedMessage message;
+    private NotificationMessageReceivedMessage serverMessage;
     private CurrentUser currentUser;
 
     public MessageReceivedMessageHandler(JsonObject messageFromServer, CurrentUser currentUser) {
-        this.message = gson.fromJson(messageFromServer, NotificationMessageReceivedMessage.class);
+        this.serverMessage = gson.fromJson(messageFromServer, NotificationMessageReceivedMessage.class);
         this.currentUser = currentUser;
     }
 
     @Override
-    public void handle() { // TODO what if message if first message in group conversation
-        Message receivedMessage = new Message(message);
-        if (currentUser.getConversationList().get(message.getConversationKey()) != null) { // existing conversation
+    public void handle() { // TODO what if serverMessage is first serverMessage in group conversation
+        Message receivedMessage = new Message(serverMessage);
+        if (serverMessage.getConversation() == null) { // existing conversation
             try {
-                currentUser.getConversationList().get(message.getConversationKey()).addMessageToConversation(receivedMessage);
+                currentUser.getConversationList().get(serverMessage.getConversationKey()).addMessageToConversation(receivedMessage);
             } catch (ParseException e) {
-                System.out.println("Error parsing date while adding message to conversation" + e);
+                System.out.println("Error parsing date while adding serverMessage to conversation" + e);
             }
         } else { // new conversation
-            Conversation newConversation = new Conversation(message);
-            currentUser.getConversationList().put(receivedMessage.getConversationKey(), newConversation);
+            Conversation newConversation = serverMessage.getConversation();
+            System.out.println("setting conversation worked");
+            currentUser.getConversationList().put(newConversation.getConversationKey(), newConversation);
         }
     }
 }
