@@ -81,19 +81,24 @@ public class ServerConnection {
                             messageReceivedMessageHandler.handle();
                             break;
                         case 9: // Message Updated
-                            NotificationMessageUpdatedMessage messageUpdatedMessage = gson.fromJson(messageFromServer, NotificationMessageUpdatedMessage.class);
+                            MessageUpdatedMessageHandler messageUpdatedMessageHandler = new MessageUpdatedMessageHandler(messageFromServer, currentUser);
+                            messageUpdatedMessageHandler.handle();
                             break;
                         case 10: // User Added to Conversation
-                            NotificationUserAddedToConversationMessage userAddedToConversationMessage = gson.fromJson(messageFromServer, NotificationUserAddedToConversationMessage.class);
+                            UserAddedToConversationMessageHandler userAddedToConversationMessageHandler = new UserAddedToConversationMessageHandler(messageFromServer, currentUser);
+                            userAddedToConversationMessageHandler.handle();
                             break;
                         case 11: // User Removed from Conversation
-                            NotificationUserRemovedFromConversationMessage userRemovedFromConversationMessage = gson.fromJson(messageFromServer, NotificationUserRemovedFromConversationMessage.class);
+                            UserRemovedFromConversationMessageHandler userRemovedFromConversationMessageHandler = new UserRemovedFromConversationMessageHandler(messageFromServer, currentUser);
+                            userRemovedFromConversationMessageHandler.handle();
                             break;
                         case 12: // Message Read
-                            NotificationMessageReadMessage messageReadMessage = gson.fromJson(messageFromServer, NotificationMessageReadMessage.class);
+                            MessageReadMessageHandler messageReadMessageHandler = new MessageReadMessageHandler(messageFromServer, currentUser);
+                            messageReadMessageHandler.handle();
                             break;
                         case 13: // Typing
-                            NotificationTypingMessage typingMessage = gson.fromJson(messageFromServer, NotificationTypingMessage.class);
+                            MessageTypingMessageHandler messageTypingMessageHandler = new MessageTypingMessageHandler(messageFromServer, currentUser);
+                            messageTypingMessageHandler.handle();
                             break;
                         default:
                             System.out.println("ERROR invalid message received. Status of message received: " + status);

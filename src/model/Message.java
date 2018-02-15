@@ -13,7 +13,7 @@ public class Message implements Comparable<Message> {
     ConversationKey *datastore.Key  `json:"conversation_key,omitempty"`
     From            *string         `json:"from,omitempty"`
     Text            *string         `json:"text,omitempty"`
-    Reactions       *[]UserReaction `json:"reactions,omitempty"`
+    reactions       *[]UserReaction `json:"reactions,omitempty"`
     Typing          *bool           `json:"typing,omitempty"`*/
 
     private String serverTime;
@@ -24,12 +24,12 @@ public class Message implements Comparable<Message> {
     private String from;
     private String text;
     private enum Reaction {  }
-    private UserReaction[] userReactions;
+    private UserReaction[] reactions;
     private boolean typing;
 
     // Test Constructor
     public Message(String serverTime, String clientTime, String[] to, String messageKey, String conversationKey,
-                   String from, String text, UserReaction[] userReactions, boolean typing) {
+                   String from, String text, UserReaction[] reactions, boolean typing) {
         this.serverTime = serverTime;
         this.clientTime = clientTime;
         this.to = to;
@@ -37,7 +37,7 @@ public class Message implements Comparable<Message> {
         this.conversationKey = conversationKey;
         this.from = from;
         this.text = text;
-        this.userReactions = userReactions;
+        this.reactions = reactions;
         this.typing = typing;
     }
 
@@ -48,7 +48,7 @@ public class Message implements Comparable<Message> {
         this.from = messageFromServer.getFrom();
         this.text = messageFromServer.getText();
         if (messageFromServer.getReactions() != null) {
-            this.userReactions = messageFromServer.getReactions();
+            this.reactions = messageFromServer.getReactions();
         }
     }
 
@@ -71,6 +71,9 @@ public class Message implements Comparable<Message> {
     public String[] getTo() { return to; }
     public String getFrom() { return from; }
     public String getConversationKey() { return conversationKey; }
+    public String getMessageKey() { return messageKey; }
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
 
     // Sorts messages by time.
     // If there is a serverTime, that time will be used.  If there is no serverTime, clientTime will be used.

@@ -7,10 +7,14 @@ public class NotificationUserAddedToConversationMessage extends ServerMessage {
     private String conversationKey;
     private Conversation conversation;
 
-    public NotificationUserAddedToConversationMessage(String username, String conversationKey, Conversation conversation) {
+    public NotificationUserAddedToConversationMessage(String username, String conversationKey) {
         this.status = Status.NOTIFICATIONUSERADDEDTOCONVERSATION.ordinal();
         this.username = username;
         this.conversationKey = conversationKey;
+    }
+
+    public NotificationUserAddedToConversationMessage(Conversation conversation) {
+        this.status = Status.NOTIFICATIONUSERADDEDTOCONVERSATION.ordinal();
         this.conversation = conversation;
     }
 

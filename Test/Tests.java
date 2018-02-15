@@ -367,30 +367,50 @@ public class Tests {
     }
 
     @Test
-    public void receiveMessageUpdatedMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
+    public void receiveMessageUpdatedMessage() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
-        NotificationMessageUpdatedMessage m = new NotificationMessageUpdatedMessage("kcn4", "nc4l", "Hello");
+        NotificationLoggedInMessage m = createLoggedInMessage();
         conn.getOut().println(m.toJsonString());
+        NotificationMessageUpdatedMessage message = new NotificationMessageUpdatedMessage("conv2", "m3", "whats up");
+        conn.getOut().println(message.toJsonString());
+        TimeUnit.SECONDS.sleep(4);
+        assertTrue(conn.getCurrentUser().getConversationList().get("conv2").getMessages().get("m3").getText().equals("whats up"));
+
     }
 
     @Test
-    public void receiveUserAddedToConversationMessage() throws InterruptedException {
-        CurrentUser currentUser = new CurrentUser();
-
+    public void receiveUserAddedToConversationMessageExisting() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+        NotificationUserAddedToConversationMessage m = new NotificationUserAddedToConversationMessage("fred", "conv1");
+        conn.getOut().println(m.toJsonString());
+
+        TimeUnit.SECONDS.sleep(5);
+        assertFalse(conn.getCurrentUser().getConversationList().get("conv1").getMemberStatus().get("fred").getRead());
+    }
+
+    @Test
+    public void receiveUserAddedToConversationMessageNonExisting() throws InterruptedException {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+
         Map<String, Status> memberStatus1 = new HashMap<>();
         memberStatus1.put("thead9", new Status(true, true));
-        memberStatus1.put("suzy", new Status(false, false));
+        memberStatus1.put("fred", new Status(false, false));
         UserReaction ur1 = new UserReaction(new int[] {1, 2}, "thead9");
         UserReaction ur2 = new UserReaction(new int[] {3, 4}, "suzy");
         Message m1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
@@ -402,51 +422,75 @@ public class Tests {
         HashMap<String, Message> mList1 = new HashMap<>();
         mList1.put(m1.getConversationKey(), m1);
         mList1.put(m2.getConversationKey(), m2);
-        Conversation conv1 = new Conversation("conv1", "2018-03-9 03:00:22.012", memberStatus1, mList1);
+        Conversation conv3 = new Conversation("conv3", "2018-03-9 03:00:22.012", memberStatus1, mList1);
 
-        NotificationUserAddedToConversationMessage m = new NotificationUserAddedToConversationMessage("thead9", "4hyd", conv1);
+        NotificationUserAddedToConversationMessage m = new NotificationUserAddedToConversationMessage(conv3);
         conn.getOut().println(m.toJsonString());
 
         TimeUnit.SECONDS.sleep(5);
+        conn.getCurrentUser();
+        assertFalse(conn.getCurrentUser().getConversationList().get("conv3").getMemberStatus().get("fred").getRead());
+
     }
 
     @Test
-    public void receiveUserRemovedFromConversation() {
-        CurrentUser currentUser = new CurrentUser();
-
+    public void receiveUserRemovedFromConversationSelf() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
-        NotificationUserRemovedFromConversationMessage m = new NotificationUserRemovedFromConversationMessage("thead9", "4jv8");
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+        NotificationUserRemovedFromConversationMessage m = new NotificationUserRemovedFromConversationMessage("thead9", "conv2");
         conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(5);
+        assertNull(conn.getCurrentUser().getConversationList().get("conv2"));
     }
 
     @Test
-    public void receiveMessageReadConversation() {
-        CurrentUser currentUser = new CurrentUser();
-
+    public void receiveUserRemovedFromConversationNotSelf() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
-        NotificationMessageReadMessage m = new NotificationMessageReadMessage("uh4h", "thead9");
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+        NotificationUserRemovedFromConversationMessage m = new NotificationUserRemovedFromConversationMessage("barney", "conv2");
         conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(5);
+        assertNull(conn.getCurrentUser().getConversationList().get("conv2").getMemberStatus().get("barney"));
     }
 
     @Test
-    public void receiveTypingMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
+    public void receiveMessageReadConversation() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
-        NotificationTypingMessage m = new NotificationTypingMessage("kj4n", "thead9", true);
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+        NotificationMessageReadMessage m = new NotificationMessageReadMessage("conv2", "barney");
         conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(5);
+        assertTrue(conn.getCurrentUser().getConversationList().get("conv2").getMemberStatus().get("barney").getRead());
+    }
+
+    @Test
+    public void receiveTypingMessage() throws InterruptedException {
+        startTestServerEcho();
+
+        ServerConnection conn = new ServerConnection();
+        conn.startListeningToServer();
+
+        NotificationLoggedInMessage message = createLoggedInMessage();
+        conn.getOut().println(message.toJsonString());
+        NotificationTypingMessage m = new NotificationTypingMessage("conv2", "barney", true);
+        conn.getOut().println(m.toJsonString());
+        TimeUnit.SECONDS.sleep(5);
+        assertTrue(conn.getCurrentUser().getConversationList().get("conv2").getMemberStatus().get("barney").getTyping());
     }
 
     private void startTestServerEcho(){
@@ -482,8 +526,8 @@ public class Tests {
                 new String[] {"thead9", "suzy"}, "999", "cn47", "thead9", "hello",
                 new UserReaction[] {ur1, ur2}, true);
         HashMap<String, Message> mList1 = new HashMap<>();
-        mList1.put(m1.getConversationKey(), m1);
-        mList1.put(m2.getConversationKey(), m2);
+        mList1.put(m1.getMessageKey(), m1);
+        mList1.put(m2.getMessageKey(), m2);
         Conversation conv1 = new Conversation("conv1", "2018-03-9 03:00:22.012", memberStatus1, mList1);
 
         Map<String, Status> memberStatus2 = new HashMap<>();
@@ -492,14 +536,14 @@ public class Tests {
         UserReaction ur3 = new UserReaction(new int[] {1, 2}, "thead9");
         UserReaction ur4 = new UserReaction(new int[] {3, 4}, "barney");
         Message m3 = new Message("2018-01-9 03:00:21.012", "2018-01-9 03:00:22.012",
-                new String[] {"thead9", "barney"}, "8ch", "nvj4", "thead9", "hi",
+                new String[] {"thead9", "barney"}, "m3", "nvj4", "thead9", "hi",
                 new UserReaction[] {ur3, ur4}, true);
         Message m4 = new Message("2018-01-8 03:00:21.012", "2018-01-8 03:00:22.012",
-                new String[] {"thead9", "suzy"}, "888", "nvj4", "thead9", "hi",
+                new String[] {"thead9", "suzy"}, "m4", "nvj4", "thead9", "hi",
                 new UserReaction[] {ur3, ur4}, true);
         HashMap<String, Message> mList2 = new HashMap<>();
-        mList2.put(m3.getConversationKey(), m3);
-        mList2.put(m4.getConversationKey(), m4);
+        mList2.put(m3.getMessageKey(), m3);
+        mList2.put(m4.getMessageKey(), m4);
         Conversation conv2 = new Conversation("conv2", "2017-03-9 03:00:22.012", memberStatus2, mList2);
 
         HashMap<String, Conversation> cList = new HashMap<>();

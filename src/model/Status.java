@@ -19,4 +19,6 @@ public class Status {
     public boolean getTyping() {
         return typing;
     }
+    public void setRead(boolean read) { this.read = read; }
+    public void setTyping(boolean typing) { this.typing = typing; }
 }
