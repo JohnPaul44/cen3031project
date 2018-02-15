@@ -67,6 +67,7 @@ type Profile struct {
 	Email  string  `json:"email"`
 	Phone  *string `json:"phone,omitempty"`
 	Gender *int    `json:"gender,omitempty"`
+	Age	   *int		`json:"age,omitempty"`
 }
 
 type ServerMessage struct {
@@ -216,7 +217,7 @@ func socketClosed(err error) bool {
 func sendServerMessageToUser(username string, message *ServerMessage) {
 	_, contains := conns[username]
 	if contains {
-		for _, conn := range conns[username] {
+		for _, conn := range conns[username].connections {
 			err := sendServerMessage(conn.bufrw, message)
 			if err != nil {
 				if socketClosed(err) {
@@ -531,7 +532,7 @@ func updateOnlineStatus(user *DSUser, online bool) {
 
 func handleLogOut(user *DSUser, bufrw *bufio.ReadWriter, _ *ServerMessage) error {
 	rsp := new(ServerMessage)
-	conns.remove(user)
+	// connection removed in main event loop
 	rsp.Status = NotificationLoggedOut
 
 	log.Printf("%s (%s) logged out\n", user.Profile.Name, user.username)
@@ -681,13 +682,15 @@ func handleUpdateProfile(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 		return sendServerMessage(bufrw, rsp)
 	}
 
-	user.Profile = *message.Profile
+	// update local profile (for logging) for all connections with the same username
+	conns.updateProfile(user, *message.Profile)
 
 	rsp.clear()
 	rsp.Status = NotificationProfileUpdated
 	rsp.Profile = &user.Profile
 
 	sendServerMessageToUser(user.username, rsp)
+
 	log.Printf("%s (%s) updated %s profile\n", user.Profile.Name, func() string {
 		if user.Profile.Gender == nil {
 			return "his/her"
@@ -914,9 +917,9 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 	}
 
 	// send message to all sender's connections, excluding the originating connection
-	for t := range conns[user.username] {
+	for t := range conns[user.username].connections {
 		if t != user.connection.time {
-			conn := conns[user.username][t]
+			conn := conns[user.username].connections[t]
 			err = sendServerMessage(conn.bufrw, rsp)
 			if err != nil {
 				if socketClosed(err) {
@@ -1326,11 +1329,16 @@ func handleReadMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 }
 
 type Connection struct {
-	bufrw        *bufio.ReadWriter // interface for reading and writing to the connection
-	time         time.Time         // time that the connection was established (used for differentiating different connections with same username)
+	bufrw        *bufio.ReadWriter 	// interface for reading and writing to the connection
+	time         time.Time         	// time that the connection was established (used for differentiating different connections with same username)
 }
 
-type Connections map[string]map[time.Time]*Connection
+type UserConnection struct {
+	profile Profile
+	connections map[time.Time]*Connection
+}
+
+type Connections map[string]UserConnection
 
 var conns = make(Connections)
 var connsMutex = new(sync.Mutex)
@@ -1341,29 +1349,41 @@ func (conns Connections) contains(username string) bool {
 }
 
 func (conns *Connections) add(user *DSUser) {
-	_, contains := (*conns)[user.username]
-
 	connsMutex.Lock()
-	(*conns)[user.username][user.connection.time] = user.connection
+	_, contains := (*conns)[user.username]
+	// user is not already in map, so create UserConnection object, set profile and initialize map
+	if !contains {
+		(*conns)[user.username] = UserConnection{user.Profile, make(map[time.Time]*Connection)}
+	}
+	// add connection to connections map
+	(*conns)[user.username].connections[user.connection.time] = user.connection
 	connsMutex.Unlock()
 
-	if contains {
+	// user was not previously in map, so update online status
+	if !contains {
 		updateOnlineStatus(user, true)
 	}
 }
 
 func (conns *Connections) remove(user *DSUser) {
 	connsMutex.Lock()
-	delete((*conns)[user.username], user.connection.time)
-	if len((*conns)[user.username]) == 0 {
+	delete((*conns)[user.username].connections, user.connection.time)
+	if len((*conns)[user.username].connections) == 0 {
 		delete(*conns, user.username)
 	}
+	_, contains := (*conns)[user.username]
 	connsMutex.Unlock()
 
-	_, contains := (*conns)[user.username]
+	// user is not in map anymore
 	if !contains {
 		updateOnlineStatus(user, false)
 	}
+}
+
+func (conns *Connections) updateProfile(user *DSUser, profile Profile) {
+	connsMutex.Lock()
+	(*conns)[user.username] = UserConnection{profile, (*conns)[user.username].connections}
+	connsMutex.Unlock()
 }
 
 func remove(s []string, r string) ([]string, bool) {
@@ -1508,6 +1528,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				break
 			}
 		}
+		conns.remove(usr)
 	}
 
 	log.Println("Socket closed")
