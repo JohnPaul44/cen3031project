@@ -24,6 +24,7 @@ public class login_controller {
 	public void LoginEvent(ActionEvent event) throws Exception{
 		//checks whether the username and password match
 		//need to add in a check to the database to check username and password
+		//case sensitive
 		if(username.getText().equals("user") && password.getText().equals("password")) {
 			status.setText("Login Successful");
 			
@@ -40,6 +41,7 @@ public class login_controller {
 			((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
 		}
 		else {
+			//alerts the user to incorrect credentials
 			status.setText("Incorrect Username or Password");
 		}
 	}
