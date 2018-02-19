@@ -55,7 +55,7 @@ public class ServerConnection {
                             errorHandler.handle();
                             break;
                         case 2: // Logged In Message
-                            LoggedInMessageHandler loggedInMessageHandler = new LoggedInMessageHandler(messageFromServer, currentUser);
+                            NotificationMessageHandler loggedInMessageHandler = new LoggedInMessageHandler(messageFromServer, currentUser);
                             loggedInMessageHandler.handle();
                             break;
                         case 3: // User Online Status
