@@ -43,7 +43,7 @@ public class Tests {
     }
 
     @Test
-    public void sendLogInMessage() {
+    public void sendLogInMessage() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
