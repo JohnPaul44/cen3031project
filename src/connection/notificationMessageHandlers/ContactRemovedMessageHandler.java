@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import connection.serverMessages.NotificationContactRemovedMessage;
 import model.CurrentUser;
 
-public class ContactRemovedMessageHandler implements NotificationMessageHandler {
+public class ContactRemovedMessageHandler implements MessageHandler {
     private NotificationContactRemovedMessage serverMessage;
     private CurrentUser currentUser;
 

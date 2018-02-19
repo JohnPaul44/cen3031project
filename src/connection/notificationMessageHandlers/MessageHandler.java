@@ -2,7 +2,7 @@ package connection.notificationMessageHandlers;
 
 import com.google.gson.Gson;
 
-public interface NotificationMessageHandler {
+public interface MessageHandler {
     Gson gson = new Gson();
     void handle();
 }

@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import connection.serverMessages.NotificationMessageReadMessage;
 import model.CurrentUser;
 
-public class MessageReadMessageHandler implements NotificationMessageHandler {
+public class MessageReadMessageHandler implements MessageHandler {
     private NotificationMessageReadMessage serverMessage;
     private CurrentUser currentUser;
 

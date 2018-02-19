@@ -2,12 +2,11 @@ package connection.notificationMessageHandlers;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import connection.serverMessages.ServerMessage;
 import model.CurrentUser;
 
 public class HandlerFactory {
 
-    public NotificationMessageHandler produce(String serverMessage, CurrentUser currentUser) throws Exception {
+    public MessageHandler produce(String serverMessage, CurrentUser currentUser) throws Exception {
         JsonParser parser = new JsonParser();
         JsonObject messageFromServer = parser.parse(serverMessage).getAsJsonObject();
         int status = messageFromServer.get("status").getAsInt();

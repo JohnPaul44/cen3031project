@@ -3,7 +3,7 @@ package connection.notificationMessageHandlers;
 import com.google.gson.JsonObject;
 import connection.serverMessages.NotificationErrorMessage;
 
-public class ErrorMessageHandler implements NotificationMessageHandler{
+public class ErrorMessageHandler implements MessageHandler {
     private NotificationErrorMessage serverMessage;
 
     public ErrorMessageHandler(JsonObject messageFromServer) {

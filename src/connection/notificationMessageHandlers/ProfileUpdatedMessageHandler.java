@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import connection.serverMessages.NotificationProfileUpdatedMessage;
 import model.CurrentUser;
 
-public class ProfileUpdatedMessageHandler implements NotificationMessageHandler {
+public class ProfileUpdatedMessageHandler implements MessageHandler {
     private NotificationProfileUpdatedMessage serverMessage;
     private CurrentUser currentUser;
 

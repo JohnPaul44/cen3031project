@@ -6,7 +6,7 @@ import model.Conversation;
 import model.CurrentUser;
 import model.Status;
 
-public class UserAddedToConversationMessageHandler implements NotificationMessageHandler {
+public class UserAddedToConversationMessageHandler implements MessageHandler {
     private NotificationUserAddedToConversationMessage serverMessage;
     private CurrentUser currentUser;
 

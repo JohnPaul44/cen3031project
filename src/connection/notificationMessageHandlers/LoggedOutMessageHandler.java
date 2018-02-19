@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import connection.serverMessages.NotificationLoggedOutMessage;
 import model.CurrentUser;
 
-public class LoggedOutMessageHandler implements NotificationMessageHandler {
+public class LoggedOutMessageHandler implements MessageHandler {
     private NotificationLoggedOutMessage serverMessage;
     private CurrentUser currentUser;
 

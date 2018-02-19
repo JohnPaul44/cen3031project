@@ -8,7 +8,7 @@ import model.Message;
 
 import java.text.ParseException;
 
-public class MessageReceivedMessageHandler implements NotificationMessageHandler {
+public class MessageReceivedMessageHandler implements MessageHandler {
     private NotificationMessageReceivedMessage serverMessage;
     private CurrentUser currentUser;
 

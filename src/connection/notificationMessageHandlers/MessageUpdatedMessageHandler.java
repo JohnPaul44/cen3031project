@@ -5,7 +5,7 @@ import connection.serverMessages.NotificationMessageUpdatedMessage;
 import model.CurrentUser;
 import model.Message;
 
-public class MessageUpdatedMessageHandler implements NotificationMessageHandler {
+public class MessageUpdatedMessageHandler implements MessageHandler {
     private NotificationMessageUpdatedMessage serverMessage;
     private CurrentUser currentUser;
 

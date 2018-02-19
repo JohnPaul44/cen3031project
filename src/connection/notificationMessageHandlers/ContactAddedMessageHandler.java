@@ -5,7 +5,7 @@ import connection.serverMessages.NotificationContactAddedMessage;
 import model.Contact;
 import model.CurrentUser;
 
-public class ContactAddedMessageHandler implements NotificationMessageHandler {
+public class ContactAddedMessageHandler implements MessageHandler {
     private NotificationContactAddedMessage serverMessage;
     private CurrentUser currentUser;
 
@@ -15,7 +15,7 @@ public class ContactAddedMessageHandler implements NotificationMessageHandler {
     }
 
     @Override
-    public void handle(){
+    public void handle() {
         Contact contact = new Contact(serverMessage.getUsername(), false);
         currentUser.getContactList().put(serverMessage.getUsername(), contact);
     }

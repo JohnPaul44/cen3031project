@@ -6,7 +6,7 @@ import model.Contact;
 import model.CurrentUser;
 
 
-public class UserOnlineStatusMessageHandler implements NotificationMessageHandler {
+public class UserOnlineStatusMessageHandler implements MessageHandler {
     private NotificationUserOnlineStatusMessage serverMessage;
     private CurrentUser currentUser;
 

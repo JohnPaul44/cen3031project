@@ -37,7 +37,7 @@ public class ServerConnection {
             HandlerFactory handlerFactory = new HandlerFactory();
             try {
                 while ((userInput = in.readLine()) != null) {
-                    NotificationMessageHandler handler = handlerFactory.produce(userInput, currentUser);
+                    MessageHandler handler = handlerFactory.produce(userInput, currentUser);
                     handler.handle();
                 }
             } catch (IOException e) {
