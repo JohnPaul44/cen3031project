@@ -1,6 +1,6 @@
 import connection.Server;
 import connection.ServerConnection;
-import connection.serverMessaging.*;
+import connection.serverMessages.*;
 import model.*;
 import org.junit.Test;
 
@@ -11,7 +11,6 @@ import static org.junit.Assert.assertTrue;
 import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -32,31 +31,27 @@ public class Tests {
     }
 
     @Test
-    public void sendRegisterMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
+    public void sendRegisterMessage() throws InterruptedException {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionRegisterMessage m = new ActionRegisterMessage("thead9", "bogus,", "Thomas Headley", "thead9@ufl.edu");
-
-        conn.getOut().println(m.toJsonString());
+        conn.getMessageSender().sendMessage(m);
+        TimeUnit.SECONDS.sleep(4);
     }
 
     @Test
     public void sendLogInMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
         conn.startListeningToServer();
 
         ActionLogInMessage m = new ActionLogInMessage("thead9", "bogus,");
-
-        conn.getOut().println(m.toJsonString());
+        conn.getMessageSender().sendMessage(m);
+        TimeUnit.SECONDS.sleep(4);
     }
 
     @Test

@@ -1,0 +1,45 @@
+package connection.serverMessages;
+
+import com.google.gson.Gson;
+
+public abstract class ServerMessage {
+    enum Status {
+        UNINITILIALIZED,
+        NOTIFICATIONERROR,
+        NOTIFICATIONLOGGEDIN,
+        NOTIFICATIONUSERONLINESTATUS,
+        NOTIFICATIONLOGGEDOUT,
+        NOTIFICATIONCONTACTADDED,
+        NOTIFICATIONCONTACTREMOVED,
+        NOTIFICATIONPROFILEUPDATED,
+        NOTIFICATIONMESSAGERECEIVED,
+        NOTIFICATIONMESSAGEUPDATED,
+        NOTIFICATIONUSERADDEDTOCONVERSATION,
+        NOTIFICATIONUSERREMOVEDFROMCONVERSATION,
+        NOTIFICATIONMESSAGEREAD,
+        NOTIFICATIONTYPING,
+
+        ACTIONREGISTER,
+        ACTIONLOGIN,
+        ACTIONLOGOUT,
+        ACTIONADDCONTACT,
+        ACTIONREMOVECONTACT,
+        ACTIONUPDATEPROFILE,
+        ACTIONSENDMESSAGE,
+        ACTIONUPDATEMESSAGE,
+        ACTIONADDUSERTOCONVERSATION,
+        ACTIONREMOVEDUSERFROMCONVERSATION,
+        ACTIONREADMESSAGE,
+        ACTIONSETTYPING
+    }
+    int status;
+
+    public int getStatus() {
+        return status;
+    }
+
+    public String toJsonString() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
+    }
+}

@@ -6,8 +6,7 @@ import java.net.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import connection.messageHandlers.*;
-import connection.serverMessaging.*;
+import connection.notificationMessageHandlers.*;
 import model.CurrentUser;
 
 public class ServerConnection {
@@ -15,6 +14,7 @@ public class ServerConnection {
     private PrintWriter out;
     private BufferedReader in;
     private CurrentUser currentUser;
+    private MessageSender messageSender;
 
     public ServerConnection() {
         this.currentUser = new CurrentUser();
@@ -22,6 +22,7 @@ public class ServerConnection {
             Socket socket = new Socket(Server.hostname, Server.portNumber);
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.messageSender = new MessageSender(out);
         } catch(IOException e) {
             System.out.println("Error while creating connection to server");
         }
@@ -30,8 +31,8 @@ public class ServerConnection {
     public PrintWriter getOut() {
         return out;
     }
-
     public CurrentUser getCurrentUser() { return currentUser; }
+    public MessageSender getMessageSender() { return messageSender; }
 
     public void startListeningToServer() {
         Thread thread = new Thread(() -> {
@@ -42,6 +43,7 @@ public class ServerConnection {
                     JsonParser parser = new JsonParser();
                     JsonObject messageFromServer = parser.parse(userInput).getAsJsonObject();
                     int status = messageFromServer.get("status").getAsInt();
+                    System.out.println(status);
 
                     switch (status) {
                         case 0: // Uninitialized
@@ -101,7 +103,7 @@ public class ServerConnection {
                             messageTypingMessageHandler.handle();
                             break;
                         default:
-                            System.out.println("ERROR invalid message received. Status of message received: " + status);
+                            System.out.println("Invalid message received. Status of message received: " + status);
                     }
 
                     System.out.println("\nClient Received: " + userInput);

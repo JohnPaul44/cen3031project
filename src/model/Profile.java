@@ -9,6 +9,7 @@ public class Profile {
     private String email;
     private String phone;
     private int gender; // 0 = female, 1 = male, 2 = other
+    private int age;
 
     // Test Constructor
     public Profile(String name, String email, String phone) {

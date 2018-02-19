@@ -1,6 +1,6 @@
 package model;
 
-import connection.serverMessaging.NotificationMessageReceivedMessage;
+import connection.serverMessages.NotificationMessageReceivedMessage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
