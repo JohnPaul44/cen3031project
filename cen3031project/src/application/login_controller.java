@@ -6,8 +6,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class login_controller {
@@ -21,7 +24,22 @@ public class login_controller {
 	private TextField password;
 	
 	@FXML
-	public void LoginEvent(ActionEvent event) throws Exception{
+	private Button loginButton;
+	
+	
+	//event handlers for both when the login button is pressed or when the enter key is used
+	@FXML
+	public void LoginEventKey(KeyEvent keyEvent) throws Exception{
+		if(keyEvent.getCode() == KeyCode.ENTER) {
+			//calls the same action that occurs when the button is pressed
+			ActionEvent aevent = new ActionEvent(keyEvent.getSource(), loginButton);
+			//pass the keyEvent into the button action event
+			LoginEventButton(aevent);
+		}
+	}
+	
+	@FXML
+	public void LoginEventButton(ActionEvent event) throws Exception{
 		//checks whether the username and password match
 		//need to add in a check to the database to check username and password
 		//case sensitive
