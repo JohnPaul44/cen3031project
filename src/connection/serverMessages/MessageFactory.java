@@ -13,7 +13,7 @@ public class MessageFactory {
                 return gson.fromJson(jsonObject, NotificationErrorMessage.class);
             case 2: // Logged In Message
                 return gson.fromJson(jsonObject, NotificationLoggedInMessage.class);
-            /*case 3: // User Online Status
+            case 3: // User Online Status
                 return gson.fromJson(jsonObject, NotificationUserOnlineStatusMessage.class);
             case 4: // Logged Out Message
                 return gson.fromJson(jsonObject, NotificationLoggedOutMessage.class);
@@ -34,7 +34,7 @@ public class MessageFactory {
             case 12: // Message Read
                 return gson.fromJson(jsonObject, NotificationMessageReadMessage.class);
             case 13: // Typing
-                return gson.fromJson(jsonObject, NotificationTypingMessage.class);*/
+                return gson.fromJson(jsonObject, NotificationTypingMessage.class);
             default:
                 throw new Exception("Invalid message trying to be produced. Status of message: " + jsonObject.get("status").getAsInt());
         }
