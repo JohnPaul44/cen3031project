@@ -16,7 +16,7 @@
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username*" translateX="120.0" translateY="17.0" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password*" translateX="120.0" translateY="35.0" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm Password*" translateX="75.0" translateY="54.0" />
-            <Text fx:id="firstNameField" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name*" translateX="113.0" translateY="73.0" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="First Name*" translateX="113.0" translateY="73.0" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name*" translateX="113.0" translateY="92.0" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="EMail*" translateX="133.0" translateY="109.0" />
             <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Phone #" translateX="125.0" translateY="125.0" />
@@ -49,7 +49,7 @@
                   <Font size="14.0" />
                </font>
             </PasswordField>
-            <TextField promptText="Please Enter Your First Name" translateY="25.0">
+            <TextField fx:id="firstNameField" promptText="Please Enter Your First Name" translateY="25.0">
                <font>
                   <Font size="14.0" />
                </font>
@@ -70,7 +70,7 @@
                </font>
             </TextField>
             <ChoiceBox fx:id="genderField" prefHeight="25.0" prefWidth="268.0" translateY="45.0" />
-            <DatePicker fx:id="dateOfBirthField" prefHeight="25.0" prefWidth="261.0" translateY="50.0" />
+            <DatePicker fx:id="DOBField" prefHeight="25.0" prefWidth="261.0" translateY="50.0" />
          </children>
       </VBox>
    </center>
