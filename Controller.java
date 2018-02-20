@@ -12,7 +12,7 @@ import javafx.scene.control.TextField;
 
 public class Controller {
 
-    ObservableList<String> genderFieldList = FXCollections.observableArrayList("Male", "Female", "N/A");
+    ObservableList<String> genderFieldList = FXCollections.observableArrayList("Male", "Female", "N/A (Optional)");
 
 
     //Fields on the Register Screen
@@ -59,8 +59,12 @@ public class Controller {
         //System.out.println(gender);
 
 
-       // calcAge();
+       if (calcAge() == 0){  //If it returns 0 then no age was selected
+           String age = "N/A";
+       }
 
+
+        //Manual Testing
         System.out.println("Username: " + username);
         System.out.println("Password: " + password);
         System.out.println("Confirm Password: " + confPassword);
@@ -69,6 +73,7 @@ public class Controller {
         System.out.println("Email: " + email);
         System.out.println("Phone #: " + phoneNumber());
         System.out.println("Gender: " + gender);
+        System.out.println("Age: " + calcAge());
 
 
     }
@@ -76,39 +81,51 @@ public class Controller {
     private String phoneNumber() {  //TODO: Limit amount of numbers to be entered
         String phoneNum = phoneNumberField.getText();
         System.out.println(phoneNum);
-        if (phoneNum.matches("[0-9]*") || phoneNum.isEmpty()) {
+        if (phoneNum.matches("[0-9]*") && !phoneNum.isEmpty()) {
             System.out.println("Phone # accepted!");
             return phoneNum;
         }
-        else {
-            System.out.println("Numbers only!");
+        else if (phoneNum.isEmpty()){
+            phoneNum = "N/A";
+            return phoneNum;
         }
-        return phoneNum;
+        else {
+            System.out.println("Numbers only! Please re-enter a valid phone number!");
+        }
+        return null;
     }
 
 
     @FXML
     private void initialize(){
         //Sets initial value in the drop down
-        genderField.setValue("N/A");
+        genderField.setValue("N/A (Optional)");
         genderField.setItems(genderFieldList);
     }
 
 
     @FXML
-    private String calcAge() { //TODO: Work in progress only based off year right now, need to get month and day
-        if (DOBField == null) {
-            String noAge = "N/A";
-            return noAge;
-        } else {
+    private int calcAge() {
             Calendar now = Calendar.getInstance();
             int year = now.get(Calendar.YEAR);
-            int month = now.get(Calendar.MONTH);
+            int month = now.get(Calendar.MONTH) + 1;
             int day = now.get(Calendar.DAY_OF_MONTH);
+            if((DOBField.getValue() == null)){
+                int age = 0;
+                return age;
+            }
             int birthYear = (DOBField.getValue().getYear());
+            int birthMonth = (DOBField.getValue().getMonthValue());
+            int birthDay = (DOBField.getValue().getDayOfMonth());
             int age = year - birthYear;
-            System.out.println(age);
-        }
-        return null;
+            if (birthMonth > month){
+                age--;
+            }
+            else if (month == birthMonth){
+                if(birthDay > day){
+                    age--;
+                }
+            }
+            return age;
     }
 }
