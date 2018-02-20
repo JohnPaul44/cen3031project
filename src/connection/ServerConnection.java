@@ -5,6 +5,7 @@ import java.net.*;
 
 import connection.notificationMessageHandlers.*;
 import model.CurrentUser;
+import model.UserUpdater;
 
 public class ServerConnection {
 
@@ -34,10 +35,11 @@ public class ServerConnection {
     public void startListeningToServer() {
         Thread thread = new Thread(() -> {
             String userInput;
+            UserUpdater userUpdater = new UserUpdater(currentUser);
             HandlerFactory handlerFactory = new HandlerFactory();
             try {
                 while ((userInput = in.readLine()) != null) {
-                    MessageHandler handler = handlerFactory.produce(userInput, currentUser);
+                    MessageHandler handler = handlerFactory.produce(userInput, userUpdater);
                     handler.handle();
                 }
             } catch (IOException e) {

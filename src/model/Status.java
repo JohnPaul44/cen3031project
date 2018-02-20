@@ -1,5 +1,9 @@
 package model;
 
+import connection.serverMessages.NotificationMessageReadMessage;
+import connection.serverMessages.NotificationTypingMessage;
+import connection.serverMessages.NotificationUserAddedToConversationMessage;
+
 public class Status {
     /*Read   bool `json:"read"`
     Typing bool `json:"typing"`*/
@@ -13,6 +17,11 @@ public class Status {
         this.typing = typing;
     }
 
+    public Status() {
+        read = false;
+        typing = false;
+    }
+
     public boolean getRead() {
         return read;
     }
@@ -21,4 +30,12 @@ public class Status {
     }
     public void setRead(boolean read) { this.read = read; }
     public void setTyping(boolean typing) { this.typing = typing; }
+
+    public void updateRead(NotificationMessageReadMessage message) {
+        read = true;
+    }
+
+    public void updateTyping(NotificationTypingMessage message) {
+        typing = message.getTyping();
+    }
 }

@@ -1,5 +1,8 @@
 package model;
 
+import connection.serverMessages.NotificationContactAddedMessage;
+import connection.serverMessages.NotificationUserOnlineStatusMessage;
+
 public class Contact {
     /*Username string `json:"username"`
     Online   bool   `json:"online"`*/
@@ -13,6 +16,11 @@ public class Contact {
         this.online = online;
     }
 
+    public Contact(NotificationContactAddedMessage message) {
+        username = message.getUsername();
+        online = false;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -20,5 +28,7 @@ public class Contact {
         return online;
     }
 
-    public void setOnline(boolean online) { this.online = online; }
+    public void updateOnline(NotificationUserOnlineStatusMessage message) {
+        online = message.getOnline();
+    }
 }

@@ -1,6 +1,7 @@
 package model;
 
 import connection.serverMessages.NotificationMessageReceivedMessage;
+import connection.serverMessages.NotificationMessageUpdatedMessage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,6 +75,10 @@ public class Message implements Comparable<Message> {
     public String getMessageKey() { return messageKey; }
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
+
+    public void updateMessage(NotificationMessageUpdatedMessage message) {
+        text = message.getText();
+    }
 
     // Sorts messages by time.
     // If there is a serverTime, that time will be used.  If there is no serverTime, clientTime will be used.

@@ -22,6 +22,6 @@ public class Main extends Application {
         CurrentUser currentUser = new CurrentUser();
 
 
-        //launch(args);
+        launch(args);
     }
 }

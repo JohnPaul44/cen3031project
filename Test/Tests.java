@@ -185,8 +185,6 @@ public class Tests {
 
     @Test
     public void sendSetTypingMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
@@ -199,8 +197,6 @@ public class Tests {
 
     @Test
     public void receiveErrorMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
