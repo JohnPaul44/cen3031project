@@ -12,13 +12,11 @@ public class UserUpdater {
     }
 
     public void updateUser(ServerMessage serverMessage) throws ParseException {
-        System.out.println(serverMessage.getStatus());
         switch (serverMessage.getStatus()) {
             case 2: // Logged In Message
-                System.out.println("hello");
                 currentUser.logIn((NotificationLoggedInMessage)serverMessage);
                 break;
-            /*case 3: // User Online Status
+            case 3: // User Online Status
                 currentUser.updateUserOnlineStatus((NotificationUserOnlineStatusMessage) serverMessage);
                 break;
             case 4: // Logged Out Message
@@ -49,7 +47,7 @@ public class UserUpdater {
                 currentUser.updateMessageRead((NotificationMessageReadMessage) serverMessage);
                 break;
             case 13: // Typing
-                currentUser.updateMessageTyping((NotificationTypingMessage) serverMessage);*/
+                currentUser.updateMessageTyping((NotificationTypingMessage) serverMessage);
         }
     }
 }
