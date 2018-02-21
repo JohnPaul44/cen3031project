@@ -37,11 +37,6 @@ public class Controller {
 
     public void registerButtonClicked() {
 
-        if (calcAge() == 0){  //If it returns 0 then no age was selected
-            String age = "N/A";
-        }
-
-
         //Manual Testing
         System.out.println("Username: " + username());
        // System.out.println("Password: " + password());
@@ -51,7 +46,7 @@ public class Controller {
         System.out.println("Email: " + email());
         System.out.println("Phone #: " + phoneNumber());
         System.out.println("Gender: " + gender());
-        System.out.println("Age: " + calcAge());
+        System.out.println("Birthday: " + birthDay());
 
 
     }
@@ -92,10 +87,10 @@ public class Controller {
     }
 
 
-    private String phoneNumber() {  //TODO: Limit amount of numbers to be entered
+    private String phoneNumber() {  //TODO: Catch for when invalid entry delays register
         String phoneNum = phoneNumberField.getText();
         System.out.println(phoneNum);
-        if (phoneNum.matches("[0-9]*") && !phoneNum.isEmpty()) {
+        if (phoneNum.matches("[0-9]*") && !phoneNum.isEmpty() && phoneNum.length() == 10) {
             System.out.println("Phone # accepted!");
             return phoneNum;
         }
@@ -121,7 +116,13 @@ public class Controller {
         genderField.setItems(genderFieldList);
     }
 
+    private String birthDay () {        //TODO: link birthDay(string) to server
+        String bDay = String.valueOf(DOBField.getValue());
+        return bDay;
+    }
 
+
+    /*
     @FXML
     private int calcAge() {
             Calendar now = Calendar.getInstance();
@@ -146,4 +147,5 @@ public class Controller {
             }
             return age;
     }
+    */
 }
