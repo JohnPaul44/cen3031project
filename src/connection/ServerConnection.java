@@ -4,10 +4,11 @@ import java.io.*;
 import java.net.*;
 
 import connection.notificationMessageHandlers.*;
+import connection.serverMessages.ServerMessage;
 import model.CurrentUser;
 import model.UserUpdater;
 
-public class ServerConnection {
+public class ServerConnection implements IServerConnection{
 
     private PrintWriter out;
     private BufferedReader in;
@@ -32,7 +33,11 @@ public class ServerConnection {
     public CurrentUser getCurrentUser() { return currentUser; }
     public MessageSender getMessageSender() { return messageSender; }
 
-    public void startListeningToServer() {
+    public void sendMessageToServer(ServerMessage serverMessage) {
+        out.println(serverMessage.toJsonString());
+    }
+
+    public void listenToServer() {
         Thread thread = new Thread(() -> {
             String userInput;
             UserUpdater userUpdater = new UserUpdater(currentUser);

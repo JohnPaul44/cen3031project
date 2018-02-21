@@ -35,10 +35,10 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionRegisterMessage m = new ActionRegisterMessage("thead9", "bogus,", "Thomas Headley", "thead9@ufl.edu");
-        conn.getMessageSender().sendMessage(m);
+        conn.sendMessageToServer(m);
         TimeUnit.SECONDS.sleep(4);
     }
 
@@ -47,7 +47,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionLogInMessage m = new ActionLogInMessage("thead9", "bogus,");
         conn.getMessageSender().sendMessage(m);
@@ -61,7 +61,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionLogOutMessage m = new ActionLogOutMessage();
 
@@ -75,7 +75,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionAddContactMessage m = new ActionAddContactMessage("thead9");
 
@@ -89,7 +89,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionRemoveContactMessage m = new ActionRemoveContactMessage("thead9");
 
@@ -103,7 +103,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         Profile p = new Profile("Thomas Headley", "thead9", "4074086638");
         ActionUpdateProfileMessage m = new ActionUpdateProfileMessage(p);
@@ -118,7 +118,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionSendMessageMessage m = new ActionSendMessageMessage(ActionSendMessageMessage.ActionSendMessageMessageType.TO, "suzy", "Hi Suzy!");
         ActionSendMessageMessage m2 = new ActionSendMessageMessage(ActionSendMessageMessage.ActionSendMessageMessageType.CONVERSATIONKEY, "51dcj", "Hi Suzy!");
@@ -134,7 +134,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionUpdateMessageMessage m = new ActionUpdateMessageMessage("14dv", "8dco", "Hello Suzy");
 
@@ -148,7 +148,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionAddUserToConversationMessage m = new ActionAddUserToConversationMessage("thead9", "dcn4");
 
@@ -162,7 +162,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionRemoveUserFromConversationMessage m = new ActionRemoveUserFromConversationMessage("thead9", "dcn4");
 
@@ -176,7 +176,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionReadMessageMessage m = new ActionReadMessageMessage("thead9");
 
@@ -188,7 +188,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionSetTypingMessage m = new ActionSetTypingMessage("thead9", true);
 
@@ -200,7 +200,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationErrorMessage m = new NotificationErrorMessage(5, "Error #5");
         conn.getOut().println(m.toJsonString());
@@ -211,7 +211,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage m = createLoggedInMessage();
 
@@ -224,7 +224,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
         conn.getOut().println(loggedInMessage.toJsonString());
@@ -239,7 +239,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
         conn.getOut().println(loggedInMessage.toJsonString());
@@ -257,7 +257,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -273,7 +273,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -289,7 +289,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -306,7 +306,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -329,7 +329,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -362,7 +362,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage m = createLoggedInMessage();
         conn.getOut().println(m.toJsonString());
@@ -378,7 +378,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -394,7 +394,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -429,7 +429,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -444,7 +444,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -459,7 +459,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -474,7 +474,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
