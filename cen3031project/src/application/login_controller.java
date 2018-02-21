@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.scene.Node;
 
 public class login_controller {
 	@FXML
@@ -55,7 +56,7 @@ public class login_controller {
 			primaryStage.show();
 			
 			//closes the login screen when the home screen pops up
-			//((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+			((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
 		}
 		else {
 			//alerts the user to incorrect credentials
@@ -67,11 +68,14 @@ public class login_controller {
 	public void RegisterEvent(ActionEvent event) throws Exception{
 		//opens a new window where a user can register their account
 		Stage registerStage = new Stage();
-		Parent root = FXMLLoader.load(getClass().getResource("/application/register.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("/application/registerUser.fxml"));
 		Scene scene = new Scene(root,700,400);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		registerStage.setScene(scene);
 		registerStage.show();
+		
+		//closes the login screen when the home screen pops up
+		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
 	}
 	
 	@FXML
