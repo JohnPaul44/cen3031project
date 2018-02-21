@@ -36,47 +36,61 @@ public class Controller {
     private DatePicker DOBField;
 
     public void registerButtonClicked() {
-        String username = usernameField.getText();  //TODO: link username(string) to server
-        String password = passwordField.getText();
-        String confPassword = confirmPasswordField.getText();
 
-        if (!password.equals(confPassword)){
-            System.out.println("Your password does not match!");
+        if (calcAge() == 0){  //If it returns 0 then no age was selected
+            String age = "N/A";
         }
-        else if (password.equals(confPassword)){
-            String passwordMathces = confPassword;  //TODO: link password(string) to server
-        }
-
-        String firstName = firstNameField.getText(); //TODO: link first name(string) to server
-
-        String lastName = lastNameField.getText(); //TODO: link last name(string) to server
-
-        String email = emailField.getText(); //TODO: link email(string) to server
-
-       // phoneNumber();  //TODO: Limit amount of characters then link phone number to server
-
-        String gender = (String) genderField.getValue();  //TODO: link gender(string) to server
-        //System.out.println(gender);
-
-
-       if (calcAge() == 0){  //If it returns 0 then no age was selected
-           String age = "N/A";
-       }
 
 
         //Manual Testing
-        System.out.println("Username: " + username);
-        System.out.println("Password: " + password);
-        System.out.println("Confirm Password: " + confPassword);
-        System.out.println("First Name: " + firstName);
-        System.out.println("Last Name: " + lastName);
-        System.out.println("Email: " + email);
+        System.out.println("Username: " + username());
+       // System.out.println("Password: " + password());
+        System.out.println("Confirm Password: " + confPassword());
+        System.out.println("First Name: " + firstName());
+        System.out.println("Last Name: " + lastName());
+        System.out.println("Email: " + email());
         System.out.println("Phone #: " + phoneNumber());
-        System.out.println("Gender: " + gender);
+        System.out.println("Gender: " + gender());
         System.out.println("Age: " + calcAge());
 
 
     }
+
+    private String username () {
+        String username = usernameField.getText();  //TODO: link username(string) to server
+        return username;
+    }
+
+    private String confPassword (){
+        String password = passwordField.getText();
+        String confPassword = confirmPasswordField.getText();
+
+        if (!password.equals(confPassword)){
+            System.out.println("Your password does not match! Please try again!");
+            return password;        //TODO: Make some function to delay registering
+        }
+        else if (password.equals(confPassword)) {
+            String passwordMathces = confPassword;
+            return passwordMathces;     //TODO: link password(string) to server
+        }
+        return password;
+    }
+
+    private String firstName () {
+        String firstName = firstNameField.getText(); //TODO: link first name(string) to server
+        return firstName;
+    }
+
+    private String lastName () {
+        String lastName = lastNameField.getText(); //TODO: link last name(string) to server
+        return lastName;
+    }
+
+    private String email () {
+        String email = emailField.getText(); //TODO: link email(string) to server
+        return email;
+    }
+
 
     private String phoneNumber() {  //TODO: Limit amount of numbers to be entered
         String phoneNum = phoneNumberField.getText();
@@ -95,6 +109,10 @@ public class Controller {
         return null;
     }
 
+    private String gender (){
+        String gender = (String) genderField.getValue();  //TODO: link gender(string) to server
+        return gender;
+    }
 
     @FXML
     private void initialize(){
