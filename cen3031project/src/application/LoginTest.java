@@ -52,6 +52,8 @@ public class LoginTest extends ApplicationTest{
 		FxAssert.verifyThat("#password", NodeMatchers.hasText(""));
 		FxAssert.verifyThat("#status", LabeledMatchers.hasText(""));
 		
+		//have to initalize some action before the enter key works
+		clickOn("#username");
 		//when the enter key is pressed
 		push(KeyCode.ENTER);
 		FxAssert.verifyThat("#status", LabeledMatchers.hasText("Incorrect Username or Password"));
@@ -77,8 +79,9 @@ public class LoginTest extends ApplicationTest{
 		//TODO:figure out how to type a string instead of key codes
 		clickOn("#username").type(KeyCode.U, KeyCode.S, KeyCode.E, KeyCode.R, KeyCode.R );
 		
+		push(KeyCode.TAB);
 		//inputs an incorrect password
-		clickOn("#password").type(KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S, KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D, KeyCode.D);
+		type(KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S, KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D, KeyCode.D);
 		
 		//press enter key
 		push(KeyCode.ENTER);
@@ -105,8 +108,9 @@ public class LoginTest extends ApplicationTest{
 		//TODO:figure out how to type a string instead of key codes
 		clickOn("#username").type(KeyCode.U, KeyCode.S, KeyCode.E, KeyCode.R, KeyCode.R );
 		
+		push(KeyCode.TAB);
 		//inputs a correct password
-		clickOn("#password").type(KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S, KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D);
+		type(KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S, KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D);
 		
 		//press enter key
 		push(KeyCode.ENTER);
@@ -133,8 +137,9 @@ public class LoginTest extends ApplicationTest{
 		//TODO:figure out how to type a string instead of key codes
 		clickOn("#username").type(KeyCode.U, KeyCode.S, KeyCode.E, KeyCode.R);
 		
+		push(KeyCode.TAB);
 		//inputs an incorrect password
-		clickOn("#password").type(KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S, KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D, KeyCode.D);
+		type(KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S, KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D, KeyCode.D);
 		
 		//press enter key
 		push(KeyCode.ENTER);
@@ -161,8 +166,9 @@ public class LoginTest extends ApplicationTest{
 		//input a correct username
 		clickOn("#username").type(KeyCode.U, KeyCode.S, KeyCode.E, KeyCode.R);
 		
+		push(KeyCode.TAB);
 		//input a correct password
-		clickOn("#password").type(KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S, KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D);
+		type(KeyCode.P, KeyCode.A, KeyCode.S, KeyCode.S, KeyCode.W, KeyCode.O, KeyCode.R, KeyCode.D);
 		
 		push(KeyCode.ENTER);
 		FxAssert.verifyThat("#status", LabeledMatchers.hasText("Login Successful"));
