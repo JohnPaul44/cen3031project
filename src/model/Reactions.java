@@ -1,6 +1,6 @@
 package model;
 
-public class UserReaction {
+public class Reactions {
     /*Reactions []int  `json:"type"`
     User      string `json:"user"`*/
 
@@ -8,7 +8,7 @@ public class UserReaction {
     private String user;
 
     // Test Constructor
-    public UserReaction(int[] type, String user) {
+    public Reactions(int[] type, String user) {
         this.type = type;
         this.user = user;
     }

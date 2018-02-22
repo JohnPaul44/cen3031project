@@ -1,7 +1,9 @@
 package connection.serverMessages;
 
 import model.Conversation;
-import model.UserReaction;
+import model.Reactions;
+
+import java.util.Map;
 
 public class NotificationMessageReceivedMessage extends ServerMessage {
     private String conversationKey;
@@ -9,11 +11,11 @@ public class NotificationMessageReceivedMessage extends ServerMessage {
     private String serverTime;
     private String from;
     private String text;
-    private UserReaction[] reactions;
+    private Map<String, Reactions> reactions;
     private Conversation conversation;
 
     // Test constructor for existing conversation
-    public NotificationMessageReceivedMessage(String conversationKey, String messageKey, String serverTime, String from, String text, UserReaction[] reactions) {
+    public NotificationMessageReceivedMessage(String conversationKey, String messageKey, String serverTime, String from, String text, Map<String, Reactions> reactions) {
         this.status = Status.NOTIFICATIONMESSAGERECEIVED.ordinal();
         this.conversationKey = conversationKey;
         this.messageKey = messageKey;
@@ -52,7 +54,7 @@ public class NotificationMessageReceivedMessage extends ServerMessage {
     public String getText() {
         return text;
     }
-    public UserReaction[] getReactions() {
+    public Map<String, Reactions> getReactions() {
         return reactions;
     }
     public Conversation getConversation() { return conversation; }
