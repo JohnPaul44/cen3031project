@@ -1,10 +1,12 @@
 package model;
 
 import connection.serverMessages.NotificationMessageReceivedMessage;
+import connection.serverMessages.NotificationMessageUpdatedMessage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 public class Message implements Comparable<Message> {
     /*Time            *time.Time      `json:"time,omitempty"`
@@ -24,12 +26,12 @@ public class Message implements Comparable<Message> {
     private String from;
     private String text;
     private enum Reaction {  }
-    private UserReaction[] reactions;
+    private Map<String, Reactions> reactions;
     private boolean typing;
 
     // Test Constructor
     public Message(String serverTime, String clientTime, String[] to, String messageKey, String conversationKey,
-                   String from, String text, UserReaction[] reactions, boolean typing) {
+                   String from, String text, Map<String, Reactions> reactions, boolean typing) {
         this.serverTime = serverTime;
         this.clientTime = clientTime;
         this.to = to;
@@ -74,6 +76,10 @@ public class Message implements Comparable<Message> {
     public String getMessageKey() { return messageKey; }
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
+
+    public void updateMessage(NotificationMessageUpdatedMessage message) {
+        text = message.getText();
+    }
 
     // Sorts messages by time.
     // If there is a serverTime, that time will be used.  If there is no serverTime, clientTime will be used.

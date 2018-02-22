@@ -4,40 +4,61 @@ import java.io.*;
 import java.net.*;
 
 import connection.notificationMessageHandlers.*;
+import connection.serverMessages.ServerMessage;
 import model.CurrentUser;
+import model.UserUpdater;
 
-public class ServerConnection {
+public class ServerConnection implements IServerConnection{
 
     private PrintWriter out;
     private BufferedReader in;
     private CurrentUser currentUser;
-    private MessageSender messageSender;
+    private String hostname = "35.231.80.25";
+    private int portNumber = 8675;
 
     public ServerConnection() {
         this.currentUser = new CurrentUser();
         try {
-            Socket socket = new Socket(Server.hostname, Server.portNumber);
+            Socket socket = new Socket(hostname, portNumber);
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.messageSender = new MessageSender(out);
+            out.println("GET /connect HTTP/1.0\r\n\r\n");
+            listenToServer();
         } catch(IOException e) {
-            System.out.println("Error while creating connection to server");
+            System.out.println("Error connecting to server: " + e);
         }
     }
 
-    public PrintWriter getOut() {
-        return out;
+    public ServerConnection(String hostname, int portNumber) {
+        this.currentUser = new CurrentUser();
+        try {
+            Socket socket = new Socket(hostname, portNumber);
+            this.out = new PrintWriter(socket.getOutputStream(), true);
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out.println("GET /connect HTTP/1.0\r\n\r\n");
+            listenToServer();
+        } catch(IOException e) {
+            System.out.println("Error connecting to server: " + e);
+        }
     }
-    public CurrentUser getCurrentUser() { return currentUser; }
-    public MessageSender getMessageSender() { return messageSender; }
 
-    public void startListeningToServer() {
+    public PrintWriter getOut() { return out; }
+    public CurrentUser getCurrentUser() { return currentUser; }
+
+    @Override
+    public void sendMessageToServer(ServerMessage serverMessage) {
+        out.println(serverMessage.toJsonString());
+    }
+
+    @Override
+    public void listenToServer() {
         Thread thread = new Thread(() -> {
-            String userInput;
+            String messageFromServer;
+            UserUpdater userUpdater = new UserUpdater(currentUser);
             HandlerFactory handlerFactory = new HandlerFactory();
             try {
-                while ((userInput = in.readLine()) != null) {
-                    NotificationMessageHandler handler = handlerFactory.produce(userInput, currentUser);
+                while ((messageFromServer = in.readLine()) != null) {
+                    MessageHandler handler = handlerFactory.produce(messageFromServer, userUpdater);
                     handler.handle();
                 }
             } catch (IOException e) {
@@ -45,6 +66,7 @@ public class ServerConnection {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            System.out.println("Done listening");
         });
 
         thread.start();

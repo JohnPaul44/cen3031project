@@ -1,12 +1,16 @@
-import connection.Server;
+import connection.ServerConnectionTestDouble;
+import connection.ServerTestDouble;
 import connection.ServerConnection;
 import connection.serverMessages.*;
 import model.*;
 import org.junit.Test;
+import org.mockito.*;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.google.gson.Gson;
 
@@ -31,37 +35,29 @@ public class Tests {
     }
 
     @Test
-    public void sendRegisterMessage() throws InterruptedException {
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+    public void sendRegisterMessage() {
+        ServerTestDouble serverTestDouble = new ServerTestDouble();
+        ServerConnectionTestDouble conn = new ServerConnectionTestDouble(serverTestDouble);
 
         ActionRegisterMessage m = new ActionRegisterMessage("thead9", "bogus,", "Thomas Headley", "thead9@ufl.edu");
-        conn.getMessageSender().sendMessage(m);
-        TimeUnit.SECONDS.sleep(4);
+        conn.sendMessageToServer(m);
     }
 
     @Test
-    public void sendLogInMessage() throws InterruptedException {
-        startTestServerEcho();
-
-        ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+    public void sendLogInMessage() {
+        ServerTestDouble serverTestDouble = new ServerTestDouble();
+        ServerConnectionTestDouble conn = new ServerConnectionTestDouble(serverTestDouble);
 
         ActionLogInMessage m = new ActionLogInMessage("thead9", "bogus,");
-        conn.getMessageSender().sendMessage(m);
-        TimeUnit.SECONDS.sleep(4);
+        conn.sendMessageToServer(m);
     }
 
     @Test
     public void sendLogOutMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionLogOutMessage m = new ActionLogOutMessage();
 
@@ -70,12 +66,10 @@ public class Tests {
 
     @Test
     public void sendAddContactMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionAddContactMessage m = new ActionAddContactMessage("thead9");
 
@@ -84,12 +78,10 @@ public class Tests {
 
     @Test
     public void sendRemoveContactMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionRemoveContactMessage m = new ActionRemoveContactMessage("thead9");
 
@@ -98,12 +90,10 @@ public class Tests {
 
     @Test
     public void sendUpdateProfileMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         Profile p = new Profile("Thomas Headley", "thead9", "4074086638");
         ActionUpdateProfileMessage m = new ActionUpdateProfileMessage(p);
@@ -113,12 +103,10 @@ public class Tests {
 
     @Test
     public void sendSendMessageMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionSendMessageMessage m = new ActionSendMessageMessage(ActionSendMessageMessage.ActionSendMessageMessageType.TO, "suzy", "Hi Suzy!");
         ActionSendMessageMessage m2 = new ActionSendMessageMessage(ActionSendMessageMessage.ActionSendMessageMessageType.CONVERSATIONKEY, "51dcj", "Hi Suzy!");
@@ -129,12 +117,10 @@ public class Tests {
 
     @Test
     public void sendUpdateMessageMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionUpdateMessageMessage m = new ActionUpdateMessageMessage("14dv", "8dco", "Hello Suzy");
 
@@ -143,12 +129,10 @@ public class Tests {
 
     @Test
     public void sendAddUserToConversationMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionAddUserToConversationMessage m = new ActionAddUserToConversationMessage("thead9", "dcn4");
 
@@ -157,12 +141,10 @@ public class Tests {
 
     @Test
     public void sendRemoveUserFromConversationMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionRemoveUserFromConversationMessage m = new ActionRemoveUserFromConversationMessage("thead9", "dcn4");
 
@@ -171,12 +153,10 @@ public class Tests {
 
     @Test
     public void sendReadMessageMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionReadMessageMessage m = new ActionReadMessageMessage("thead9");
 
@@ -185,12 +165,10 @@ public class Tests {
 
     @Test
     public void sendSetTypingMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         ActionSetTypingMessage m = new ActionSetTypingMessage("thead9", true);
 
@@ -199,12 +177,10 @@ public class Tests {
 
     @Test
     public void receiveErrorMessage() {
-        CurrentUser currentUser = new CurrentUser();
-
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationErrorMessage m = new NotificationErrorMessage(5, "Error #5");
         conn.getOut().println(m.toJsonString());
@@ -215,7 +191,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage m = createLoggedInMessage();
 
@@ -228,7 +204,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
         conn.getOut().println(loggedInMessage.toJsonString());
@@ -243,7 +219,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
         conn.getOut().println(loggedInMessage.toJsonString());
@@ -261,7 +237,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -277,7 +253,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -293,7 +269,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -310,18 +286,22 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
-        UserReaction u1 = new UserReaction(new int[] {1, 6}, "thead9");
-        UserReaction u2 = new UserReaction(new int[] {5, 4}, "suzy");
+        Reactions u1 = new Reactions(new int[] {1, 6}, "thead9");
+        Reactions u2 = new Reactions(new int[] {5, 4}, "suzy");
+        Map<String, Reactions> reactions = new HashMap<>();
+        reactions.put("thead9", u1);
+        reactions.put("suzy", u2);
+
 
         // without user reactions
         //NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv3", "8cj4", "2018-03-9 03:00:22.012",
         //       "thead9", "Hello");
         NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv1", "8cj4", "2018-03-9 03:00:22.012",
-                "thead9", "Hello", new UserReaction[] {u1, u2});
+                "thead9", "Hello", reactions);
 
         conn.getOut().println(m.toJsonString());
         TimeUnit.SECONDS.sleep(4);
@@ -333,7 +313,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -341,14 +321,17 @@ public class Tests {
         Map<String, Status> memberStatus2 = new HashMap<>();
         memberStatus2.put("thead9", new Status(true, true));
         memberStatus2.put("barney", new Status(false, false));
-        UserReaction ur3 = new UserReaction(new int[] {1, 2}, "thead9");
-        UserReaction ur4 = new UserReaction(new int[] {3, 4}, "barney");
+        Reactions ur3 = new Reactions(new int[] {1, 2}, "thead9");
+        Reactions ur4 = new Reactions(new int[] {3, 4}, "barney");
+        Map<String, Reactions> reactions1 = new HashMap<>();
+        reactions1.put("thead9", ur3);
+        reactions1.put("barney", ur4);
         Message m3 = new Message("2018-01-9 03:00:21.012", "2018-01-9 03:00:22.012",
                 new String[] {"thead9", "barney"}, "8ch", "nvj4", "thead9", "hi",
-                new UserReaction[] {ur3, ur4}, true);
+                reactions1, true);
         Message m4 = new Message("2018-01-8 03:00:21.012", "2018-01-8 03:00:22.012",
                 new String[] {"thead9", "suzy"}, "888", "nvj4", "thead9", "hi",
-                new UserReaction[] {ur3, ur4}, true);
+                reactions1, true);
         HashMap<String, Message> mList2 = new HashMap<>();
         mList2.put(m3.getConversationKey(), m3);
         mList2.put(m4.getConversationKey(), m4);
@@ -366,7 +349,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage m = createLoggedInMessage();
         conn.getOut().println(m.toJsonString());
@@ -382,7 +365,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -398,7 +381,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -406,14 +389,17 @@ public class Tests {
         Map<String, Status> memberStatus1 = new HashMap<>();
         memberStatus1.put("thead9", new Status(true, true));
         memberStatus1.put("fred", new Status(false, false));
-        UserReaction ur1 = new UserReaction(new int[] {1, 2}, "thead9");
-        UserReaction ur2 = new UserReaction(new int[] {3, 4}, "suzy");
+        Reactions ur1 = new Reactions(new int[] {1, 2}, "thead9");
+        Reactions ur2 = new Reactions(new int[] {3, 4}, "suzy");
+        Map<String, Reactions> reactions1 = new HashMap<>();
+        reactions1.put("thead9", ur1);
+        reactions1.put("suzy", ur2);
         Message m1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
                 new String[] {"thead9", "suzy"}, "34f", "cn47", "thead9", "hello",
-                new UserReaction[] {ur1, ur2}, true);
+                reactions1, true);
         Message m2 = new Message("2018-02-8 03:00:21.012", "2018-02-8 03:00:22.012",
                 new String[] {"thead9", "suzy"}, "999", "cn47", "thead9", "hello",
-                new UserReaction[] {ur1, ur2}, true);
+                reactions1, true);
         HashMap<String, Message> mList1 = new HashMap<>();
         mList1.put(m1.getConversationKey(), m1);
         mList1.put(m2.getConversationKey(), m2);
@@ -433,7 +419,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -448,7 +434,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -463,7 +449,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -478,7 +464,7 @@ public class Tests {
         startTestServerEcho();
 
         ServerConnection conn = new ServerConnection();
-        conn.startListeningToServer();
+        conn.listenToServer();
 
         NotificationLoggedInMessage message = createLoggedInMessage();
         conn.getOut().println(message.toJsonString());
@@ -489,15 +475,15 @@ public class Tests {
     }
 
     private void startTestServerEcho(){
-        Thread thread = new Thread(() -> {
+        /*Thread thread = new Thread(() -> {
             try {
-                Server s = new Server();
-                s.startServerEcho();
+                ServerTestDouble s = new ServerTestDouble();
+                //s.startServerEcho();
             } catch (IOException e) {
                 System.out.println("Error starting server in test: " + e);
             }
         });
-        thread.start();
+        thread.start();*/
     }
 
     private NotificationLoggedInMessage createLoggedInMessage() {
@@ -512,14 +498,17 @@ public class Tests {
         Map<String, Status> memberStatus1 = new HashMap<>();
         memberStatus1.put("thead9", new Status(true, true));
         memberStatus1.put("suzy", new Status(false, false));
-        UserReaction ur1 = new UserReaction(new int[] {1, 2}, "thead9");
-        UserReaction ur2 = new UserReaction(new int[] {3, 4}, "suzy");
+        Reactions ur1 = new Reactions(new int[] {1, 2}, "thead9");
+        Reactions ur2 = new Reactions(new int[] {3, 4}, "suzy");
+        Map<String, Reactions> reactions1 = new HashMap<>();
+        reactions1.put("thead9", ur1);
+        reactions1.put("suzy", ur2);
         Message m1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
                 new String[] {"thead9", "suzy"}, "34f", "cn47", "thead9", "hello",
-                new UserReaction[] {ur1, ur2}, true);
+                reactions1, true);
         Message m2 = new Message("2018-02-8 03:00:21.012", "2018-02-8 03:00:22.012",
                 new String[] {"thead9", "suzy"}, "999", "cn47", "thead9", "hello",
-                new UserReaction[] {ur1, ur2}, true);
+                reactions1, true);
         HashMap<String, Message> mList1 = new HashMap<>();
         mList1.put(m1.getMessageKey(), m1);
         mList1.put(m2.getMessageKey(), m2);
@@ -528,14 +517,17 @@ public class Tests {
         Map<String, Status> memberStatus2 = new HashMap<>();
         memberStatus2.put("thead9", new Status(true, true));
         memberStatus2.put("barney", new Status(false, false));
-        UserReaction ur3 = new UserReaction(new int[] {1, 2}, "thead9");
-        UserReaction ur4 = new UserReaction(new int[] {3, 4}, "barney");
+        Reactions ur3 = new Reactions(new int[] {1, 2}, "thead9");
+        Reactions ur4 = new Reactions(new int[] {3, 4}, "barney");
+        Map<String, Reactions> reactions2 = new HashMap<>();
+        reactions2.put("thead9", ur3);
+        reactions2.put("barney", ur4);
         Message m3 = new Message("2018-01-9 03:00:21.012", "2018-01-9 03:00:22.012",
                 new String[] {"thead9", "barney"}, "m3", "nvj4", "thead9", "hi",
-                new UserReaction[] {ur3, ur4}, true);
+                reactions2, true);
         Message m4 = new Message("2018-01-8 03:00:21.012", "2018-01-8 03:00:22.012",
                 new String[] {"thead9", "suzy"}, "m4", "nvj4", "thead9", "hi",
-                new UserReaction[] {ur3, ur4}, true);
+                reactions2, true);
         HashMap<String, Message> mList2 = new HashMap<>();
         mList2.put(m3.getMessageKey(), m3);
         mList2.put(m4.getMessageKey(), m4);

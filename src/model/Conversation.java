@@ -1,6 +1,6 @@
 package model;
 
-import connection.serverMessages.NotificationMessageReceivedMessage;
+import connection.serverMessages.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,13 +59,36 @@ public class Conversation implements Comparable<Conversation> {
     public String getTime() { return time; }
     public HashMap<String, Message> getMessages() { return messages; }
 
-    public void addMessageToConversation(Message messageToAdd) throws ParseException {
-        messages.put(messageToAdd.getConversationKey(), messageToAdd);
+    public void addMessage(Message message) throws ParseException {
+        messages.put(message.getConversationKey(), message);
         Date currentConversationTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(time);
-        Date messageToAddTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(messageToAdd.getServerTime());
+        Date messageToAddTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(message.getServerTime());
         if (messageToAddTime.after(currentConversationTime)) {
-            time = messageToAdd.getServerTime();
+            time = message.getServerTime();
         }
+    }
+
+    public void updateMessage(NotificationMessageUpdatedMessage notificationMessageUpdatedMessagemessage) {
+        Message message = messages.get(notificationMessageUpdatedMessagemessage.getMessageKey());
+        message.updateMessage(notificationMessageUpdatedMessagemessage);
+    }
+
+    public void addUser(NotificationUserAddedToConversationMessage message) {
+        memberStatus.put(message.getUsername(), new Status());
+    }
+
+    public void removeUser(NotificationUserRemovedFromConversationMessage message) {
+        memberStatus.remove(message.getUsername());
+    }
+
+    public void updateRead(NotificationMessageReadMessage message) {
+        Status status = memberStatus.get(message.getFrom());
+        status.updateRead(message);
+    }
+
+    public void updateTyping(NotificationTypingMessage message) {
+        Status status = memberStatus.get(message.getFrom());
+        status.updateTyping(message);
     }
 
     @Override
