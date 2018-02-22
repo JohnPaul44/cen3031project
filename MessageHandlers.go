@@ -2,12 +2,12 @@ package main
 
 import (
 	"log"
-	"bufio"
 	"fmt"
 	"cloud.google.com/go/datastore"
+	"net"
 )
 
-type ServerMessageHandler func(*DSUser, *bufio.ReadWriter, *ServerMessage) error
+type ServerMessageHandler func(*DSUser, net.Conn, *ServerMessage) error
 
 var handlerMap = map[int]ServerMessageHandler{
 	ActionLogOut:                     handleLogOut,
@@ -22,33 +22,33 @@ var handlerMap = map[int]ServerMessageHandler{
 	ActionRemoveUserFromConversation: handleRemoveUserFromConversation,
 }
 
-func handleServerMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleServerMessage(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	handler, contains := handlerMap[message.Status]
 	if !contains {
 		rsp := new(ServerMessage)
 		e := ErrInvalidStatus
 		log.Println(e)
 		rsp.setError(e)
-		serr := sendServerMessage(bufrw, rsp)
+		serr := sendServerMessage(conn, rsp)
 		if serr != nil {
 			return serr
 		}
 		return e
 	}
-	return handler(user, bufrw, message)
+	return handler(user, conn, message)
 }
 
-func handleLogOut(user *DSUser, bufrw *bufio.ReadWriter, _ *ServerMessage) error {
+func handleLogOut(user *DSUser, conn net.Conn, _ *ServerMessage) error {
 	rsp := new(ServerMessage)
 	// connection removed in main event loop
 	rsp.Status = NotificationLoggedOut
 
 	log.Printf("%s (%s) logged out\n", user.Profile.Name, user.username)
 
-	return sendServerMessage(bufrw, rsp)
+	return sendServerMessage(conn, rsp)
 }
 
-func handleAddContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleAddContact(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
 	errStr := fmt.Sprintf("%s (%s) cannot add contact:", user.Profile.Name, user.username)
 
@@ -56,14 +56,14 @@ func handleAddContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMess
 		e := NewError("missing username", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if len(*message.Username) == 0 {
 		e := NewError("empty username", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	errStr = fmt.Sprintf("%s (%s) cannot add '%s' as a contact:", user.Profile.Name, user.username, *message.Username)
@@ -75,12 +75,12 @@ func handleAddContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMess
 			e := ErrInvalidUsername
 			log.Println(errStr, e)
 			rsp.setError(e)
-			return sendServerMessage(bufrw, rsp)
+			return sendServerMessage(conn, rsp)
 		}
 
 		log.Printf("%s %s cannot get user '%s' from datastore: %s\n", ErrorTag, errStr, user.username, err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	user.contacts = append(user.contacts, *message.Username)
@@ -94,7 +94,7 @@ func handleAddContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMess
 	return nil
 }
 
-func handleRemoveContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleRemoveContact(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
 	errStr := fmt.Sprintf("%s (%s) cannot remove contact:", user.Profile.Name, user.username)
 
@@ -102,14 +102,14 @@ func handleRemoveContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 		e := NewError("missing username", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if len(*message.Username) == 0 {
 		e := NewError("empty username", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	errStr = fmt.Sprintf("%s (%s) cannot remove user '%s' from contacts:", user.Profile.Name, user.username, *message.Username)
@@ -120,12 +120,12 @@ func handleRemoveContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 			e := ErrInvalidUsername
 			log.Println(errStr, e)
 			rsp.setError(e)
-			return sendServerMessage(bufrw, rsp)
+			return sendServerMessage(conn, rsp)
 		}
 
 		log.Println(ErrorTag, errStr, err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	user.contacts, _ = remove(user.contacts, *message.Username)
@@ -139,7 +139,7 @@ func handleRemoveContact(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 	return nil
 }
 
-func handleUpdateProfile(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
 	errStr := fmt.Sprintf("%s (%s) cannot update profile:", user.Profile.Name, user.username)
 
@@ -147,14 +147,14 @@ func handleUpdateProfile(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 		e := NewError("missing profile", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if len(message.Profile.Name) == 0 || len(message.Profile.Email) == 0 {
 		e := NewError("empty profile.name and/or profile.email", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 
@@ -165,7 +165,7 @@ func handleUpdateProfile(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 	if err != nil {
 		log.Println(ErrorTag, errStr, "cannot update profile in datastore:", err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 	rsp.clear()
 	rsp.Status = NotificationProfileUpdated
@@ -187,7 +187,7 @@ func handleUpdateProfile(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 	return nil
 }
 
-func handleSetTyping(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleSetTyping(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
 	errStr := fmt.Sprintf("%s (%s) cannot update typing status:", user.Profile.Name, user.username)
 
@@ -195,21 +195,21 @@ func handleSetTyping(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessa
 		e := NewError("missing message", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if message.Message.ConversationKey == nil || message.Message.Typing == nil {
 		e := NewError("missing message.conversationKey and/or message.typing", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if len(*message.Message.ConversationKey) == 0 {
 		e := NewError("empty message.conversationKey", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	convKey :=getConversationKey(*message.Message.ConversationKey)
@@ -218,7 +218,7 @@ func handleSetTyping(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessa
 	if err != nil {
 		log.Println(ErrorTag, errStr, err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	rsp.Status = NotificationTyping
@@ -231,7 +231,7 @@ func handleSetTyping(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessa
 	if err != nil {
 		log.Println(ErrorTag, errStr, err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	for _, member := range *members {
@@ -249,7 +249,7 @@ func handleSetTyping(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessa
 	return nil
 }
 
-func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleSendMessage(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
 	errStr := fmt.Sprintf("%s (%s) cannot send message:", user.Profile.Name, user.username)
 
@@ -257,21 +257,21 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 		e := NewError("missing Message", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if (message.Message.To == nil && message.Message.ConversationKey == nil) || message.Message.Text == nil || message.Message.ClientTime == nil {
 		e := NewError("missing message.to, message.conversationKey, message.text and/or message.clientTime", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if ((len(*message.Message.To) == 0 || len((*message.Message.To)[0]) == 0) && len(*message.Message.ConversationKey) == 0) || len(*message.Message.Text) == 0 || len(*message.Message.ClientTime) == 0 {
 		e := NewError("empty message.to, message.conversationKey, message.text and/or message.clientTime", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	isNewConversation := message.Message.ConversationKey == nil
@@ -282,7 +282,7 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 		if err == ErrInvalidConversationKey {
 			log.Println(errStr, err)
 			rsp.setError(ErrInvalidConversationKey)
-			return sendServerMessage(bufrw, rsp)
+			return sendServerMessage(conn, rsp)
 		}
 	}
 
@@ -299,7 +299,7 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 	if err != nil {
 		log.Println(ErrorTag, errStr, "could not get member statuses:", err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if isNewConversation {
@@ -325,7 +325,7 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 	for t := range conns[user.username].connections {
 		if t != user.connection.time {
 			conn := conns[user.username].connections[t]
-			err = sendServerMessage(conn.bufrw, rsp)
+			err = sendServerMessage(conn.conn, rsp)
 			if err != nil {
 				if socketClosed(err) {
 					log.Printf("socket closed for '%s'\n", user.username)
@@ -340,10 +340,10 @@ func handleSendMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 	rsp.Message.ClientTime = message.Message.ClientTime
 	log.Printf("%s (%s) sent message to: %s\n", user.Profile.Name, user.username, *message.Message.To)
 
-	return sendServerMessage(bufrw, rsp)
+	return sendServerMessage(conn, rsp)
 }
 
-func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleUpdateMessage(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
 	errStr := fmt.Sprintf("%s (%s) cannot update message:", user.Profile.Name, user.username)
 
@@ -351,21 +351,21 @@ func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 		e := NewError("missing Message", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if message.Message.ConversationKey == nil || message.Message.MessageKey == nil || message.Message.Text == nil {
 		e := NewError("missing message.conversationKey, message.messageKey and/or message.text", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if len(*message.Message.ConversationKey) == 0 || len(*message.Message.MessageKey) == 0 || len(*message.Message.Text) == 0 {
 		e := NewError("empty message.conversationKey, message.messageKey and/or message.text", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	convKey := getConversationKey(*message.Message.ConversationKey)
@@ -383,7 +383,7 @@ func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 			log.Println(ErrorTag, errStr, "cannot get message from datastore:", err)
 			rsp.setError(ErrInternalServer)
 		}
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	// ensure that the user who wrote the message is the same one trying to update it
@@ -400,7 +400,7 @@ func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 		}()), ErrorUnauthorized)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	// update message
@@ -411,7 +411,7 @@ func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 	if err != nil {
 		log.Println(ErrorTag, errStr, "cannot update Message in datastore:", err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	// get Conversation (ConversationKey) from datastore
@@ -426,7 +426,7 @@ func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 			log.Println(ErrorTag, errStr, "cannot get conversation from datastore:", err)
 			rsp.setError(ErrInternalServer)
 		}
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	// notify all users in Conversation (NotificationMessageUpdated), including the sender
@@ -440,7 +440,7 @@ func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 	if err != nil {
 		log.Println(ErrorTag, errStr, "cannot get member statuses:", err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	for member := range memberStatuses {
@@ -452,7 +452,7 @@ func handleUpdateMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerM
 	return nil
 }
 
-func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleAddUserToConversation(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
 	errStr := fmt.Sprintf("%s (%s) cannot add user to conversation:", user.Profile.Name, user.username)
 
@@ -460,21 +460,21 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 		e := NewError("missing Message", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if message.Username == nil || message.Message.ConversationKey == nil {
 		e := NewError("missing username and/or message.conversationKey", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if len(*message.Username) == 0 || len(*message.Message.ConversationKey) == 0 {
 		e := NewError("empty username and/or message.conversationKey", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	errStr = fmt.Sprintf("%s (%s) cannot add user '%s' to conversation:", user.Profile.Name, user.username, *message.Username)
@@ -488,7 +488,7 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 	if err != nil {
 		log.Println(ErrorTag, errStr, "cannot get conversation from datastore:", err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	// notify all users in Conversation
@@ -501,7 +501,7 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 	if err != nil {
 		log.Println(ErrorTag, errStr, "cannot get member statuses:", err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	for member := range memberStatuses {
@@ -517,7 +517,7 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 	if err != nil {
 		log.Println(ErrorTag, errStr, "cannot get conversation messages:", err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	(*rsp.Conversations)[0].Messages = *messages
@@ -534,7 +534,7 @@ func handleAddUserToConversation(user *DSUser, bufrw *bufio.ReadWriter, message 
 	return nil
 }
 
-func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleRemoveUserFromConversation(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
 	errStr := fmt.Sprintf("%s (%s) cannot remove user from conversation:", user.Profile.Name, user.username)
 
@@ -542,21 +542,21 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 		e := NewError("missing message and/or username", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if message.Message.ConversationKey == nil {
 		e := NewError("missing message.conversationKey", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if len(*message.Username) == 0 || len(*message.Message.ConversationKey) == 0 {
 		e := NewError("empty username and/or message.conversationKey", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	errStr = fmt.Sprintf("%s (%s) cannot remove '%s' from conversation:", user.Profile.Name, user.username, *message.Username)
@@ -570,7 +570,7 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 		}
 		log.Println(ErrorTag, errStr, err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	// notify all users in Conversation (NotificationUserRemovedFromConversation)
@@ -583,7 +583,7 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 	if err != nil {
 		log.Println(ErrorTag, errStr, err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	for _, member := range *members {
@@ -607,7 +607,7 @@ func handleRemoveUserFromConversation(user *DSUser, bufrw *bufio.ReadWriter, mes
 	return nil
 }
 
-func handleReadMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMessage) error {
+func handleReadMessage(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
 	errStr := fmt.Sprintf("%s (%s) cannot read message:", user.Profile.Name, user.username)
 
@@ -615,21 +615,21 @@ func handleReadMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 		e := NewError("missing message", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if message.Message.ConversationKey == nil {
 		e := NewError("missing message.conversationKey", ErrorMissingParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	if len(*message.Message.ConversationKey) == 0 {
 		e := NewError("empty message.conversationKey", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	convKey := getConversationKey(*message.Message.ConversationKey)
@@ -638,7 +638,7 @@ func handleReadMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 	if err != nil {
 		log.Println(ErrorTag, errStr, err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	rsp.Status = NotificationMessageRead
@@ -649,7 +649,7 @@ func handleReadMessage(user *DSUser, bufrw *bufio.ReadWriter, message *ServerMes
 	if err != nil {
 		log.Println(ErrorTag, errStr, err)
 		rsp.setError(ErrInternalServer)
-		return sendServerMessage(bufrw, rsp)
+		return sendServerMessage(conn, rsp)
 	}
 
 	// notify members, including the sender

@@ -9,6 +9,8 @@ import (
 	"cloud.google.com/go/datastore"
 	"time"
 	"io"
+	"encoding/json"
+	"net"
 )
 
 const ProjectID = "cen3031-192414"
@@ -31,7 +33,7 @@ func register(user *DSUser, message *ServerMessage) error {
 		log.Println(errStr, e)
 		rsp.setError(e)
 
-		serr := sendServerMessage(user.connection.bufrw, rsp)
+		serr := sendServerMessage(user.connection.conn, rsp)
 		if serr != nil {
 			return serr
 		}
@@ -43,7 +45,7 @@ func register(user *DSUser, message *ServerMessage) error {
 		log.Println(errStr, e)
 		rsp.setError(e)
 
-		serr := sendServerMessage(user.connection.bufrw, rsp)
+		serr := sendServerMessage(user.connection.conn, rsp)
 		if serr != nil {
 			return serr
 		}
@@ -63,7 +65,7 @@ func register(user *DSUser, message *ServerMessage) error {
 			rsp.setError(ErrInternalServer)
 		}
 
-		serr := sendServerMessage(user.connection.bufrw, rsp)
+		serr := sendServerMessage(user.connection.conn, rsp)
 		if serr != nil {
 			return serr
 		}
@@ -85,7 +87,7 @@ func logIn(user *DSUser, message *ServerMessage) error {
 		log.Println(errStr, e)
 		rsp.setError(e)
 
-		err := sendServerMessage(user.connection.bufrw, rsp)
+		err := sendServerMessage(user.connection.conn, rsp)
 		if err != nil {
 			return err
 		}
@@ -97,7 +99,7 @@ func logIn(user *DSUser, message *ServerMessage) error {
 		log.Println(errStr, e)
 		rsp.setError(e)
 
-		err := sendServerMessage(user.connection.bufrw, rsp)
+		err := sendServerMessage(user.connection.conn, rsp)
 		if err != nil {
 			return err
 		}
@@ -135,8 +137,6 @@ func updateOnlineStatus(user *DSUser, online bool) {
 		sendServerMessageToUser(contact, msg)
 	}
 
-	log.Printf("user object: %+v", *user)
-
 	log.Printf("%s (%s) is %s\n", user.Profile.Name, user.username, func() string {
 		if online {
 			return "online"
@@ -155,6 +155,39 @@ func remove(s []string, r string) ([]string, bool) {
 	return s, false
 }
 
+func getServerMessage(conn net.Conn, message *ServerMessage) error {
+	err := json.NewDecoder(conn).Decode(message)
+	if err != nil {
+		log.Println("cannot decode JSON message:", err)
+	}
+	return nil
+}
+
+func sendServerMessage(conn net.Conn, message *ServerMessage) error {
+	err := json.NewEncoder(conn).Encode(message)
+	if err != nil {
+		log.Println(ErrorTag, "cannot encode JSON message:", err)
+		return err
+	}
+	return nil
+}
+
+func sendServerMessageToUser(username string, message *ServerMessage) {
+	_, contains := conns[username]
+	if contains {
+		for _, conn := range conns[username].connections {
+			err := sendServerMessage(conn.conn, message)
+			if err != nil {
+				if socketClosed(err) {
+					log.Printf("socket closed for '%s'\n", username)
+				} else {
+					log.Println(ErrorTag, "error sending message to client:", err)
+				}
+			}
+		}
+	}
+}
+
 func handleConnect(w http.ResponseWriter, _ *http.Request) {
 	hj, ok := w.(http.Hijacker)
 	if !ok {
@@ -162,13 +195,13 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 
-	s, bufrw, err := hj.Hijack()
+	conn, _, err := hj.Hijack()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	defer s.Close()
+	defer conn.Close()
 
 	var loggedIn bool
 	sockClosed := false
@@ -180,10 +213,10 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		msg := new(ServerMessage)
 		for !loggedIn {
 			// first message received is either Login or Register
-			err = getServerMessage(bufrw, msg)
+			err = getServerMessage(conn, msg)
 			if err != nil {
 				log.Println("cannot get message from client:", err)
-				err = sendServerMessage(bufrw, rsp)
+				err = sendServerMessage(conn, rsp)
 				if socketClosed(err) {
 					sockClosed = true
 					break
@@ -191,7 +224,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 
 				// if the socket is still open, the only other errors result from invalid JSON
 				rsp.setError(ErrInvalidJSON)
-				err = sendServerMessage(bufrw, rsp)
+				err = sendServerMessage(conn, rsp)
 				if socketClosed(err) {
 					sockClosed = true
 					break
@@ -221,7 +254,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				e := NewError("not logged in", ErrorUnauthorized)
 				log.Println("cannot perform action:", e)
 				rsp.setError(e)
-				serr := sendServerMessage(bufrw, rsp)
+				serr := sendServerMessage(conn, rsp)
 				sockClosed = socketClosed(serr)
 				break
 			}
@@ -240,7 +273,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		// add connection to connections map
 		connection := new(Connection)
 		connection.time = time.Now()
-		connection.bufrw = bufrw
+		connection.conn = conn
 		usr.connection = connection
 		conns.add(usr)
 
@@ -254,18 +287,20 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		}
 		rsp.Conversations, err = getConversations(usr)
 		if err != nil {
+			log.Println(ErrorTag, "cannot get conversations:", err)
 			break
 		}
 
 		// return logged in message with user information
-		err = sendServerMessage(bufrw, rsp)
+		err = sendServerMessage(conn, rsp)
 		if err != nil {
+			log.Println(ErrorTag, "cannot send response to client:", err)
 			break
 		}
 
 		// event loop
 		for loggedIn && !sockClosed {
-			err = getServerMessage(bufrw, msg)
+			err = getServerMessage(conn, msg)
 			if err != nil {
 				if socketClosed(err) {
 					sockClosed = true
@@ -276,7 +311,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				continue
 			}
 
-			err = handleServerMessage(usr, bufrw, msg)
+			err = handleServerMessage(usr, conn, msg)
 			if err != nil {
 				if socketClosed(err) {
 					sockClosed = true

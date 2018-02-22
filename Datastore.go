@@ -143,8 +143,6 @@ func getUserAccount(username string) (*DSUser, error) {
 
 	user.username = username
 
-	log.Printf("got user account: %+v\n", user)
-
 	return user, nil
 }
 
@@ -556,7 +554,7 @@ func getConversations(user *DSUser) (*[]Conversation, error) {
 		*conversations = append(*conversations, conversation)
 	}
 
-	if err != iterator.Done {
+	if err != nil && err != iterator.Done {
 		log.Println(ErrorTag, errStr, "cannot get conversation from datastore:", err)
 		return nil, err
 	}

@@ -1,18 +1,18 @@
 package main
 
 import (
-	"bufio"
 	"time"
 	"sync"
+	"net"
 )
 
 type Connection struct {
-	bufrw        *bufio.ReadWriter 	// interface for reading and writing to the connection
-	time         time.Time         	// time that the connection was established (used for differentiating different connections with same username)
+	conn net.Conn  // interface for reading and writing to the connection
+	time time.Time // time that the connection was established (used for differentiating different connections with same username)
 }
 
 type UserConnection struct {
-	profile *Profile
+	profile     *Profile
 	connections map[time.Time]*Connection
 }
 

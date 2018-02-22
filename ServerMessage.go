@@ -2,9 +2,6 @@ package main
 
 import (
 	"time"
-	"bufio"
-	"encoding/json"
-	"log"
 )
 
 type Reactions int
@@ -140,37 +137,3 @@ const (
 	ActionReadMessage                = iota // requires ConversationKey
 	ActionSetTyping                  = iota // requires Message.ConversationKey, Message.Typing
 )
-
-func getServerMessage(bufrw *bufio.ReadWriter, message *ServerMessage) error {
-	err := json.NewDecoder(bufrw).Decode(message)
-	if err != nil {
-		log.Println("cannot decode JSON message:", err)
-	}
-	return nil
-}
-
-func sendServerMessage(bufrw *bufio.ReadWriter, message *ServerMessage) error {
-	bytes, err := json.Marshal(message)
-	if err != nil {
-		log.Println(ErrorTag, "cannot encode JSON message:", err)
-		return err
-	}
-	_, err = bufrw.Write(bytes)
-	return err
-}
-
-func sendServerMessageToUser(username string, message *ServerMessage) {
-	_, contains := conns[username]
-	if contains {
-		for _, conn := range conns[username].connections {
-			err := sendServerMessage(conn.bufrw, message)
-			if err != nil {
-				if socketClosed(err) {
-					log.Printf("socket closed for '%s'\n", username)
-				} else {
-					log.Println(ErrorTag, "error sending message to client:", err)
-				}
-			}
-		}
-	}
-}
