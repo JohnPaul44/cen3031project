@@ -1,6 +1,6 @@
 package connection.serverMessages;
 
-public class ActionUpdateMessageMessage extends ServerMessage{
+public class ActionUpdateMessageMessage extends ActionServerMessage{
     private String conversationKey;
     private String messageKey;
     private String text;

@@ -4,7 +4,7 @@ import model.Reactions;
 
 import java.util.Map;
 
-public class ActionReactToMessage extends ServerMessage{
+public class ActionReactToMessage extends ActionServerMessage{
     private String conversationKey;
     private String messageKey;
     private Map<String, Reactions> reactions;

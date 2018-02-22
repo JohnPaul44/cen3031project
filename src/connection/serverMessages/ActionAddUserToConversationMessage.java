@@ -1,6 +1,6 @@
 package connection.serverMessages;
 
-public class ActionAddUserToConversationMessage extends ServerMessage {
+public class ActionAddUserToConversationMessage extends ActionServerMessage {
     private String username;
     private String conversationKey;
 

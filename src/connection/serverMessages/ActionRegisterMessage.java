@@ -1,6 +1,6 @@
 package connection.serverMessages;
 
-public class ActionRegisterMessage extends ServerMessage{
+public class ActionRegisterMessage extends ActionServerMessage{
     private String username;
     private String password;
     private String name;
