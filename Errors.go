@@ -38,6 +38,7 @@ const ErrorTag = "ERROR:"
 var (
 	ErrInternalServer         = NewError("internal server error", ErrorInternalServer)
 	ErrInvalidJSON            = NewError("invalid JSON", ErrorInvalidJSON)
+	ErrUnauthorized           = NewError("unauthorized", ErrorUnauthorized)
 	ErrExistingAccount        = NewError("account already exists", ErrorExistingAccount)
 	ErrMissingParameter       = NewError("missing parameter", ErrorMissingParameter)
 	ErrEmptyParameter         = NewError("empty parameter", ErrorEmptyParameter)

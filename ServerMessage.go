@@ -7,28 +7,47 @@ import (
 	"log"
 )
 
+type Reactions int
+
+const (
+	ReactionExclamation Reactions = 1 << iota
+	ReactionQuestion              = 1 << iota
+	ReactionHeart                 = 1 << iota
+	ReactionThumbsUp              = 1 << iota
+	ReactionThumbsDown            = 1 << iota
+)
+
+func (r *Reactions) clear() {
+	*r = 0
+}
+
+func (r *Reactions) set(reaction Reactions) {
+	*r |= reaction
+}
+
 type UserReaction struct {
-	Reactions []int  `json:"type"`
-	User      string `json:"user"`
+	Reactions Reactions `json:"type"`
+	User      string    `json:"user"`
 }
 
 type Message struct {
-	ServerTime      *time.Time      `json:"serverTime,omitempty"`
-	ClientTime      *string         `json:"clientTime,omitempty"`
-	To              *[]string       `json:"to,omitempty"`
-	MessageKey      *string         `json:"messageKey,omitempty"`
-	ConversationKey *string         `json:"conversationKey,omitempty"`
-	From            *string         `json:"from,omitempty"`
-	Text            *string         `json:"text,omitempty"`
-	Reactions       *[]UserReaction `json:"reactions,omitempty"`
-	Typing          *bool           `json:"typing,omitempty"`
+	ServerTime      *time.Time            `json:"serverTime,omitempty"`
+	ClientTime      *string               `json:"clientTime,omitempty"`
+	To              *[]string             `json:"to,omitempty"`
+	MessageKey      *string               `json:"messageKey,omitempty"`
+	ConversationKey *string               `json:"conversationKey,omitempty"`
+	From            *string               `json:"from,omitempty"`
+	Text            *string               `json:"text,omitempty"`
+	Reactions       *map[string]Reactions `json:"reactions,omitempty"`
+	Typing          *bool                 `json:"typing,omitempty"`
 }
 
 type Status struct {
-	Read   bool `json:"read"`
-	Typing bool `json:"typing"`
+	Read   bool `json:"read",datastore:"Read"`
+	Typing bool `json:"typing",datastore:"Typing"`
 }
 
+// TODO: add Created time variable and rename Time to LastMessage
 type Conversation struct {
 	Time            time.Time         `json:"time"`
 	MemberStatus    map[string]Status `json:"memberStatus"`
@@ -42,17 +61,18 @@ type Contact struct {
 }
 
 const (
-	GenderFemale = iota
-	GenderMale   = iota
-	GenderOther  = iota
+	GenderUnknown = "Unknown"
+	GenderFemale  = "Female"
+	GenderMale    = "Male"
+	GenderOther   = "Other"
 )
 
 type Profile struct {
-	Name   string  `json:"name"`
-	Email  string  `json:"email"`
-	Phone  *string `json:"phone,omitempty"`
-	Gender *int    `json:"gender,omitempty"`
-	Age	   *int		`json:"age,omitempty"`
+	Name     string `json:"name",datastore:"Name"`
+	Email    string `json:"email",datastore:"Email"`
+	Phone    string `json:"phone,omitempty",datastore:"Phone,omitempty"`
+	Gender   string `json:"gender,omitempty",datastore:"Gender,omitempty"`
+	Birthday string `json:"birthday,omitempty",datastore:"Birthday,omitempty"`
 }
 
 type ServerMessage struct {
@@ -88,28 +108,20 @@ func (msg *ServerMessage) setError(err ServerError) {
 }
 
 const (
-	ReactionExclamation = iota
-	ReactionQuestion    = iota
-	ReactionHeart       = iota
-	ReactionThumbsUp    = iota
-	ReactionThumbsDown  = iota
-)
-
-const (
 	// Default status
 	StatusUninitialized = iota
 
 	// Notifications are sent to devices
 	NotificationError                       = iota // returns ErrorNumber and ErrorString
-	NotificationLoggedIn                    = iota // returns Username, Profile, Contacts, Conversations
+	NotificationLoggedIn                    = iota // returns Username, Profile, Contacts, ConversationKeys
 	NotificationUserOnlineStatus            = iota // returns Online, Username
 	NotificationLoggedOut                   = iota // session has ended, returns nothing
 	NotificationContactAdded                = iota // returns Username
 	NotificationContactRemoved              = iota // returns Username
 	NotificationProfileUpdated              = iota // returns Profile
-	NotificationMessageReceived             = iota // returns Message.[ConversationKey, MessageKey, ServerTime, From, Text (, Reactions)] (Message is embedded in Conversations if it is the first message in a conversation)
+	NotificationMessageReceived             = iota // returns Message.[ConversationKey, MessageKey, ServerTime, From, Text (, Reactions)] (Message is embedded in ConversationKeys if it is the first message in a conversation)
 	NotificationMessageUpdated              = iota // returns Message.[ConversationKey, MessageKey, Text]
-	NotificationUserAddedToConversation     = iota // returns Username, Message.ConversationKey (, Message.Conversations (returned only to new user))
+	NotificationUserAddedToConversation     = iota // returns Username, Message.ConversationKey (, Message.ConversationKeys (returned only to new user))
 	NotificationUserRemovedFromConversation = iota // returns Username, Message.ConversationKey
 	NotificationMessageRead                 = iota // returns Message.[ConversationKey, From]
 	NotificationTyping                      = iota // returns Message.[ConversationKey, From, Typing]

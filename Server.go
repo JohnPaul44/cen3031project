@@ -7,7 +7,6 @@ import (
 	"log"
 	"context"
 	"cloud.google.com/go/datastore"
-	"golang.org/x/crypto/bcrypt"
 	"time"
 	"io"
 )
@@ -53,51 +52,16 @@ func register(user *DSUser, message *ServerMessage) error {
 
 	errStr = fmt.Sprintf("cannot register %s as '%s':", message.Profile.Name, *message.Username)
 
-	userKey := usernameStringToKey(*message.Username)
-	err := client.Get(c, userKey, user)
-	if err == nil {
-		// user account already exists
-		e := NewError(fmt.Sprintf("username '%s' is already taken", *message.Username), ErrorExistingAccount)
-		log.Println(errStr, e)
-		rsp.setError(e)
-
-		serr := sendServerMessage(user.connection.bufrw, rsp)
-		if serr != nil {
-			return serr
-		}
-		return ErrExistingAccount
-	}
-
-	if err != datastore.ErrNoSuchEntity {
-		log.Println(ErrorTag, errStr, "cannot determine if user already exists:", err)
-		rsp.setError(ErrInternalServer)
-
-		serr := sendServerMessage(user.connection.bufrw, rsp)
-		if serr != nil {
-			return serr
-		}
-		return err
-	}
-
 	// create account
-	user.username = *message.Username
-	user.Profile = *message.Profile
-	user.PassHash, err = bcrypt.GenerateFromPassword([]byte(*message.Password), 10)
+	user, err := createUserAccount(*message.Username, *message.Password, *message.Profile)
 	if err != nil {
-		log.Println(ErrorTag, errStr, "cannot generate password hash:", err)
-		rsp.setError(ErrInternalServer)
-
-		serr := sendServerMessage(user.connection.bufrw, rsp)
-		if serr != nil {
-			return serr
+		if err == ErrExistingAccount {
+			log.Println(ErrorTag, errStr, "account already exists")
+			rsp.setError(ErrExistingAccount)
+		} else {
+			log.Println(ErrorTag, errStr, err)
+			rsp.setError(ErrInternalServer)
 		}
-		return err
-	}
-
-	_, err = client.Put(c, userKey, user)
-	if err != nil {
-		log.Println(ErrorTag, errStr, "cannot add user to datastore:", err)
-		rsp.setError(ErrInternalServer)
 
 		serr := sendServerMessage(user.connection.bufrw, rsp)
 		if serr != nil {
@@ -142,46 +106,20 @@ func logIn(user *DSUser, message *ServerMessage) error {
 
 	errStr = fmt.Sprintf("cannot log in as '%s':", *message.Username)
 
-	userKey := usernameStringToKey(*message.Username)
-	err := client.Get(c, userKey, user)
+	user, err := getUserAccountAuthenticated(*message.Username, *message.Password)
 	if err != nil {
-		if err == datastore.ErrNoSuchEntity {
-			// user doesn't exist
-			log.Println(errStr, ErrInvalidUsername)
-			rsp.setError(ErrInvalidLogin)
-			rsp.Username = message.Username
-
-			serr := sendServerMessage(user.connection.bufrw, rsp)
-			if serr != nil {
-				return serr
-			}
-			return ErrInvalidUsername
-		}
-
-		log.Println(ErrorTag, errStr, "cannot get user from datastore:", err)
-		rsp.setError(ErrInternalServer)
-
-		serr := sendServerMessage(user.connection.bufrw, rsp)
-		if serr != nil {
-			return serr
-		}
-		return err
-	}
-
-	err = bcrypt.CompareHashAndPassword(user.PassHash, []byte(*message.Password))
-	if err != nil {
-		// invalid password
-		log.Println(errStr, ErrInvalidPassword)
-		rsp.setError(ErrInvalidLogin)
-
-		serr := sendServerMessage(user.connection.bufrw, rsp)
-		if serr != nil {
-			return serr
-		}
 		return err
 	}
 
 	user.username = *message.Username
+
+	contacts, err := getContacts(user)
+	if err != nil {
+		log.Println(ErrorTag, errStr, "cannot get contacts:", err)
+	} else {
+		user.contacts = *contacts
+	}
+
 	log.Printf("%s (%s) logged in\n", user.Profile.Name, user.username)
 
 	return nil
@@ -195,7 +133,7 @@ func updateOnlineStatus(user *DSUser, online bool) {
 	msg.Username = &user.username
 
 	// send notification to online contacts
-	for _, contact := range user.Contacts {
+	for _, contact := range user.contacts {
 		sendServerMessageToUser(contact, msg)
 	}
 
@@ -310,7 +248,10 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		rsp.Status = NotificationLoggedIn
 		rsp.Username = &usr.username
 		rsp.Profile = &usr.Profile
-		rsp.Contacts = getContacts(usr)
+		rsp.Contacts = new([]Contact)
+		for _, contact := range usr.contacts {
+			*rsp.Contacts = append(*rsp.Contacts, Contact{Username:contact, Online:conns.contains(contact)})
+		}
 		rsp.Conversations, err = getConversations(usr)
 		if err != nil {
 			break
