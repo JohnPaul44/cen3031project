@@ -128,6 +128,19 @@ public class Tests {
     }
 
     @Test
+    public void sendReactToMessage() {
+        ServerTestDouble serverTestDouble = new ServerTestDouble();
+        ServerConnectionTestDouble serverConnectionTestDouble = new ServerConnectionTestDouble(serverTestDouble);
+
+        Reactions r1 = new Reactions(new int[]{1, 2}, "thead9");
+        Map<String, Reactions> reactions = new HashMap<>();
+        reactions.put("thead9", r1);
+
+        ActionReactToMessage m = new ActionReactToMessage("kcnd", "ngkc", reactions);
+        serverConnectionTestDouble.sendMessageToServer(m);
+    }
+
+    @Test
     public void sendAddUserToConversationMessage() {
         startTestServerEcho();
 
