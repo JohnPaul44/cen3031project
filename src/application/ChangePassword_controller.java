@@ -1,7 +1,6 @@
 package application;
 
 //S Eboli
-//testing
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
