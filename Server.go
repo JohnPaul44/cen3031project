@@ -297,6 +297,10 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 	log.Println("Socket closed")
 }
 
+func handleHome(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("<H1>System.Out.Chat()</H1>"))
+}
+
 var c = context.Background()
 var client *datastore.Client
 
@@ -308,7 +312,8 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/connect", handleConnect).Methods("GET")
+	r.HandleFunc("/", handleHome)
+	r.HandleFunc("/connect", handleConnect).Methods("GET") // "GET /connect HTTP/1.0\r\n\r\n"
 
 	log.Println("Server started")
 	log.Fatal(http.ListenAndServe(":8675", r))
