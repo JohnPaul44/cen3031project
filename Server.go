@@ -111,8 +111,6 @@ func logIn(user *DSUser, message *ServerMessage) error {
 		return err
 	}
 
-	user.username = *message.Username
-
 	contacts, err := getContacts(user)
 	if err != nil {
 		log.Println(ErrorTag, errStr, "cannot get contacts:", err)
@@ -136,6 +134,8 @@ func updateOnlineStatus(user *DSUser, online bool) {
 	for _, contact := range user.contacts {
 		sendServerMessageToUser(contact, msg)
 	}
+
+	log.Printf("user object: %+v", *user)
 
 	log.Printf("%s (%s) is %s\n", user.Profile.Name, user.username, func() string {
 		if online {

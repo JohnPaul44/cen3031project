@@ -143,6 +143,8 @@ func getUserAccount(username string) (*DSUser, error) {
 
 	user.username = username
 
+	log.Printf("got user account: %+v\n", user)
+
 	return user, nil
 }
 
