@@ -237,6 +237,15 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				if err != nil {
 					log.Println("cannot log user in:", err)
 					sockClosed = socketClosed(err)
+					if !sockClosed {
+						if err == ErrInvalidUsername || err == ErrInvalidPassword {
+							rsp.setError(ErrInvalidLogin)
+						} else {
+							rsp.setError(ErrInternalServer)
+						}
+						err = sendServerMessage(conn, rsp)
+						sockClosed = socketClosed(err)
+					}
 					break
 				}
 				loggedIn = true
@@ -244,7 +253,17 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 			case ActionRegister:
 				err = register(usr, msg)
 				if err != nil {
+					log.Println("cannot register user:", err)
 					sockClosed = socketClosed(err)
+					if !sockClosed {
+						if err == ErrExistingAccount {
+							rsp.setError(ErrExistingAccount)
+						} else {
+							rsp.setError(ErrInternalServer)
+						}
+						err = sendServerMessage(conn, rsp)
+						sockClosed = socketClosed(err)
+					}
 					break
 				}
 				loggedIn = true
