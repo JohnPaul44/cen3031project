@@ -80,6 +80,15 @@ public class login_controller {
 	
 	@FXML
 	public void ChangePassEvent(ActionEvent event) throws Exception{
+		
+		if(username.getText().equals("")) {
+			status.setText("Please input your username");
+			return;
+		}
+		
+		//check the username is in the database
+		//if the username is not valid, stay on screen. return;
+		
 		//opens a new window where a user can change their password
 		Stage changeStage = new Stage();
 		Parent root = FXMLLoader.load(getClass().getResource("/application/changePass.fxml")); //loads the window
