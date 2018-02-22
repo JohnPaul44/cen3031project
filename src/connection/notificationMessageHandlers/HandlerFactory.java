@@ -29,6 +29,7 @@ public class HandlerFactory {
             case 11: // User Removed from Conversation Notification
             case 12: // Message Read Notification
             case 13: // Typing Notification
+                System.out.println("Message received from server with status: " + status);
                 return new ModelUpdateMessageHandler(messageFromServer, userUpdater);
             case 14: // Register Action
             case 15: // Log In Action
