@@ -58,8 +58,8 @@ func (conns *Connections) remove(user *DSUser) {
 	}
 }
 
-func (conns *Connections) updateProfile(user *DSUser, profile *Profile) {
+func (conns *Connections) updateProfile(user *DSUser, profile Profile) {
 	connsMutex.Lock()
-	(*conns)[user.username] = UserConnection{profile, (*conns)[user.username].connections}
+	(*conns)[user.username] = UserConnection{&profile, (*conns)[user.username].connections}
 	connsMutex.Unlock()
 }
