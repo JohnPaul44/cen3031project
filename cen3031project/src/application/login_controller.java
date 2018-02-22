@@ -87,5 +87,8 @@ public class login_controller {
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		changeStage.setScene(scene);
 		changeStage.show();
+		
+		//closes the login screen when the home screen pops up
+		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
 	}
 }
