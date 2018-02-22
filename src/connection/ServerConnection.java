@@ -13,7 +13,6 @@ public class ServerConnection implements IServerConnection{
     private PrintWriter out;
     private BufferedReader in;
     private CurrentUser currentUser;
-    private MessageSender messageSender;
 
     public ServerConnection() {
         this.currentUser = new CurrentUser();
@@ -21,7 +20,6 @@ public class ServerConnection implements IServerConnection{
             Socket socket = new Socket(Server.hostname, Server.portNumber);
             this.out = new PrintWriter(socket.getOutputStream(), true);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.messageSender = new MessageSender(out);
         } catch(IOException e) {
             System.out.println("Error while creating connection to server");
         }
@@ -31,7 +29,6 @@ public class ServerConnection implements IServerConnection{
         return out;
     }
     public CurrentUser getCurrentUser() { return currentUser; }
-    public MessageSender getMessageSender() { return messageSender; }
 
     public void sendMessageToServer(ServerMessage serverMessage) {
         out.println(serverMessage.toJsonString());

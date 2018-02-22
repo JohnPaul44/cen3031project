@@ -50,7 +50,7 @@ public class Tests {
         conn.listenToServer();
 
         ActionLogInMessage m = new ActionLogInMessage("thead9", "bogus,");
-        conn.getMessageSender().sendMessage(m);
+        conn.sendMessageToServer(m);
         TimeUnit.SECONDS.sleep(4);
     }
 
