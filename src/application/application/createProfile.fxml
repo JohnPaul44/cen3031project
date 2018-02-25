@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8">
+   <children>
+      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="26.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../../Desktop/Screen%20Shot%202018-02-22%20at%2011.22.44%20AM.png" />
+         </image>
+      </ImageView>
+      <Label layoutX="80.0" layoutY="183.0" text="USERNAME" />
+      <TextArea layoutX="20.0" layoutY="259.0" prefHeight="117.0" prefWidth="226.0" promptText="Bio" />
+      <TextField layoutX="19.0" layoutY="222.0" prefHeight="27.0" prefWidth="226.0" promptText="What's on your mind?" />
+      <Label layoutX="617.0" layoutY="14.0" text="Edit Mode" />
+      <TextField fx:id="name" layoutX="267.0" layoutY="56.0" prefHeight="20.0" prefWidth="200.0" promptText="First Name Last Name">
+         <font>
+            <Font size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="email" layoutX="267.0" layoutY="86.0" prefHeight="20.0" prefWidth="200.0" promptText="Email">
+         <font>
+            <Font size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="phone" layoutX="267.0" layoutY="118.0" prefHeight="20.0" prefWidth="200.0" promptText="Phone #">
+         <font>
+            <Font size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="gender" layoutX="267.0" layoutY="149.0" prefHeight="20.0" prefWidth="200.0" promptText="Gender">
+         <font>
+            <Font size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="dob" layoutX="267.0" layoutY="180.0" prefHeight="20.0" prefWidth="200.0" promptText="DOB (Age)">
+         <font>
+            <Font size="12.0" />
+         </font>
+      </TextField>
+      <Label layoutX="516.0" layoutY="50.0" prefHeight="36.0" prefWidth="144.0" text="Chat Statistics and Game Scores" textAlignment="CENTER" wrapText="true" />
+      <Label layoutX="267.0" layoutY="227.0" text="Interests">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>
