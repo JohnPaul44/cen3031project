@@ -15,7 +15,7 @@
       <Label layoutX="57.0" layoutY="29.0" text="System.out.chat()" textFill="#fbfaf9" />
       <AnchorPane layoutX="199.0" layoutY="17.0" prefHeight="366.0" prefWidth="442.0" style="-fx-background-color: #E7DECD; -fx-border-color: #804E49; -fx-border-width: 6;">
          <children>
-            <Button fx:id="changeButton" layoutX="90.0" layoutY="307.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="244.0" style="-fx-background-color: #698F3F;" text="Change Password" textFill="#fbfaf9" visible="false">
+            <Button fx:id="changeButton" layoutX="90.0" layoutY="307.0" mnemonicParsing="false" onAction="#changePassword" onKeyPressed="#changePasswordEventKey" prefHeight="27.0" prefWidth="244.0" style="-fx-background-color: #698F3F;" text="Change Password" textFill="#fbfaf9" visible="false">
                <effect>
                   <Reflection />
                </effect>
@@ -57,12 +57,12 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <PasswordField fx:id="newPass" layoutX="90.0" layoutY="230.0" prefHeight="27.0" prefWidth="244.0" promptText="New Password" visible="false">
+            <PasswordField fx:id="newPass" layoutX="90.0" layoutY="230.0" onKeyPressed="#changePasswordEventKey" prefHeight="27.0" prefWidth="244.0" promptText="New Password" visible="false">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </PasswordField>
-            <PasswordField fx:id="confPass" focusTraversable="false" layoutX="90.0" layoutY="265.0" prefHeight="27.0" prefWidth="244.0" promptText="Confirm Password" visible="false">
+            <PasswordField fx:id="confPass" layoutX="90.0" layoutY="265.0" onKeyPressed="#changePasswordEventKey" prefHeight="27.0" prefWidth="244.0" promptText="Confirm Password" visible="false">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>

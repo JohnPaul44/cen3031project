@@ -63,7 +63,7 @@ public class ChangePassword_controller {
 		registerStage.setScene(scene);
 		registerStage.show();
 		
-		//closes the login screen when the home screen pops up
+		//closes the change password screen when the home screen pops up
 		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
     }
 	
@@ -110,12 +110,27 @@ public class ChangePassword_controller {
 	@FXML
 	public void changePassword(ActionEvent event) throws Exception{
 		//check that the two passwords match
-		if(confPassword()) {
-			//send the information to the database
+		if(!confPassword()) {
+			return;
 		}
+		//send the information to the database
 		
-		//reopens the main login screen
-		BackButton(event);
+		//opens confirmation screen
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(getClass().getResource("/application/changePassConf.fxml"));
+		loader.load();
+		
+		//creates instance of the change password controller
+		//passes the username to the confirmation screen
+		ChangePassConf_controller conf = loader.getController();
+		conf.setUsername(username.getText());
+		
+		Parent root = loader.getRoot();
+		Stage changeStage = new Stage();
+		Scene scene = new Scene(root,250,200);
+		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		changeStage.setScene(scene);
+		changeStage.show();
 	}
 	
 	@FXML
@@ -143,5 +158,9 @@ public class ChangePassword_controller {
 			return false;
 		}
 		return true;
+	}
+	
+	public void close(ActionEvent event) {
+		
 	}
 }

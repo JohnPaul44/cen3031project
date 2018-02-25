@@ -104,7 +104,6 @@ public class login_controller {
 		//creates instance of the change password controller
 		//passes the username to the change password screen
 		ChangePassword_controller pass = loader.getController();
-		System.out.println(username.getText());
 		pass.setUsername(username.getText());
 		
 		Parent root = loader.getRoot();
