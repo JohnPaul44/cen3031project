@@ -21,9 +21,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+import javax.xml.soap.Text;
+
 public class Register_controller {
 
     ObservableList<String> genderFieldList = FXCollections.observableArrayList("Male", "Female", "N/A (Optional)");
+    ObservableList<String> securityQuestionList = FXCollections.observableArrayList("<Security Questions>", "What is your mother's maiden name?", "What was the name of your first pet?", "What was your high school mascot?");
 
 
     //Fields on the Register Screen
@@ -51,6 +54,10 @@ public class Register_controller {
     private Button backButton;
     @FXML
     private Label status;
+    @FXML
+    private ChoiceBox securityQuestion;
+    @FXML
+    private TextField securityQuestionAnswer;
 
     //overrides so the enter key allows the user to register
     public void registerEnterKey(KeyEvent keyEvent) throws Exception{
@@ -73,6 +80,8 @@ public class Register_controller {
         System.out.println("Phone #: " + phoneNumber());
         System.out.println("Gender: " + gender());
         System.out.println("Birthday: " + birthDay());
+        System.out.println("Security Question: " + securityQuestion());
+        System.out.println("Security Answer: " + securityAnswer());
         
         //error checking for empty fields
         if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("")) { 	
@@ -180,11 +189,23 @@ public class Register_controller {
         return gender;
     }
 
+    private String securityQuestion() {
+        String securityQues = (String) securityQuestion.getValue();
+        return securityQues;
+    }
+
+    private String securityAnswer(){
+        String securityAns = securityQuestionAnswer.getText();
+        return securityAns;
+    }
+
     @FXML
     private void initialize(){
         //Sets initial value in the drop down
         genderField.setValue("N/A (Optional)");
         genderField.setItems(genderFieldList);
+        securityQuestion.setValue("<Security Questions>");
+        securityQuestion.setItems(securityQuestionList);
     }
 
     private String birthDay () {        //TODO: link birthDay(string) to server
