@@ -13,7 +13,7 @@ public class Main extends Application {
 		try {
 			//opens the login window on start up
 			Parent root = FXMLLoader.load(getClass().getResource("/application/login.fxml"));
-			Scene scene = new Scene(root,700,400);
+			Scene scene = new Scene(root,700,500);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();

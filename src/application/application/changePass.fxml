@@ -9,11 +9,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane focusTraversable="true" prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ChangePassword_controller">
+<AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ChangePassword_controller">
    <children>
       <Button fx:id="backButton" layoutX="14.0" layoutY="24.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #698F3F;" text="&lt;" textFill="#fbfaf9" />
       <Label layoutX="57.0" layoutY="29.0" text="System.out.chat()" textFill="#fbfaf9" />
-      <AnchorPane layoutX="199.0" layoutY="17.0" prefHeight="366.0" prefWidth="442.0" style="-fx-background-color: #E7DECD; -fx-border-color: #804E49; -fx-border-width: 6;">
+      <AnchorPane layoutX="201.0" layoutY="67.0" prefHeight="366.0" prefWidth="442.0" style="-fx-background-color: #E7DECD; -fx-border-color: #804E49; -fx-border-width: 6;">
          <children>
             <Button fx:id="changeButton" layoutX="90.0" layoutY="307.0" mnemonicParsing="false" onAction="#changePassword" onKeyPressed="#changePasswordEventKey" prefHeight="27.0" prefWidth="244.0" style="-fx-background-color: #698F3F;" text="Change Password" textFill="#fbfaf9" visible="false">
                <effect>
@@ -67,7 +67,7 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </PasswordField>
-            <PasswordField fx:id="answer" layoutX="91.0" layoutY="162.0" onKeyPressed="#confirmIdentityEventKey" prefHeight="27.0" prefWidth="244.0" promptText="answer" style="-fx-background-color: #fafafa;">
+            <PasswordField fx:id="answer" layoutX="91.0" layoutY="162.0" prefHeight="27.0" prefWidth="244.0" promptText="answer" style="-fx-background-color: #fafafa;">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>

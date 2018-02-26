@@ -21,8 +21,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-import javax.xml.soap.Text;
-
 public class Register_controller {
 
     ObservableList<String> genderFieldList = FXCollections.observableArrayList("Male", "Female", "N/A (Optional)");
@@ -121,7 +119,7 @@ public class Register_controller {
         //opens new window for creating a profile
         Stage primaryStage = new Stage();
 		Parent root = FXMLLoader.load(getClass().getResource("/application/createProfile.fxml"));
-		Scene scene = new Scene(root,700,400); //sets the size of the window
+		Scene scene = new Scene(root,700,500); //sets the size of the window
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -218,7 +216,7 @@ public class Register_controller {
     		//opens the main login screen up again
     		Stage registerStage = new Stage();
 		Parent root = FXMLLoader.load(getClass().getResource("/application/login.fxml"));
-		Scene scene = new Scene(root,700,400);
+		Scene scene = new Scene(root,700,500);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		registerStage.setScene(scene);
 		registerStage.show();

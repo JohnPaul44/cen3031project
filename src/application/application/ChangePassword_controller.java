@@ -58,7 +58,7 @@ public class ChangePassword_controller {
     		//opens the main login screen up again
     		Stage registerStage = new Stage();
 		Parent root = FXMLLoader.load(getClass().getResource("/application/login.fxml"));
-		Scene scene = new Scene(root,700,400);
+		Scene scene = new Scene(root,700,500);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		registerStage.setScene(scene);
 		registerStage.show();

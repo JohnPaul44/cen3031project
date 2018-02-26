@@ -55,7 +55,7 @@ public class login_controller {
 			//must make a stage, then loads the fxml document for the scene
 			Stage primaryStage = new Stage();
 			Parent root = FXMLLoader.load(getClass().getResource("/application/home.fxml"));
-			Scene scene = new Scene(root,700,400); //sets the size of the window
+			Scene scene = new Scene(root,700,500); //sets the size of the window
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
@@ -77,7 +77,7 @@ public class login_controller {
 		//opens a new window where a user can register their account
 		Stage registerStage = new Stage();
 		Parent root = FXMLLoader.load(getClass().getResource("/application/registerUser.fxml"));
-		Scene scene = new Scene(root,700,400);
+		Scene scene = new Scene(root,700,500);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		registerStage.setScene(scene);
 		registerStage.show();
@@ -108,7 +108,7 @@ public class login_controller {
 		
 		Parent root = loader.getRoot();
 		Stage changeStage = new Stage();
-		Scene scene = new Scene(root,700,400);
+		Scene scene = new Scene(root,700,500);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		changeStage.setScene(scene);
 		changeStage.show();
