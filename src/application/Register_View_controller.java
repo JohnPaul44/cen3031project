@@ -1,13 +1,12 @@
 package application;
 
 //John Paul
+import connection.serverMessages.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-
-import java.util.Calendar;
 
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -21,7 +20,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-public class Register_controller {
+public class Register_View_controller extends ViewController {
 
     ObservableList<String> genderFieldList = FXCollections.observableArrayList("Male", "Female", "N/A (Optional)");
     ObservableList<String> securityQuestionList = FXCollections.observableArrayList("<Security Questions>", "What is your mother's maiden name?", "What was the name of your first pet?", "What was your high school mascot?");
@@ -116,16 +115,25 @@ public class Register_controller {
               
         
         status.setText("Register Successful");
-        //opens new window for creating a profile
-        Stage primaryStage = new Stage();
-		Parent root = FXMLLoader.load(getClass().getResource("/application/createProfile.fxml"));
-		Scene scene = new Scene(root,700,500); //sets the size of the window
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		primaryStage.setScene(scene);
-		primaryStage.show();
-		
-		//closes the login screen when the home screen pops up
-		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+        loggedIn();
+    }
+
+    public void loggedIn() throws Exception{
+        try {
+            //opens new window for creating a profile
+            Stage primaryStage = new Stage();
+            Parent root = FXMLLoader.load(getClass().getResource("/application/createProfile.fxml"));
+            Scene scene = new Scene(root, 700, 500); //sets the size of the window
+            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            //closes the login screen when the home screen pops up
+            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private String username () {
@@ -223,6 +231,20 @@ public class Register_controller {
 		
 		//closes the login screen when the home screen pops up
 		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+    }
+
+    @Override
+    void notification(ServerMessage message) {
+        switch(message.getStatus()){
+            case NOTIFICATIONLOGGEDIN:
+                loggedIn();
+                break;
+            case NOTIFICATIONERROR:
+                status.setText("Unavailable Username");
+                break;
+            default:
+                break;
+        }
     }
     	
     /*

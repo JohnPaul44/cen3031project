@@ -16,7 +16,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-public class ChangePassword_controller {
+public class ChangePassword_View_controller extends ViewController {
 	@FXML
 	private Label username;
 	@FXML
@@ -122,7 +122,7 @@ public class ChangePassword_controller {
 		
 		//creates instance of the change password controller
 		//passes the username to the confirmation screen
-		ChangePassConf_controller conf = loader.getController();
+		ChangePassConf_View_controller conf = loader.getController();
 		conf.setUsername(username.getText());
 		
 		Parent root = loader.getRoot();
