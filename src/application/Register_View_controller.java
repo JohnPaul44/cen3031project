@@ -113,7 +113,7 @@ public class Register_View_controller extends ViewController {
         try {
             //opens new window for creating a profile
             Stage primaryStage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("/application/createProfile.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/application/home.fxml"));
             Scene scene = new Scene(root, 700, 500); //sets the size of the window
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);
