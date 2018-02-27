@@ -4,8 +4,11 @@ import java.io.*;
 import java.net.*;
 
 import connection.notificationMessageHandlers.*;
+import connection.serverMessages.ActionLogInMessage;
+import connection.serverMessages.ActionRegisterMessage;
 import connection.serverMessages.ServerMessage;
 import model.CurrentUser;
+import model.Profile;
 import model.UserUpdater;
 
 public class ServerConnection implements IServerConnection{
@@ -70,5 +73,17 @@ public class ServerConnection implements IServerConnection{
         });
 
         thread.start();
+    }
+
+    public void login(String username, String password) {
+        ServerMessage message = new ActionLogInMessage(username, password);
+        sendMessageToServer(message);
+    }
+
+    public void registerNewUser(String username, String password, String firstName, String lastName, String email,
+                                String phone, Profile.Gender gender, String DOB, String securityQuestion, String securityAnswer) {
+        ActionRegisterMessage message = new ActionRegisterMessage(username, password, firstName, lastName, email, phone,
+                gender.toString().toLowerCase(), DOB, securityQuestion, securityAnswer);
+        sendMessageToServer(message);
     }
 }
