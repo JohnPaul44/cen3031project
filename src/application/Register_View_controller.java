@@ -74,7 +74,7 @@ public class Register_View_controller extends ViewController {
     	@FXML
     public void registerButtonClicked(ActionEvent event) throws Exception {
         //error checking for empty fields
-        if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("")) { 	
+        if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("") || phoneNumber().equals("") || securityAnswer().equals("")) {
         		status.setText("Please enter: ");
         		if(username().equals("")) {
         			status.setText(status.getText() + "|username|  ");
@@ -91,6 +91,12 @@ public class Register_View_controller extends ViewController {
         		if(email().equals("")) {
         			status.setText(status.getText() + "|email|  ");
         		}
+        		if(phoneNumber().equals("")){
+        		    status.setText(status.getText() + "|phone number|  ");
+                }
+                if(securityAnswer().equals("")){
+        		    status.setText(status.getText() + "|security question|  ");
+                }
         		return;
         }
         //error checking for mismatched passwords
@@ -101,7 +107,6 @@ public class Register_View_controller extends ViewController {
         else {
             connection.registerNewUser(username(), checkedPassword(), firstName(), lastName(), email(), phoneNumber(), gender(), birthDay(), securityQuestion(), securityAnswer());
             status.setText("Register Successful");
-            loggedIn();
 
             //closes the login screen when the home screen pops up
             ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
@@ -110,15 +115,22 @@ public class Register_View_controller extends ViewController {
 
     public void loggedIn(){
         try {
-            //opens new window for creating a profile
-            Stage primaryStage = new Stage();
-            Parent root = FXMLLoader.load(getClass().getResource("/application/home.fxml"));
-            Scene scene = new Scene(root, 700, 500); //sets the size of the window
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/application/home.fxml"));
+            loader.load();
+
+            Home_View_controller home = loader.getController();
+            home.passConnection(connection);
+            connection.setDelegate(home);
+            home.initialize();
+
+            Parent root = loader.getRoot();
+            Stage registerStage = new Stage();
+            Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        }
-        catch(Exception e){
+            registerStage.setScene(scene);
+            registerStage.show();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -133,7 +145,6 @@ public class Register_View_controller extends ViewController {
         String confPassword = confirmPasswordField.getText();
 
         if (!password.equals(confPassword)){
-            System.out.println("Your password does not match! Please try again!");
             status.setText("Error: passwords do not match");
             return false;
         }
@@ -216,26 +227,38 @@ public class Register_View_controller extends ViewController {
 
     @FXML
     public void BackButton(ActionEvent event) throws Exception{
-    		//opens the main login screen up again
-    		Stage registerStage = new Stage();
-		Parent root = FXMLLoader.load(getClass().getResource("/application/login.fxml"));
-		Scene scene = new Scene(root,700,500);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		registerStage.setScene(scene);
-		registerStage.show();
-		
-		//closes the login screen when the home screen pops up
-		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/application/login.fxml"));
+            loader.load();
+
+            Login_View_controller login = loader.getController();
+            login.passConnection(connection);
+            connection.setDelegate(login);
+
+            Parent root = loader.getRoot();
+            Stage registerStage = new Stage();
+            Scene scene = new Scene(root, 700, 500);
+            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+            registerStage.setScene(scene);
+            registerStage.show();
+
+            //closes the login screen when the home screen pops up
+            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void notification(ServerMessage message) {
         switch(message.getStatus()){
             case NOTIFICATIONLOGGEDIN:
+                status.setText("Register Successful");
                 loggedIn();
                 break;
             case NOTIFICATIONERROR:
-                status.setText("Unavailable Username");
+                status.setText("Username Unavailable");
                 break;
             default:
                 break;

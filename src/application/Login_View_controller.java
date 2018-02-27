@@ -15,7 +15,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 
-public class login_controller extends ViewController{
+public class Login_View_controller extends ViewController{
 	ServerConnection connection;
 
 	public void passConnection(ServerConnection con){

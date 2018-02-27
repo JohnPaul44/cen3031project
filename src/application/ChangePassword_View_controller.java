@@ -63,16 +63,27 @@ public class ChangePassword_View_controller extends ViewController {
 	
 	@FXML
     public void BackButton(ActionEvent event) throws Exception{
-    		//opens the main login screen up again
-    		Stage registerStage = new Stage();
-		Parent root = FXMLLoader.load(getClass().getResource("/application/login.fxml"));
-		Scene scene = new Scene(root,700,500);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		registerStage.setScene(scene);
-		registerStage.show();
-		
-		//closes the change password screen when the home screen pops up
-		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/application/login.fxml"));
+            loader.load();
+
+            Login_View_controller login = loader.getController();
+            login.passConnection(connection);
+            connection.setDelegate(login);
+
+            Parent root = loader.getRoot();
+            Stage registerStage = new Stage();
+            Scene scene = new Scene(root, 700, 500);
+            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+            registerStage.setScene(scene);
+            registerStage.show();
+
+            //closes the old screen when the new screen pops up
+            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 	
 	//event handlers for both when the login button is pressed or when the enter key is used
