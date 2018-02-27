@@ -23,7 +23,7 @@ import javafx.stage.Stage;
 
 public class Register_controller {
 
-    ObservableList<String> genderFieldList = FXCollections.observableArrayList("Male", "Female", "N/A (Optional)");
+    ObservableList<Gender> genderFieldList = FXCollections.observableArrayList(Gender.values());
     ObservableList<String> securityQuestionList = FXCollections.observableArrayList("<Security Questions>", "What is your mother's maiden name?", "What was the name of your first pet?", "What was your high school mascot?");
 
 
@@ -197,10 +197,12 @@ public class Register_controller {
         return securityAns;
     }
 
+    enum Gender { FEMALE, MALE, OTHER, NA};
+
     @FXML
     private void initialize(){
         //Sets initial value in the drop down
-        genderField.setValue("N/A (Optional)");
+        genderField.setValue(Gender.NA);
         genderField.setItems(genderFieldList);
         securityQuestion.setValue("<Security Questions>");
         securityQuestion.setItems(securityQuestionList);
