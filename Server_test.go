@@ -10,10 +10,13 @@ import (
 const (
 	TestUser = "test_user"
 	TestPass = "test_password"
-	TestName = "Test User"
+	TestFirstName = "Test"
+	TestLastName = "User"
 	TestEmail = "test@email.com"
-	TestGender = GenderMale
 	TestPhone = "1234567890"
+	TestSecurityQuestion = "security question"
+	TestSecurityAnswer = "security answer"
+	TestGender = GenderMale
 	TestBirthday = "2018-02-21"
 )
 
@@ -90,7 +93,8 @@ func TestCreateUserAccount(t *testing.T) {
 		}
 	}
 
-	_, err = createUserAccount(TestUser, TestPass, Profile{Name:TestName, Email:TestEmail, Gender:GenderMale, Phone:TestPhone, Birthday:TestBirthday})
+	_, err = createUserAccount(TestUser, TestPass, Profile{FirstName:TestFirstName, LastName:TestLastName, Email:TestEmail,
+	Phone:TestPhone, SecurityQuestion:TestSecurityQuestion, SecurityAnswer:TestSecurityAnswer, Gender:GenderMale, Birthday:TestBirthday})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -104,8 +108,12 @@ func TestCreateUserAccount(t *testing.T) {
 		t.Error("usernames do not match")
 	}
 
-	if usr.Profile.Name != TestName {
-		t.Error("names do not match")
+	if usr.Profile.FirstName != TestFirstName {
+		t.Error("first names do not match")
+	}
+
+	if usr.Profile.LastName != TestLastName {
+		t.Error("last names do not match")
 	}
 
 	if usr.Profile.Email != TestEmail {

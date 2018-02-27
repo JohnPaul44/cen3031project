@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 )
 
-func main() {
+func testMain() {
 	conn, err := net.Dial("tcp", ":8675")
 	if err != nil {
 		log.Fatal(err)

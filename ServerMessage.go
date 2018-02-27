@@ -63,16 +63,16 @@ const (
 
 type Profile struct {
 	// Required
-	FirstName        string `json:"firstName",datastore:"First Name"`
-	LastName         string `json:"lastName",datastore:"Last Name"`
+	FirstName        string `json:"firstName",datastore:"FirstName"`
+	LastName         string `json:"lastName",datastore:"LastName"`
 	Email            string `json:"email",datastore:"Email"`
 	Phone            string `json:"phone",datastore:"Phone"`
-	SecurityQuestion string `json:"securityQuestion",datastore:"Security Question"`
-	SecurityAnswer   string `json:"securityAnswer",datastore:"Security Answer"`
+	SecurityQuestion string `json:"securityQuestion",datastore:"SecurityQuestion"`
+	SecurityAnswer   string `json:"securityAnswer",datastore:"SecurityAnswer"`
 
 	// Optional
-	Gender   string    `json:"gender,omitempty",datastore:"Gender,omitempty"`
-	Birthday time.Time `json:"birthday,omitempty",datastore:"Birthday,omitempty"`
+	Gender   string `json:"gender,omitempty",datastore:"Gender,omitempty"`
+	Birthday string `json:"birthday,omitempty",datastore:"Birthday,omitempty"`
 }
 
 type ServerMessage struct {
