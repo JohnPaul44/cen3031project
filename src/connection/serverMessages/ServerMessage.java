@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 
 public abstract class ServerMessage {
     public enum Status {
@@ -36,6 +37,7 @@ public abstract class ServerMessage {
         ACTIONREMOVEDUSERFROMCONVERSATION,
         ACTIONREADMESSAGE,
         ACTIONSETTYPING;
+
 
         @Override
         public String toString() {

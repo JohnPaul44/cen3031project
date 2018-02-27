@@ -3,6 +3,7 @@ package connection;
 import java.io.*;
 import java.net.*;
 
+
 import com.google.gson.Gson;
 import com.sun.security.ntlm.Server;
 import connection.notificationMessageHandlers.*;
@@ -12,6 +13,7 @@ import connection.serverMessages.ServerMessage;
 import model.CurrentUser;
 import model.Profile;
 import model.UserUpdater;
+import  application.ViewController;
 
 public class ServerConnection implements IServerConnection{
 
@@ -53,6 +55,7 @@ public class ServerConnection implements IServerConnection{
 
     @Override
     public void sendMessageToServer(ServerMessage serverMessage) {
+        System.out.println(serverMessage.toJsonString());
         out.println(serverMessage.toJsonString());
     }
 

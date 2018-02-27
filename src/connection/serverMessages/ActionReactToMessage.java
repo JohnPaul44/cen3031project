@@ -10,7 +10,7 @@ public class ActionReactToMessage extends ActionServerMessage{
     private Map<String, Reactions> reactions;
 
     public ActionReactToMessage(String conversationKey, String messageKey, Map<String, Reactions> reactions) {
-        this.status = Status.ACTIONREACTTOMESSAGE.ordinal();
+        this.status = Status.ACTIONREACTTOMESSAGE;
         this.conversationKey = conversationKey;
         this.messageKey = messageKey;
         this.reactions = reactions;

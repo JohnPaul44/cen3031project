@@ -1,5 +1,6 @@
 package application;
 	
+import connection.ServerConnection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -8,11 +9,20 @@ import javafx.scene.Scene;
 
 
 public class Main extends Application {
+
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+			ServerConnection connection = new ServerConnection();
 			//opens the login window on start up
-			Parent root = FXMLLoader.load(getClass().getResource("/application/login.fxml"));
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("/application/login.fxml"));
+			loader.load();
+
+			login_controller login = loader.getController();
+			login.passConnection(connection);
+
+			Parent root = loader.getRoot();
 			Scene scene = new Scene(root,700,500);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);

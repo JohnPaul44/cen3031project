@@ -1,5 +1,7 @@
 package application;
 
+import connection.ServerConnection;
+import connection.serverMessages.ServerMessage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,8 +15,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.scene.Node;
 
-public class login_controller {
-	//ServerConnection connection = new ServerConnection();
+public class login_controller extends ViewController{
+	ServerConnection connection;
+
+	public void passConnection(ServerConnection con){
+		connection = con;
+	}
 
 	@FXML
 	private Label status;
@@ -27,7 +33,7 @@ public class login_controller {
 	
 	@FXML
 	private Button loginButton;
-	
+
 	
 	//event handlers for both when the login button is pressed or when the enter key is used
 	@FXML
@@ -42,31 +48,7 @@ public class login_controller {
 	
 	@FXML
 	public void LoginEventButton(ActionEvent event) throws Exception{
-		//checks whether the username and password match
-		//need to add in a check to the database to check username and password
-		//case sensitive
-		if(username.getText().equals("user") && password.getText().equals("password")) {
-			status.setText("Login Successful");
-			
-			//creates the new window for the home screen
-			//must make a stage, then loads the fxml document for the scene
-			Stage primaryStage = new Stage();
-			Parent root = FXMLLoader.load(getClass().getResource("/application/home.fxml"));
-			Scene scene = new Scene(root,700,500); //sets the size of the window
-			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			primaryStage.setScene(scene);
-			primaryStage.show();
-			
-			primaryStage.setTitle("Welcome " + username.getText());
-			
-			//closes the login screen when the home screen pops up
-			((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
-		}
-		else {
-			//alerts the user to incorrect credentials
-			status.setText("Incorrect Username or Password");
-		}
-		//connection.sendMessageToServer(new ActionLogInMessage(username.getText(), password.getText()));
+		connection.login(username.getText(), password.getText());
 	}
 	
 	@FXML
@@ -112,5 +94,20 @@ public class login_controller {
 		
 		//closes the login screen when the change password screen pops up
 		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+	}
+
+	@Override
+	public void notification(ServerMessage message) {
+		switch (message.getStatus()) {
+			case NOTIFICATIONLOGGEDIN:
+				//next screen
+				System.out.println("login success");
+				break;
+			case NOTIFICATIONERROR:
+				System.out.println("login failed");
+				break;
+			default:
+				break;
+		}
 	}
 }

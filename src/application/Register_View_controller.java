@@ -1,6 +1,7 @@
 package application;
 
 //John Paul
+import connection.ServerConnection;
 import connection.serverMessages.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,10 +20,16 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import model.Profile;
 
 public class Register_View_controller extends ViewController {
+    ServerConnection connection;
 
-    ObservableList<Gender> genderFieldList = FXCollections.observableArrayList(Gender.values());
+    public void passConnection(ServerConnection con){
+        connection = con;
+    }
+
+    ObservableList<Profile.Gender> genderFieldList = FXCollections.observableArrayList(Profile.Gender.values());
     ObservableList<String> securityQuestionList = FXCollections.observableArrayList("<Security Questions>", "What is your mother's maiden name?", "What was the name of your first pet?", "What was your high school mascot?");
 
 
@@ -67,19 +74,6 @@ public class Register_View_controller extends ViewController {
     
     	@FXML
     public void registerButtonClicked(ActionEvent event) throws Exception {
-        //Manual Testing
-        System.out.println("Username: " + username());
-       // System.out.println("Password: " + password());
-        System.out.println("Confirm Password: " + passwordField.getText());
-        System.out.println("First Name: " + firstName());
-        System.out.println("Last Name: " + lastName());
-        System.out.println("Email: " + email());
-        System.out.println("Phone #: " + phoneNumber());
-        System.out.println("Gender: " + gender());
-        System.out.println("Birthday: " + birthDay());
-        System.out.println("Security Question: " + securityQuestion());
-        System.out.println("Security Answer: " + securityAnswer());
-        
         //error checking for empty fields
         if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("")) { 	
         		status.setText("Please enter: ");
@@ -100,25 +94,19 @@ public class Register_View_controller extends ViewController {
         		}
         		return;
         }
-        
-        //TODO: error checking for duplicate username
-        
         //error checking for mismatched passwords
-        if(!confPassword()) {
+        else if(!confPassword()) {
         		//sets incorrect status in the message
         		return;
         }
-        
-        //TODO: error check password strength? maybe not
-        
-        //TODO: error check email address
-              
-        
-        status.setText("Register Successful");
-        loggedIn();
+        else {
+            connection.registerNewUser(username(), checkedPassword(), firstName(), lastName(), email(), phoneNumber(), gender(), birthDay(), securityQuestion(), securityAnswer());
+            status.setText("Register Successful");
+            loggedIn();
 
-        //closes the login screen when the home screen pops up
+            //closes the login screen when the home screen pops up
             ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+        }
     }
 
     public void loggedIn(){
@@ -137,7 +125,7 @@ public class Register_View_controller extends ViewController {
     }
 
     private String username () {
-        String username = usernameField.getText();  //TODO: link username(string) to server
+        String username = usernameField.getText();
         return username;
     }
 
@@ -148,32 +136,41 @@ public class Register_View_controller extends ViewController {
         if (!password.equals(confPassword)){
             System.out.println("Your password does not match! Please try again!");
             status.setText("Error: passwords do not match");
-            return false;        //TODO: Make some function to delay registering
+            return false;
         }
         else if (password.equals(confPassword)) {
             String passwordMathces = confPassword;
-            return true;     //TODO: link password(string) to server
+            return true;
         }
         return true;
     }
 
+    private String checkedPassword(){
+        if (confPassword() == true){
+            return passwordField.getText();
+        }
+        else{
+            return null;
+        }
+    }
+
     private String firstName () {
-        String firstName = firstNameField.getText(); //TODO: link first name(string) to server
+        String firstName = firstNameField.getText();
         return firstName;
     }
 
     private String lastName () {
-        String lastName = lastNameField.getText(); //TODO: link last name(string) to server
+        String lastName = lastNameField.getText();
         return lastName;
     }
 
     private String email () {
-        String email = emailField.getText(); //TODO: link email(string) to server
+        String email = emailField.getText();
         return email;
     }
 
 
-    private String phoneNumber() {  //TODO: Catch for when invalid entry delays register
+    private String phoneNumber() {
         String phoneNum = phoneNumberField.getText();
         System.out.println(phoneNum);
         if (phoneNum.matches("[0-9]*") && !phoneNum.isEmpty() && phoneNum.length() == 10) {
@@ -190,9 +187,8 @@ public class Register_View_controller extends ViewController {
         return null;
     }
 
-    private String gender (){
-        String gender = (String) genderField.getValue();  //TODO: link gender(string) to server
-        return gender;
+    private Profile.Gender gender (){
+        return (Profile.Gender) genderField.getValue();
     }
 
     private String securityQuestion() {
@@ -205,18 +201,16 @@ public class Register_View_controller extends ViewController {
         return securityAns;
     }
 
-    enum Gender { FEMALE, MALE, OTHER, NA};
-
     @FXML
     private void initialize(){
         //Sets initial value in the drop down
-        genderField.setValue(Gender.NA);
+        genderField.setValue(Profile.Gender.NA);
         genderField.setItems(genderFieldList);
         securityQuestion.setValue("<Security Questions>");
         securityQuestion.setItems(securityQuestionList);
     }
 
-    private String birthDay () {        //TODO: link birthDay(string) to server
+    private String birthDay () {
         String bDay = String.valueOf(DOBField.getValue());
         return bDay;
     }
@@ -236,7 +230,7 @@ public class Register_View_controller extends ViewController {
     }
 
     @Override
-    void notification(ServerMessage message) {
+    public void notification(ServerMessage message) {
         switch(message.getStatus()){
             case NOTIFICATIONLOGGEDIN:
                 loggedIn();

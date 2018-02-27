@@ -40,7 +40,7 @@ public class ChangePassConf_View_controller extends ViewController {
 	}
 
 	@Override
-	void notification(ServerMessage message) {
+	public void notification(ServerMessage message) {
 
 	}
 }
