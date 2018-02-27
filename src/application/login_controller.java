@@ -1,7 +1,5 @@
 package application;
 
-import connection.ServerConnection;
-import connection.serverMessages.ActionLogInMessage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,10 +12,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.scene.Node;
-import model.CurrentUser;
 
 public class login_controller {
-	//testing
 	//ServerConnection connection = new ServerConnection();
 
 	@FXML
@@ -104,7 +100,7 @@ public class login_controller {
 		
 		//creates instance of the change password controller
 		//passes the username to the change password screen
-		ChangePassword_controller pass = loader.getController();
+		ChangePassword_View_controller pass = loader.getController();
 		pass.setUsername(username.getText());
 		
 		Parent root = loader.getRoot();

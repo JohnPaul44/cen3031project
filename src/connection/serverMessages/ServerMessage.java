@@ -3,7 +3,7 @@ package connection.serverMessages;
 import com.google.gson.Gson;
 
 public abstract class ServerMessage {
-    enum Status {
+    public enum Status {
         UNINITILIALIZED,
         NOTIFICATIONERROR,
         NOTIFICATIONLOGGEDIN,
@@ -32,9 +32,9 @@ public abstract class ServerMessage {
         ACTIONREADMESSAGE,
         ACTIONSETTYPING
     }
-    int status;
+    Status status;
 
-    public int getStatus() {
+    public Status getStatus() {
         return status;
     }
 
