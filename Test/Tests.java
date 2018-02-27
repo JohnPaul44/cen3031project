@@ -25,6 +25,12 @@ public class Tests {
     // TODO create test for sorting conversations
 
     @Test
+    public void enumPrint(){
+        ServerMessage.Status status = ServerMessage.Status.NOTIFICATIONMESSAGERECEIVED;
+        System.out.println(status);
+    }
+
+    @Test
     public void enumToString() {
         Profile.Gender test = Profile.Gender.FEMALE;
         System.out.println(test.toString().toLowerCase());

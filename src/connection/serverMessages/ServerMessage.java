@@ -1,6 +1,9 @@
 package connection.serverMessages;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public abstract class ServerMessage {
     public enum Status {
@@ -32,7 +35,12 @@ public abstract class ServerMessage {
         ACTIONADDUSERTOCONVERSATION,
         ACTIONREMOVEDUSERFROMCONVERSATION,
         ACTIONREADMESSAGE,
-        ACTIONSETTYPING
+        ACTIONSETTYPING;
+
+        @Override
+        public String toString() {
+            return String.valueOf(super.ordinal());
+        }
     }
     int status;
 
