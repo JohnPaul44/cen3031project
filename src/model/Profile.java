@@ -11,7 +11,7 @@ public class Profile {
     private String phone;
     private String securityQuestion;
     private String securityAnswer;
-    public enum Gender { FEMALE, MALE, OTHER, NA };
+    public enum Gender { FEMALE, MALE, OTHER, NA }
     private String gender; // 0 = female, 1 = male, 2 = other, 3 = NA
     private String birthday;
 

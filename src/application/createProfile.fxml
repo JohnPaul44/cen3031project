@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
@@ -7,42 +9,95 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EditProfile_View_Controller">
    <children>
-      <Label layoutX="81.0" layoutY="228.0" text="USERNAME" />
-      <TextArea layoutX="21.0" layoutY="304.0" prefHeight="117.0" prefWidth="226.0" promptText="Bio" />
-      <TextField layoutX="20.0" layoutY="267.0" prefHeight="27.0" prefWidth="226.0" promptText="What's on your mind?" />
-      <Label layoutX="618.0" layoutY="59.0" text="Edit Mode" />
-      <TextField fx:id="name" layoutX="268.0" layoutY="101.0" prefHeight="20.0" prefWidth="200.0" promptText="First Name Last Name">
+      <Label layoutX="623.0" layoutY="23.0" text="/*Edit*/" textFill="#fbfaf9" />
+      <TextField fx:id="email" layoutX="298.0" layoutY="97.0" onKeyPressed="#SaveChangesEventKey" prefHeight="23.0" prefWidth="341.0" promptText="Email">
          <font>
             <Font size="12.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
       </TextField>
-      <TextField fx:id="email" layoutX="268.0" layoutY="131.0" prefHeight="20.0" prefWidth="200.0" promptText="Email">
+      <TextField fx:id="phone" layoutX="298.0" layoutY="129.0" onKeyPressed="#SaveChangesEventKey" prefHeight="23.0" prefWidth="341.0" promptText="Phone #">
          <font>
             <Font size="12.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
       </TextField>
-      <TextField fx:id="phone" layoutX="268.0" layoutY="163.0" prefHeight="20.0" prefWidth="200.0" promptText="Phone #">
+      <TextField fx:id="gender" layoutX="298.0" layoutY="160.0" onKeyPressed="#SaveChangesEventKey" prefHeight="23.0" prefWidth="341.0" promptText="Gender">
          <font>
             <Font size="12.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
       </TextField>
-      <TextField fx:id="gender" layoutX="268.0" layoutY="194.0" prefHeight="20.0" prefWidth="200.0" promptText="Gender">
+      <TextField fx:id="dob" layoutX="298.0" layoutY="191.0" onKeyPressed="#SaveChangesEventKey" prefHeight="23.0" prefWidth="341.0" promptText="DOB (Age)">
          <font>
             <Font size="12.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
       </TextField>
-      <TextField fx:id="dob" layoutX="268.0" layoutY="225.0" prefHeight="20.0" prefWidth="200.0" promptText="DOB (Age)">
-         <font>
-            <Font size="12.0" />
-         </font>
+      <Label layoutX="298.0" layoutY="242.0" prefHeight="18.0" prefWidth="366.0" text="Interests: (television shows, favorite foods, music, etc.)" textFill="#fbfaf9" />
+      <TextArea fx:id="interest" layoutX="298.0" layoutY="274.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Interests">
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
+      </TextArea>
+      <Label layoutX="298.0" layoutY="348.0" prefHeight="18.0" prefWidth="366.0" text="Hobbies: (video games, instruments, sports, etc.)" textFill="#fbfaf9" />
+      <TextArea fx:id="hobbies" layoutX="298.0" layoutY="375.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Hobbies">
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
+      </TextArea>
+      <Button fx:id="backButton" layoutX="20.0" layoutY="18.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #698F3F;" text="&lt;" textFill="#fbfaf9">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Label layoutX="62.0" layoutY="23.0" text="System.out.chat()" textFill="#fbfaf9" />
+      <TextField fx:id="firstName" layoutX="298.0" layoutY="60.0" onKeyPressed="#SaveChangesEventKey" promptText="First Name">
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
       </TextField>
-      <Label layoutX="517.0" layoutY="95.0" prefHeight="36.0" prefWidth="144.0" text="Chat Statistics and Game Scores" textAlignment="CENTER" wrapText="true" />
-      <Label layoutX="268.0" layoutY="272.0" text="Interests">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
+      <TextField fx:id="lastName" layoutX="472.0" layoutY="60.0" onKeyPressed="#SaveChangesEventKey" promptText="Last Name">
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
+      </TextField>
+      <Button fx:id="save" layoutX="419.0" layoutY="452.0" mnemonicParsing="false" onAction="#SaveChangesButton" style="-fx-background-color: #698F3F;" text="Save Changes" textFill="#fbfaf9">
+         <effect>
+            <Reflection />
+         </effect>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <AnchorPane layoutX="18.0" layoutY="60.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
+         <children>
+            <TextArea fx:id="bio" layoutX="10.0" layoutY="259.0" onKeyPressed="#SaveChangesEventKey" prefHeight="117.0" prefWidth="226.0" promptText="Bio">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
+            </TextArea>
+            <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="89.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME" textFill="#fbfaf9">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="mind" layoutX="10.0" layoutY="214.0" onKeyPressed="#SaveChangesEventKey" prefHeight="27.0" prefWidth="226.0" promptText="What's on your mind?">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
+            </TextField>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>
