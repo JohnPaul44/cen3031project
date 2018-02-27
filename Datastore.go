@@ -20,7 +20,7 @@ const (
 
 type DSUserContact struct {
 	// KindUserContact, key=KindUser(contact username), parent=KindUser(contact owner)
-	Time    time.Time `datastore:"Time"`
+	Time    time.Time `datastore:"LastMessage"`
 	contact *datastore.Key
 	owner   *datastore.Key
 }
@@ -43,7 +43,7 @@ type DSMessageReaction struct {
 type DSMessage struct {
 	// type: KindConversationMessage, key: random, parent: KindConversation
 	key  *datastore.Key
-	Time time.Time      `json:"time",datastore:"Time"`
+	Time time.Time      `json:"time",datastore:"LastMessage"`
 	From *datastore.Key `json:"from",datastore:"From"`
 	Text string         `json:"text",datastore:"Text"`
 }
@@ -487,7 +487,7 @@ func getConversations(user *DSUser) (*[]Conversation, error) {
 
 		var conversation Conversation
 		conversation.ConversationKey = convKey.Name
-		conversation.Time = dsConversation.LastMessage
+		conversation.LastMessage = dsConversation.LastMessage
 		conversation.MemberStatus = make(map[string]Status)
 
 		// get members of conversation

@@ -9,6 +9,7 @@ import (
 
 type ServerMessageHandler func(*DSUser, net.Conn, *ServerMessage) error
 
+// TODO: implement NotificationMessageReaction and ActionReactToMessage
 var handlerMap = map[int]ServerMessageHandler{
 	ActionLogOut:                     handleLogOut,
 	ActionAddContact:                 handleAddContact,
@@ -43,14 +44,14 @@ func handleLogOut(user *DSUser, conn net.Conn, _ *ServerMessage) error {
 	// connection removed in main event loop
 	rsp.Status = NotificationLoggedOut
 
-	log.Printf("%s (%s) logged out\n", user.Profile.Name, user.username)
+	log.Println(user.username, "logged out")
 
 	return sendServerMessage(conn, rsp)
 }
 
 func handleAddContact(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	errStr := fmt.Sprintf("%s (%s) cannot add contact:", user.Profile.Name, user.username)
+	errStr := user.username + " cannot add contact:"
 
 	if message.Username == nil {
 		e := NewError("missing username", ErrorMissingParameter)
@@ -66,7 +67,7 @@ func handleAddContact(user *DSUser, conn net.Conn, message *ServerMessage) error
 		return sendServerMessage(conn, rsp)
 	}
 
-	errStr = fmt.Sprintf("%s (%s) cannot add '%s' as a contact:", user.Profile.Name, user.username, *message.Username)
+	errStr = fmt.Sprintf("%s cannot add %s as a contact:", user.username, *message.Username)
 
 
 	err := addContact(user.username, *message.Username)
@@ -78,7 +79,7 @@ func handleAddContact(user *DSUser, conn net.Conn, message *ServerMessage) error
 			return sendServerMessage(conn, rsp)
 		}
 
-		log.Printf("%s %s cannot get user '%s' from datastore: %s\n", ErrorTag, errStr, user.username, err)
+		log.Printf("%s %s cannot get user %s from datastore: %s\n", ErrorTag, errStr, user.username, err)
 		rsp.setError(ErrInternalServer)
 		return sendServerMessage(conn, rsp)
 	}
@@ -89,14 +90,14 @@ func handleAddContact(user *DSUser, conn net.Conn, message *ServerMessage) error
 	rsp.Username = message.Username
 
 	sendServerMessageToUser(user.username, rsp)
-	log.Printf("%s (%s) added user '%s' as a contact\n", user.Profile.Name, user.username, *message.Username)
+	log.Printf("%s added %s as a contact\n", user.username, *message.Username)
 
 	return nil
 }
 
 func handleRemoveContact(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	errStr := fmt.Sprintf("%s (%s) cannot remove contact:", user.Profile.Name, user.username)
+	errStr := user.username + " cannot remove contact:"
 
 	if message.Username == nil {
 		e := NewError("missing username", ErrorMissingParameter)
@@ -112,7 +113,7 @@ func handleRemoveContact(user *DSUser, conn net.Conn, message *ServerMessage) er
 		return sendServerMessage(conn, rsp)
 	}
 
-	errStr = fmt.Sprintf("%s (%s) cannot remove user '%s' from contacts:", user.Profile.Name, user.username, *message.Username)
+	errStr = fmt.Sprintf("%s cannot remove %s from contacts:", user.username, *message.Username)
 
 	err := removeContact(user.username, *message.Username)
 	if err != nil {
@@ -134,14 +135,14 @@ func handleRemoveContact(user *DSUser, conn net.Conn, message *ServerMessage) er
 	rsp.Username = message.Username
 
 	sendServerMessageToUser(user.username, rsp)
-	log.Printf("%s (%s) removed '%s' from contacts\n", user.Profile.Name, user.username, *message.Username)
+	log.Printf("%s removed %s from contacts\n", user.username, *message.Username)
 
 	return nil
 }
 
 func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	errStr := fmt.Sprintf("%s (%s) cannot update profile:", user.Profile.Name, user.username)
+	errStr := user.username + " cannot update profile:"
 
 	if message.Profile == nil {
 		e := NewError("missing profile", ErrorMissingParameter)
@@ -150,13 +151,13 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 		return sendServerMessage(conn, rsp)
 	}
 
-	if len(message.Profile.Name) == 0 || len(message.Profile.Email) == 0 {
-		e := NewError("empty profile.name and/or profile.email", ErrorEmptyParameter)
+	if len(message.Profile.FirstName) == 0 || len(message.Profile.LastName) == 0 || len(message.Profile.Email) == 0 ||
+		len(message.Profile.Phone) == 0 || len(message.Profile.SecurityQuestion) == 0 || len(message.Profile.SecurityAnswer) == 0 {
+		e := NewError("empty profile.[firstName | lastName | email | phone | securityQuestion | securityAnswer", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
 		return sendServerMessage(conn, rsp)
 	}
-
 
 	// update local profile (for logging) for all connections with the same username
 	conns.updateProfile(user, *message.Profile)
@@ -173,7 +174,7 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 
 	sendServerMessageToUser(user.username, rsp)
 
-	log.Printf("%s (%s) updated %s profile\n", user.Profile.Name, func() string {
+	log.Printf("%s updated %s profile\n", user.username, func() string {
 		switch user.Profile.Gender {
 		case GenderFemale:
 			return "her"
@@ -182,14 +183,14 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 		default:
 			return "their"
 		}
-	}(), user.username)
+	}())
 
 	return nil
 }
 
 func handleSetTyping(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	errStr := fmt.Sprintf("%s (%s) cannot update typing status:", user.Profile.Name, user.username)
+	errStr := user.username + " cannot update typing status:"
 
 	if message.Message == nil {
 		e := NewError("missing message", ErrorMissingParameter)
@@ -238,7 +239,7 @@ func handleSetTyping(user *DSUser, conn net.Conn, message *ServerMessage) error 
 		sendServerMessageToUser(member, rsp)
 	}
 
-	log.Printf("%s (%s) %s typing\n", user.Profile.Name, user.username, func() string {
+	log.Printf("%s %s typing\n", user.username, func() string {
 		if *message.Message.Typing {
 			return "started"
 		} else {
@@ -251,7 +252,7 @@ func handleSetTyping(user *DSUser, conn net.Conn, message *ServerMessage) error 
 
 func handleSendMessage(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	errStr := fmt.Sprintf("%s (%s) cannot send message:", user.Profile.Name, user.username)
+	errStr := user.username + " cannot send message:"
 
 	if message.Message == nil {
 		e := NewError("missing Message", ErrorMissingParameter)
@@ -327,25 +328,21 @@ func handleSendMessage(user *DSUser, conn net.Conn, message *ServerMessage) erro
 			conn := conns[user.username].connections[t]
 			err = sendServerMessage(conn.conn, rsp)
 			if err != nil {
-				if socketClosed(err) {
-					log.Printf("socket closed for '%s'\n", user.username)
-				} else {
-					log.Println(ErrorTag, "error sending message to client:", err)
-				}
+				log.Printf("socket closed for '%s'\n", user.username)
 			}
 		}
 	}
 
 	// set ClientTime to the time sent by the client (for identifying message internally)
 	rsp.Message.ClientTime = message.Message.ClientTime
-	log.Printf("%s (%s) sent message to: %s\n", user.Profile.Name, user.username, *message.Message.To)
+	log.Println(user.username, "sent message to:", *message.Message.To)
 
 	return sendServerMessage(conn, rsp)
 }
 
 func handleUpdateMessage(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	errStr := fmt.Sprintf("%s (%s) cannot update message:", user.Profile.Name, user.username)
+	errStr := user.username + " cannot update message:"
 
 	if message.Message == nil {
 		e := NewError("missing Message", ErrorMissingParameter)
@@ -447,14 +444,14 @@ func handleUpdateMessage(user *DSUser, conn net.Conn, message *ServerMessage) er
 		sendServerMessageToUser(member, rsp)
 	}
 
-	log.Printf("%s (%s) updated a message\n", user.Profile.Name, user.username)
+	log.Printf("%s updated a message\n", user.username)
 
 	return nil
 }
 
 func handleAddUserToConversation(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	errStr := fmt.Sprintf("%s (%s) cannot add user to conversation:", user.Profile.Name, user.username)
+	errStr := user.username + " cannot add user to conversation:"
 
 	if message.Message == nil {
 		e := NewError("missing Message", ErrorMissingParameter)
@@ -477,7 +474,7 @@ func handleAddUserToConversation(user *DSUser, conn net.Conn, message *ServerMes
 		return sendServerMessage(conn, rsp)
 	}
 
-	errStr = fmt.Sprintf("%s (%s) cannot add user '%s' to conversation:", user.Profile.Name, user.username, *message.Username)
+	errStr = fmt.Sprintf("%s cannot add user %s to conversation:", user.username, *message.Username)
 
 	// get Conversation from datastore (ConversationKey)
 	err := addUserToConversation(user.username, *message.Username, *message.Message.ConversationKey)
@@ -510,7 +507,7 @@ func handleAddUserToConversation(user *DSUser, conn net.Conn, message *ServerMes
 
 	// send message to new member (message.Username) with all conversation data
 	rsp.Conversations = new([]Conversation)
-	conversation := Conversation{MemberStatus:memberStatuses, Time:conv.LastMessage, ConversationKey:convKey.Name}
+	conversation := Conversation{MemberStatus:memberStatuses, LastMessage:conv.LastMessage, ConversationKey:convKey.Name}
 	(*rsp.Conversations)[0] = conversation
 
 	messages, err := getMessages(convKey)
@@ -523,7 +520,7 @@ func handleAddUserToConversation(user *DSUser, conn net.Conn, message *ServerMes
 	(*rsp.Conversations)[0].Messages = *messages
 
 	sendServerMessageToUser(*message.Username, rsp)
-	log.Printf("%s (%s) added '%s' to conversation with: %s\n", user.Profile.Name, user.username, *message.Username, func() []string {
+	log.Printf("%s added %s to conversation with: %s\n", user.username, *message.Username, func() []string {
 		members, err := getConversationMembers(convKey)
 		if err != nil {
 			log.Println(ErrorTag, errStr, err)
@@ -536,7 +533,7 @@ func handleAddUserToConversation(user *DSUser, conn net.Conn, message *ServerMes
 
 func handleRemoveUserFromConversation(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	errStr := fmt.Sprintf("%s (%s) cannot remove user from conversation:", user.Profile.Name, user.username)
+	errStr := user.username + " cannot remove user from conversation:"
 
 	if message.Message == nil || message.Username == nil {
 		e := NewError("missing message and/or username", ErrorMissingParameter)
@@ -559,7 +556,7 @@ func handleRemoveUserFromConversation(user *DSUser, conn net.Conn, message *Serv
 		return sendServerMessage(conn, rsp)
 	}
 
-	errStr = fmt.Sprintf("%s (%s) cannot remove '%s' from conversation:", user.Profile.Name, user.username, *message.Username)
+	errStr = fmt.Sprintf("%s cannot remove %s from conversation:", user.username, *message.Username)
 
 	convKey := getConversationKey(*message.Message.ConversationKey)
 	err := removeUserFromConversation(user.username, *message.Username, convKey)
@@ -609,7 +606,7 @@ func handleRemoveUserFromConversation(user *DSUser, conn net.Conn, message *Serv
 
 func handleReadMessage(user *DSUser, conn net.Conn, message *ServerMessage) error {
 	rsp := new(ServerMessage)
-	errStr := fmt.Sprintf("%s (%s) cannot read message:", user.Profile.Name, user.username)
+	errStr := user.username + " cannot read message:"
 
 	if message.Message == nil {
 		e := NewError("missing message", ErrorMissingParameter)
@@ -657,7 +654,7 @@ func handleReadMessage(user *DSUser, conn net.Conn, message *ServerMessage) erro
 		sendServerMessageToUser(member, rsp)
 	}
 
-	log.Printf("%s (%s) read a message\n", user.Profile.Name, user.username)
+	log.Println(user.username, "read a message")
 
 	return nil
 }

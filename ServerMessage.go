@@ -22,12 +22,8 @@ func (r *Reactions) set(reaction Reactions) {
 	*r |= reaction
 }
 
-type UserReaction struct {
-	Reactions Reactions `json:"type"`
-	User      string    `json:"user"`
-}
-
 type Message struct {
+	ResponseKey     *string               `json:"responseKey,omitempty"`
 	ServerTime      *time.Time            `json:"serverTime,omitempty"`
 	ClientTime      *string               `json:"clientTime,omitempty"`
 	To              *[]string             `json:"to,omitempty"`
@@ -44,9 +40,10 @@ type Status struct {
 	Typing bool `json:"typing",datastore:"Typing"`
 }
 
-// TODO: add Created time variable and rename Time to LastMessage
+// TODO: implement Created time in handlers
 type Conversation struct {
-	Time            time.Time         `json:"time"`
+	Created         time.Time         `json:"created"`
+	LastMessage     time.Time         `json:"lastMessage"`
 	MemberStatus    map[string]Status `json:"memberStatus"`
 	ConversationKey string            `json:"conversationKey"`
 	Messages        []Message         `json:"messages"`
@@ -58,18 +55,24 @@ type Contact struct {
 }
 
 const (
-	GenderUnknown = "Unknown"
-	GenderFemale  = "Female"
-	GenderMale    = "Male"
-	GenderOther   = "Other"
+	GenderFemale  = "female"
+	GenderMale    = "male"
+	GenderOther   = "other"
+	GenderUnknown = "na"
 )
 
 type Profile struct {
-	Name     string `json:"name",datastore:"Name"`
-	Email    string `json:"email",datastore:"Email"`
-	Phone    string `json:"phone,omitempty",datastore:"Phone,omitempty"`
-	Gender   string `json:"gender,omitempty",datastore:"Gender,omitempty"`
-	Birthday string `json:"birthday,omitempty",datastore:"Birthday,omitempty"`
+	// Required
+	FirstName        string `json:"firstName",datastore:"First Name"`
+	LastName         string `json:"lastName",datastore:"Last Name"`
+	Email            string `json:"email",datastore:"Email"`
+	Phone            string `json:"phone",datastore:"Phone"`
+	SecurityQuestion string `json:"securityQuestion",datastore:"Security Question"`
+	SecurityAnswer   string `json:"securityAnswer",datastore:"Security Answer"`
+
+	// Optional
+	Gender   string    `json:"gender,omitempty",datastore:"Gender,omitempty"`
+	Birthday time.Time `json:"birthday,omitempty",datastore:"Birthday,omitempty"`
 }
 
 type ServerMessage struct {
@@ -118,13 +121,14 @@ const (
 	NotificationProfileUpdated              = iota // returns Profile
 	NotificationMessageReceived             = iota // returns Message.[ConversationKey, MessageKey, ServerTime, From, Text (, Reactions)] (Message is embedded in ConversationKeys if it is the first message in a conversation)
 	NotificationMessageUpdated              = iota // returns Message.[ConversationKey, MessageKey, Text]
+	NotificationMessageReaction             = iota // returns Message.[ConversationKey, MessageKey, Reactions]
 	NotificationUserAddedToConversation     = iota // returns Username, Message.ConversationKey (, Message.ConversationKeys (returned only to new user))
 	NotificationUserRemovedFromConversation = iota // returns Username, Message.ConversationKey
 	NotificationMessageRead                 = iota // returns Message.[ConversationKey, From]
 	NotificationTyping                      = iota // returns Message.[ConversationKey, From, Typing]
 
 	// Actions are received from client devices
-	ActionRegister                   = iota // requires Username, Password, Name, Email
+	ActionRegister                   = iota // requires Username, Password, First Name, Last Name, Email, Security Question & Answer, phone; optionally DOB, gender
 	ActionLogIn                      = iota // requires Username, Password
 	ActionLogOut                     = iota // request to end session, requires nothing
 	ActionAddContact                 = iota // requires Username
@@ -132,6 +136,7 @@ const (
 	ActionUpdateProfile              = iota // requires Profile
 	ActionSendMessage                = iota // requires Message.[(To | ConversationKey), ClientTime, Text]
 	ActionUpdateMessage              = iota // requires Message.[ConversationKey, MessageKey, Text]
+	ActionReactToMessage             = iota // requires Message.[ConversationKey, MessageKey, Reactions]
 	ActionAddUserToConversation      = iota // requires Username, Message.ConversationKey
 	ActionRemoveUserFromConversation = iota // requires Username, Message.ConversationKey
 	ActionReadMessage                = iota // requires ConversationKey

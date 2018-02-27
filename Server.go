@@ -8,7 +8,6 @@ import (
 	"context"
 	"cloud.google.com/go/datastore"
 	"time"
-	"io"
 	"encoding/json"
 	"net"
 )
@@ -18,10 +17,6 @@ const ProjectID = "cen3031-192414"
 // TODO: write tests
 // TODO: implement a toggle switch for editing messages in the conversation
 // TODO: implement authorization tokens
-
-func socketClosed(err error) bool {
-	return err == io.EOF || err == io.ErrUnexpectedEOF || err == io.ErrClosedPipe
-}
 
 func register(user *DSUser, message *ServerMessage) error {
 	rsp := new(ServerMessage)
@@ -40,8 +35,9 @@ func register(user *DSUser, message *ServerMessage) error {
 		return ErrMissingParameter
 	}
 
-	if len(*message.Username) == 0 || len(*message.Password) == 0 || len(message.Profile.Name) == 0 || len(message.Profile.Email) == 0 {
-		e := NewError("empty username, password, profile.name and/or profile.email", ErrorEmptyParameter)
+	if len(*message.Username) == 0 || len(*message.Password) == 0 || len(message.Profile.FirstName) == 0 || len(message.Profile.LastName) == 0 || len(message.Profile.Email) == 0 ||
+		len(message.Profile.Phone) == 0 || len(message.Profile.SecurityQuestion) == 0 || len(message.Profile.SecurityAnswer) == 0 {
+		e := NewError("empty profile.[firstName | lastName | email | phone | securityQuestion | securityAnswer", ErrorEmptyParameter)
 		log.Println(errStr, e)
 		rsp.setError(e)
 
@@ -52,7 +48,7 @@ func register(user *DSUser, message *ServerMessage) error {
 		return ErrEmptyParameter
 	}
 
-	errStr = fmt.Sprintf("cannot register %s as '%s':", message.Profile.Name, *message.Username)
+	errStr = fmt.Sprintf("cannot register %s %s as %s:", message.Profile.FirstName, message.Profile.LastName, *message.Username)
 
 	// create account
 	user, err := createUserAccount(*message.Username, *message.Password, *message.Profile)
@@ -72,7 +68,7 @@ func register(user *DSUser, message *ServerMessage) error {
 		return err
 	}
 
-	log.Printf("%s (%s) created an account\n", user.Profile.Name, user.username)
+	log.Printf("%s %s created an account with username %s\n", user.Profile.FirstName, user.Profile.LastName, user.username)
 
 	return nil
 }
@@ -120,7 +116,7 @@ func logIn(user *DSUser, message *ServerMessage) error {
 		user.contacts = *contacts
 	}
 
-	log.Printf("%s (%s) logged in\n", user.Profile.Name, user.username)
+	log.Printf("%s logged in\n", user.username)
 
 	return nil
 }
@@ -132,12 +128,14 @@ func updateOnlineStatus(user *DSUser, online bool) {
 	msg.Online = &online
 	msg.Username = &user.username
 
+	log.Printf("user (updateOnlineStatus()): %+v", *user)
+
 	// send notification to online contacts
 	for _, contact := range user.contacts {
 		sendServerMessageToUser(contact, msg)
 	}
 
-	log.Printf("%s (%s) is %s\n", user.Profile.Name, user.username, func() string {
+	log.Printf("%s is %s\n", user.username, func() string {
 		if online {
 			return "online"
 		} else {
@@ -156,20 +154,11 @@ func remove(s []string, r string) ([]string, bool) {
 }
 
 func getServerMessage(conn net.Conn, message *ServerMessage) error {
-	err := json.NewDecoder(conn).Decode(message)
-	if err != nil {
-		log.Println("cannot decode JSON message:", err)
-	}
-	return nil
+	return json.NewDecoder(conn).Decode(message)
 }
 
 func sendServerMessage(conn net.Conn, message *ServerMessage) error {
-	err := json.NewEncoder(conn).Encode(message)
-	if err != nil {
-		log.Println(ErrorTag, "cannot encode JSON message:", err)
-		return err
-	}
-	return nil
+	return json.NewEncoder(conn).Encode(message)
 }
 
 func sendServerMessageToUser(username string, message *ServerMessage) {
@@ -178,11 +167,7 @@ func sendServerMessageToUser(username string, message *ServerMessage) {
 		for _, conn := range conns[username].connections {
 			err := sendServerMessage(conn.conn, message)
 			if err != nil {
-				if socketClosed(err) {
-					log.Printf("socket closed for '%s'\n", username)
-				} else {
-					log.Println(ErrorTag, "error sending message to client:", err)
-				}
+				log.Printf("socket closed for '%s'\n", username)
 			}
 		}
 	}
@@ -205,30 +190,24 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 
 	var loggedIn bool
 	sockClosed := false
+	connection := new(Connection)
+	connection.time = time.Now()
+	connection.conn = conn
 
 	for !sockClosed {
 		loggedIn = false
 		usr := new(DSUser)
+		usr.connection = connection
 		rsp := new(ServerMessage)
 		msg := new(ServerMessage)
+
 		for !loggedIn {
 			// first message received is either Login or Register
 			err = getServerMessage(conn, msg)
 			if err != nil {
 				log.Println("cannot get message from client:", err)
-				err = sendServerMessage(conn, rsp)
-				if socketClosed(err) {
-					sockClosed = true
-					break
-				}
-
-				// if the socket is still open, the only other errors result from invalid JSON
-				rsp.setError(ErrInvalidJSON)
-				err = sendServerMessage(conn, rsp)
-				if socketClosed(err) {
-					sockClosed = true
-					break
-				}
+				sockClosed = true
+				break
 			}
 
 			switch msg.Status {
@@ -236,33 +215,24 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				err = logIn(usr, msg)
 				if err != nil {
 					log.Println("cannot log user in:", err)
-					sockClosed = socketClosed(err)
-					if !sockClosed {
-						if err == ErrInvalidUsername || err == ErrInvalidPassword {
-							rsp.setError(ErrInvalidLogin)
-						} else {
-							rsp.setError(ErrInternalServer)
-						}
+					if err == ErrInvalidUsername || err == ErrInvalidPassword {
+						rsp.setError(ErrInvalidLogin)
 						err = sendServerMessage(conn, rsp)
-						sockClosed = socketClosed(err)
+						sockClosed = err != nil
 					}
 					break
 				}
+				log.Println("user logged in:", usr.username)
 				loggedIn = true
 				break
 			case ActionRegister:
 				err = register(usr, msg)
 				if err != nil {
 					log.Println("cannot register user:", err)
-					sockClosed = socketClosed(err)
-					if !sockClosed {
-						if err == ErrExistingAccount {
-							rsp.setError(ErrExistingAccount)
-						} else {
-							rsp.setError(ErrInternalServer)
-						}
+					if err == ErrExistingAccount {
+						rsp.setError(ErrExistingAccount)
 						err = sendServerMessage(conn, rsp)
-						sockClosed = socketClosed(err)
+						sockClosed = err != nil
 					}
 					break
 				}
@@ -273,8 +243,8 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				e := NewError("not logged in", ErrorUnauthorized)
 				log.Println("cannot perform action:", e)
 				rsp.setError(e)
-				serr := sendServerMessage(conn, rsp)
-				sockClosed = socketClosed(serr)
+				err = sendServerMessage(conn, rsp)
+				sockClosed = err != nil
 				break
 			}
 
@@ -294,6 +264,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		connection.time = time.Now()
 		connection.conn = conn
 		usr.connection = connection
+		log.Printf("user (handleConnect()): %+v\n", *usr)
 		conns.add(usr)
 
 		rsp.clear()
@@ -321,23 +292,16 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		for loggedIn && !sockClosed {
 			err = getServerMessage(conn, msg)
 			if err != nil {
-				if socketClosed(err) {
-					sockClosed = true
-					break
-				}
-
-				log.Println("error getting message from client:", err)
-				continue
+				log.Println("cannot get message from client:", err)
+				sockClosed = true
+				break
 			}
 
 			err = handleServerMessage(usr, conn, msg)
 			if err != nil {
-				if socketClosed(err) {
-					sockClosed = true
-					break
-				}
-
-				log.Println("error handling message:", err)
+				log.Println("cannot handle message from client:", err)
+				sockClosed = true
+				break
 			}
 
 			if msg.Status == ActionLogOut {
@@ -351,7 +315,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 	log.Println("Socket closed")
 }
 
-func handleHome(w http.ResponseWriter, r *http.Request) {
+func handleHome(w http.ResponseWriter, _ *http.Request) {
 	w.Write([]byte("<H1>System.Out.Chat()</H1>"))
 }
 
