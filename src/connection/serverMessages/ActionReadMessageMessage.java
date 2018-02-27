@@ -1,6 +1,6 @@
 package connection.serverMessages;
 
-public class ActionReadMessageMessage extends ServerMessage {
+public class ActionReadMessageMessage extends ActionServerMessage {
     private String conversationKey;
 
     public ActionReadMessageMessage(String conversationKey) {

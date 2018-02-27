@@ -1,6 +1,6 @@
 package connection.serverMessages;
 
-public class ActionRemoveUserFromConversationMessage extends ServerMessage {
+public class ActionRemoveUserFromConversationMessage extends ActionServerMessage {
     private String username;
     private String conversationKey;
 

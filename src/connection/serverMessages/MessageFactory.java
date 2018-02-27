@@ -27,13 +27,15 @@ public class MessageFactory {
                 return gson.fromJson(jsonObject, NotificationMessageReceivedMessage.class);
             case 9: // Message Updated
                 return gson.fromJson(jsonObject, NotificationMessageUpdatedMessage.class);
-            case 10: // User Added to Conversation
+            case 10: // Message Reaction
+                return gson.fromJson(jsonObject, NotificationMessageReaction.class);
+            case 11: // User Added to Conversation
                 return gson.fromJson(jsonObject, NotificationUserAddedToConversationMessage.class);
-            case 11: // User Removed from Conversation
+            case 12: // User Removed from Conversation
                 return gson.fromJson(jsonObject, NotificationUserRemovedFromConversationMessage.class);
-            case 12: // Message Read
+            case 13: // Message Read
                 return gson.fromJson(jsonObject, NotificationMessageReadMessage.class);
-            case 13: // Typing
+            case 14: // Typing
                 return gson.fromJson(jsonObject, NotificationTypingMessage.class);
             default:
                 throw new Exception("Invalid message trying to be produced. Status of message: " + jsonObject.get("status").getAsInt());

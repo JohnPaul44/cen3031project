@@ -2,7 +2,7 @@ package connection.serverMessages;
 
 import model.Profile;
 
-public class ActionUpdateProfileMessage extends ServerMessage{
+public class ActionUpdateProfileMessage extends ActionServerMessage{
     private Profile profile;
 
     public ActionUpdateProfileMessage(Profile profile) {

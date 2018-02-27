@@ -1,6 +1,9 @@
 package connection.serverMessages;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public abstract class ServerMessage {
     public enum Status {
@@ -14,6 +17,7 @@ public abstract class ServerMessage {
         NOTIFICATIONPROFILEUPDATED,
         NOTIFICATIONMESSAGERECEIVED,
         NOTIFICATIONMESSAGEUPDATED,
+        NOTIFICATIONMESSAGEREACTION,
         NOTIFICATIONUSERADDEDTOCONVERSATION,
         NOTIFICATIONUSERREMOVEDFROMCONVERSATION,
         NOTIFICATIONMESSAGEREAD,
@@ -27,10 +31,16 @@ public abstract class ServerMessage {
         ACTIONUPDATEPROFILE,
         ACTIONSENDMESSAGE,
         ACTIONUPDATEMESSAGE,
+        ACTIONREACTTOMESSAGE,
         ACTIONADDUSERTOCONVERSATION,
         ACTIONREMOVEDUSERFROMCONVERSATION,
         ACTIONREADMESSAGE,
-        ACTIONSETTYPING
+        ACTIONSETTYPING;
+
+        @Override
+        public String toString() {
+            return String.valueOf(super.ordinal());
+        }
     }
     Status status;
 
