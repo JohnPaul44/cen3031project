@@ -1,5 +1,6 @@
 package application;
 
+import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +19,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class ChangePassword_View_controller extends ViewController {
+	ServerConnection connection;
+
+	public void passConnection(ServerConnection con){
+		connection = con;
+	}
+
 	@FXML
 	private Label username;
 	@FXML

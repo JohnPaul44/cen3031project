@@ -1,6 +1,5 @@
 package application;
 
-//John Paul
 import connection.ServerConnection;
 import connection.serverMessages.*;
 import javafx.collections.FXCollections;
