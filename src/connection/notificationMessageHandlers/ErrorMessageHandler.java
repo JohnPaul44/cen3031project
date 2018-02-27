@@ -12,6 +12,7 @@ public class ErrorMessageHandler implements MessageHandler {
 
     @Override
     public void handle() {
+
         System.out.println("Error serverMessage received from server");
         System.out.println("Error Number: " + serverMessage.getErrorNumber() + " Error String: ");
     }

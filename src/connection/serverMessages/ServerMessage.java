@@ -3,7 +3,7 @@ package connection.serverMessages;
 import com.google.gson.Gson;
 
 public abstract class ServerMessage {
-    enum Status {
+    public enum Status {
         UNINITILIALIZED,
         NOTIFICATIONERROR,
         NOTIFICATIONLOGGEDIN,
