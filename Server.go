@@ -51,7 +51,7 @@ func register(user *DSUser, message *ServerMessage) error {
 	errStr = fmt.Sprintf("cannot register %s %s as %s:", message.Profile.FirstName, message.Profile.LastName, *message.Username)
 
 	// create account
-	user, err := createUserAccount(*message.Username, *message.Password, *message.Profile)
+	u, err := createUserAccount(*message.Username, *message.Password, *message.Profile)
 	if err != nil {
 		if err == ErrExistingAccount {
 			log.Println(ErrorTag, errStr, "account already exists")
@@ -67,6 +67,8 @@ func register(user *DSUser, message *ServerMessage) error {
 		}
 		return err
 	}
+
+	*user = *u
 
 	log.Printf("%s %s created an account with username %s\n", user.Profile.FirstName, user.Profile.LastName, user.username)
 
@@ -104,10 +106,12 @@ func logIn(user *DSUser, message *ServerMessage) error {
 
 	errStr = fmt.Sprintf("cannot log in as '%s':", *message.Username)
 
-	user, err := getUserAccountAuthenticated(*message.Username, *message.Password)
+	u, err := getUserAccountAuthenticated(*message.Username, *message.Password)
 	if err != nil {
 		return err
 	}
+
+	*user = *u
 
 	contacts, err := getContacts(user)
 	if err != nil {

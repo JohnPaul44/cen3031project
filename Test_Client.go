@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 )
 
-func testMain() {
-	conn, err := net.Dial("tcp", ":8675")
+func main() {
+	conn, err := net.Dial("tcp", "systemoutchat.serveirc.com:8675")
 	if err != nil {
 		log.Fatal(err)
 	}
