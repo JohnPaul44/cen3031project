@@ -6,7 +6,7 @@ public class ActionUpdateProfileMessage extends ServerMessage{
     private Profile profile;
 
     public ActionUpdateProfileMessage(Profile profile) {
-        this.status = Status.ACTIONUPDATEPROFILE.ordinal();
+        this.status = Status.ACTIONUPDATEPROFILE;
         this.profile = profile;
     }
 }

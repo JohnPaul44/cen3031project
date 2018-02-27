@@ -13,40 +13,40 @@ public class UserUpdater {
 
     public void updateUser(ServerMessage serverMessage) throws ParseException {
         switch (serverMessage.getStatus()) {
-            case 2: // Logged In Message
+            case NOTIFICATIONLOGGEDIN: // Logged In Message
                 currentUser.logIn((NotificationLoggedInMessage)serverMessage);
                 break;
-            case 3: // User Online Status
+            case NOTIFICATIONUSERONLINESTATUS: // User Online Status
                 currentUser.updateUserOnlineStatus((NotificationUserOnlineStatusMessage) serverMessage);
                 break;
-            case 4: // Logged Out Message
+            case NOTIFICATIONLOGGEDOUT: // Logged Out Message
                 currentUser.logOut();
                 break;
-            case 5: // Contact Added
+            case NOTIFICATIONCONTACTADDED: // Contact Added
                 currentUser.addContact((NotificationContactAddedMessage) serverMessage);
                 break;
-            case 6: // Contact Removed
+            case NOTIFICATIONCONTACTREMOVED: // Contact Removed
                 currentUser.removeContact((NotificationContactRemovedMessage) serverMessage);
                 break;
-            case 7: // Profile Updated
+            case NOTIFICATIONPROFILEUPDATED: // Profile Updated
                 currentUser.updateProfile((NotificationProfileUpdatedMessage) serverMessage);
                 break;
-            case 8: // Message Received
+            case NOTIFICATIONMESSAGERECEIVED: // Message Received
                 currentUser.addMessage((NotificationMessageReceivedMessage) serverMessage);
                 break;
-            case 9: // Message Updated
+            case NOTIFICATIONMESSAGEUPDATED: // Message Updated
                 currentUser.updateMessage((NotificationMessageUpdatedMessage) serverMessage);
                 break;
-            case 10: // User Added to Conversation
+            case NOTIFICATIONUSERADDEDTOCONVERSATION: // User Added to Conversation
                 currentUser.addUserToConversation((NotificationUserAddedToConversationMessage) serverMessage);
                 break;
-            case 11: // User Removed from Conversation
+            case NOTIFICATIONUSERREMOVEDFROMCONVERSATION: // User Removed from Conversation
                 currentUser.removeUserFromConversation((NotificationUserRemovedFromConversationMessage) serverMessage);
                 break;
-            case 12: // Message Read
+            case NOTIFICATIONMESSAGEREAD: // Message Read
                 currentUser.updateMessageRead((NotificationMessageReadMessage) serverMessage);
                 break;
-            case 13: // Typing
+            case NOTIFICATIONTYPING: // Typing
                 currentUser.updateMessageTyping((NotificationTypingMessage) serverMessage);
         }
     }

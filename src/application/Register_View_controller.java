@@ -116,9 +116,12 @@ public class Register_View_controller extends ViewController {
         
         status.setText("Register Successful");
         loggedIn();
+
+        //closes the login screen when the home screen pops up
+            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
     }
 
-    public void loggedIn() throws Exception{
+    public void loggedIn(){
         try {
             //opens new window for creating a profile
             Stage primaryStage = new Stage();
@@ -127,9 +130,6 @@ public class Register_View_controller extends ViewController {
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.show();
-
-            //closes the login screen when the home screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         }
         catch(Exception e){
             e.printStackTrace();

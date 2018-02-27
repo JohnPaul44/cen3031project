@@ -5,7 +5,7 @@ public class ActionLogInMessage extends ServerMessage {
     private String password;
 
     public ActionLogInMessage(String username, String password) {
-        this.status = Status.ACTIONLOGIN.ordinal();
+        this.status = Status.ACTIONLOGIN;
         this.username = username;
         this.password = password;
     }

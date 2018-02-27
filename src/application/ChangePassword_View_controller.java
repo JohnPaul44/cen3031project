@@ -1,5 +1,6 @@
 package application;
 
+import connection.serverMessages.ServerMessage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -162,5 +163,10 @@ public class ChangePassword_View_controller extends ViewController {
 	
 	public void close(ActionEvent event) {
 		
+	}
+
+	@Override
+	void notification(ServerMessage message) {
+
 	}
 }

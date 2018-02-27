@@ -6,7 +6,7 @@ public class NotificationTypingMessage extends ServerMessage {
     private boolean typing;
 
     public NotificationTypingMessage(String conversationKey, String from, boolean typing) {
-        this.status = Status.NOTIFICATIONTYPING.ordinal();
+        this.status = Status.NOTIFICATIONTYPING;
         this.conversationKey = conversationKey;
         this.from = from;
         this.typing = typing;

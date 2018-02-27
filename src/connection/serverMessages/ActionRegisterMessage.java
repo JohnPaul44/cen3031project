@@ -7,7 +7,7 @@ public class ActionRegisterMessage extends ServerMessage{
     private String email;
 
     public ActionRegisterMessage(String username, String password, String name, String email) {
-        this.status = Status.ACTIONREGISTER.ordinal();
+        this.status = Status.ACTIONREGISTER;
         this.username = username;
         this.password = password;
         this.name = name;

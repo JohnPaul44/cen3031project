@@ -5,7 +5,7 @@ public class NotificationUserRemovedFromConversationMessage extends ServerMessag
     private String conversationKey;
 
     public NotificationUserRemovedFromConversationMessage(String username, String conversationKey) {
-        this.status = Status.NOTIFICATIONUSERREMOVEDFROMCONVERSATION.ordinal();
+        this.status = Status.NOTIFICATIONUSERREMOVEDFROMCONVERSATION;
         this.username = username;
         this.conversationKey = conversationKey;
     }

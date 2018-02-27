@@ -5,7 +5,7 @@ public class ActionAddUserToConversationMessage extends ServerMessage {
     private String conversationKey;
 
     public ActionAddUserToConversationMessage(String username, String conversationKey) {
-        this.status = Status.ACTIONADDUSERTOCONVERSATION.ordinal();
+        this.status = Status.ACTIONADDUSERTOCONVERSATION;
         this.username = username;
         this.conversationKey = conversationKey;
     }

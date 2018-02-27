@@ -6,7 +6,7 @@ public class NotificationMessageUpdatedMessage extends ServerMessage {
     private String text;
 
     public NotificationMessageUpdatedMessage(String conversationKey, String messageKey, String text) {
-        this.status = Status.NOTIFICATIONMESSAGEUPDATED.ordinal();
+        this.status = Status.NOTIFICATIONMESSAGEUPDATED;
         this.conversationKey = conversationKey;
         this.messageKey = messageKey;
         this.text = text;

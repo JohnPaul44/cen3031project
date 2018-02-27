@@ -5,7 +5,7 @@ public class NotificationErrorMessage extends ServerMessage {
     private String errorString;
 
     public NotificationErrorMessage(int errorNumber, String errorString) {
-        this.status = Status.NOTIFICATIONERROR.ordinal();
+        this.status = Status.NOTIFICATIONERROR;
         this.errorNumber = errorNumber;
         this.errorString = errorString;
     }

@@ -16,7 +16,7 @@ public class NotificationMessageReceivedMessage extends ServerMessage {
 
     // Test constructor for existing conversation
     public NotificationMessageReceivedMessage(String conversationKey, String messageKey, String serverTime, String from, String text, Map<String, Reactions> reactions) {
-        this.status = Status.NOTIFICATIONMESSAGERECEIVED.ordinal();
+        this.status = Status.NOTIFICATIONMESSAGERECEIVED;
         this.conversationKey = conversationKey;
         this.messageKey = messageKey;
         this.serverTime = serverTime;
@@ -26,12 +26,12 @@ public class NotificationMessageReceivedMessage extends ServerMessage {
     }
     // Test constructor for new conversation
     public NotificationMessageReceivedMessage(Conversation conversation) {
-        this.status = Status.NOTIFICATIONMESSAGERECEIVED.ordinal();
+        this.status = Status.NOTIFICATIONMESSAGERECEIVED;
         this.conversation = conversation;
     }
 
     public NotificationMessageReceivedMessage(String conversationKey, String messageKey, String serverTime, String from, String text) {
-        this.status = Status.NOTIFICATIONMESSAGERECEIVED.ordinal();
+        this.status = Status.NOTIFICATIONMESSAGERECEIVED;
         this.conversationKey = conversationKey;
         this.messageKey = messageKey;
         this.serverTime = serverTime;

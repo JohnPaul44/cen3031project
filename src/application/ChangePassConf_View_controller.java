@@ -1,5 +1,6 @@
 package application;
 
+import connection.serverMessages.ServerMessage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -36,5 +37,10 @@ public class ChangePassConf_View_controller extends ViewController {
 		
 		//call the back button from the change password controller
 		
+	}
+
+	@Override
+	void notification(ServerMessage message) {
+
 	}
 }
