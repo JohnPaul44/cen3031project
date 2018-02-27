@@ -17,6 +17,7 @@ import javafx.scene.Node;
 import model.CurrentUser;
 
 public class login_controller {
+	//testing
 	//ServerConnection connection = new ServerConnection();
 
 	@FXML
