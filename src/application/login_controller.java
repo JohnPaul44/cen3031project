@@ -47,7 +47,7 @@ public class login_controller extends ViewController{
 	}
 	
 	@FXML
-	public void LoginEventButton(ActionEvent event) throws Exception{
+	public void LoginEventButton(ActionEvent event){
 		connection.login(username.getText(), password.getText());
 	}
 	
@@ -95,6 +95,9 @@ public class login_controller extends ViewController{
 		//passes the username to the change password screen
 		ChangePassword_View_controller pass = loader.getController();
 		pass.setUsername(username.getText());
+		pass.passConnection(connection);
+		connection.setDelegate(pass);
+
 		
 		Parent root = loader.getRoot();
 		Stage changeStage = new Stage();
@@ -110,8 +113,17 @@ public class login_controller extends ViewController{
 	@FXML
 	public void openHome() {
 		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("/application/home.fxml"));
+			loader.load();
+
+			Home_View_controller home = loader.getController();
+			home.passConnection(connection);
+			connection.setDelegate(home);
+			home.initialize();
+
+			Parent root = loader.getRoot();
 			Stage registerStage = new Stage();
-			Parent root = FXMLLoader.load(getClass().getResource("/application/home.fxml"));
 			Scene scene = new Scene(root, 700, 500);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			registerStage.setScene(scene);
@@ -119,18 +131,23 @@ public class login_controller extends ViewController{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		//TODO: close login screen after opening the home screen, without having an action event
 	}
 
 	@Override
 	public void notification(ServerMessage message) {
 		switch (message.getStatus()) {
 			case NOTIFICATIONLOGGEDIN:
-				//next screen
+				//opens the next screen
 				System.out.println("login success");
+				status.setText("Login Successful");
 				openHome();
 				break;
 			case NOTIFICATIONERROR:
 				System.out.println("login failed");
+				//prints to the ui that the login failed
+				status.setText("Incorrect Username or Password");
 				break;
 			default:
 				break;

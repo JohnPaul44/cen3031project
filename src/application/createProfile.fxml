@@ -9,11 +9,6 @@
 
 <AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="27.0" layoutY="67.0" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../../../../../Desktop/Screen%20Shot%202018-02-22%20at%2011.22.44%20AM.png" />
-         </image>
-      </ImageView>
       <Label layoutX="81.0" layoutY="228.0" text="USERNAME" />
       <TextArea layoutX="21.0" layoutY="304.0" prefHeight="117.0" prefWidth="226.0" promptText="Bio" />
       <TextField layoutX="20.0" layoutY="267.0" prefHeight="27.0" prefWidth="226.0" promptText="What's on your mind?" />
