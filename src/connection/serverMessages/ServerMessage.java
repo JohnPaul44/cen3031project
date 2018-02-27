@@ -37,17 +37,11 @@ public abstract class ServerMessage {
         ACTIONREMOVEDUSERFROMCONVERSATION,
         ACTIONREADMESSAGE,
         ACTIONSETTYPING;
-
-
-        @Override
-        public String toString() {
-            return String.valueOf(super.ordinal());
-        }
     }
-    Status status;
+    int status;
 
     public Status getStatus() {
-        return status;
+        return Status.values()[status];
     }
 
     public String toJsonString() {

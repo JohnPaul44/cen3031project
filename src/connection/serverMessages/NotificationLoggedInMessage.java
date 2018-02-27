@@ -13,7 +13,7 @@ public class NotificationLoggedInMessage extends ServerMessage {
     private HashMap<String, Conversation> conversations;
 
     public NotificationLoggedInMessage(String username, Profile profile, HashMap<String, Contact> contacts, HashMap<String, Conversation> conversations) {
-        this.status = Status.NOTIFICATIONLOGGEDIN;
+        this.status = Status.NOTIFICATIONLOGGEDIN.ordinal();
         this.username = username;
         this.profile = profile;
         this.contacts = contacts;

@@ -54,14 +54,25 @@ public class login_controller extends ViewController{
 	@FXML
 	public void RegisterEvent(ActionEvent event) throws Exception{
 		//opens a new window where a user can register their account
-		Stage registerStage = new Stage();
-		Parent root = FXMLLoader.load(getClass().getResource("/application/registerUser.fxml"));
+
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(getClass().getResource("/application/registerUser.fxml"));
+		loader.load();
+
+		//creates instance of the change password controller
+		//passes the username to the change password screen
+		Register_View_controller reg = loader.getController();
+		reg.passConnection(connection);
+		connection.setDelegate(reg);
+
+		Parent root = loader.getRoot();
+		Stage changeStage = new Stage();
 		Scene scene = new Scene(root,700,500);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		registerStage.setScene(scene);
-		registerStage.show();
-		
-		//closes the login screen when the home screen pops up
+		changeStage.setScene(scene);
+		changeStage.show();
+
+		//closes the login screen when the change password screen pops up
 		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
 	}
 	
@@ -96,12 +107,27 @@ public class login_controller extends ViewController{
 		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
 	}
 
+	@FXML
+	public void openHome() {
+		try {
+			Stage registerStage = new Stage();
+			Parent root = FXMLLoader.load(getClass().getResource("/application/home.fxml"));
+			Scene scene = new Scene(root, 700, 500);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			registerStage.setScene(scene);
+			registerStage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void notification(ServerMessage message) {
 		switch (message.getStatus()) {
 			case NOTIFICATIONLOGGEDIN:
 				//next screen
 				System.out.println("login success");
+				openHome();
 				break;
 			case NOTIFICATIONERROR:
 				System.out.println("login failed");

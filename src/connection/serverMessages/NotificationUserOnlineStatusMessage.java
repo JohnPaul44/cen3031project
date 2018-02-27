@@ -5,7 +5,7 @@ public class NotificationUserOnlineStatusMessage extends ServerMessage {
     private String username;
 
     public NotificationUserOnlineStatusMessage(boolean online, String username) {
-        this.status = Status.NOTIFICATIONUSERONLINESTATUS;
+        this.status = Status.NOTIFICATIONUSERONLINESTATUS.ordinal();
         this.online = online;
         this.username = username;
     }

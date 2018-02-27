@@ -5,10 +5,13 @@ import java.net.*;
 
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.security.ntlm.Server;
 import connection.notificationMessageHandlers.*;
 import connection.serverMessages.ActionLogInMessage;
 import connection.serverMessages.ActionRegisterMessage;
+import connection.serverMessages.MessageFactory;
 import connection.serverMessages.ServerMessage;
 import model.CurrentUser;
 import model.Profile;
@@ -22,7 +25,11 @@ public class ServerConnection implements IServerConnection{
     private CurrentUser currentUser;
     private String hostname = "35.231.80.25";
     private int portNumber = 8675;
-    private ViewController viewController;
+    private ViewController delegate;
+
+    public void setDelegate(ViewController delegate) {
+        this.delegate = delegate;
+    }
 
     public ServerConnection() {
         this.currentUser = new CurrentUser();
@@ -70,9 +77,11 @@ public class ServerConnection implements IServerConnection{
                     MessageHandler handler = handlerFactory.produce(messageFromServer, userUpdater);
                     handler.handle();
 
-                    Gson gson = new Gson();
-                    ServerMessage serverMessage = gson.fromJson(messageFromServer, ServerMessage.class);
-                    viewController.notification(serverMessage);
+                    JsonParser parser = new JsonParser();
+                    JsonObject jsonObject = parser.parse(messageFromServer).getAsJsonObject();
+                    MessageFactory messageFactory = new MessageFactory();
+                    ServerMessage serverMessage = messageFactory.produce(jsonObject);
+                    delegate.notification(serverMessage);
                 }
             } catch (IOException e) {
                 System.out.println("Error while receiving a message from server: " + e);

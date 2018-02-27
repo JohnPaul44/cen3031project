@@ -14,7 +14,7 @@ public class ActionRegisterMessage extends ActionServerMessage{
 
     public ActionRegisterMessage(String username, String password, String firstName, String lastName, String email,
                                  String phone, String gender, String DOB, String securityQuestion, String securityAnswer) {
-        this.status = Status.ACTIONREGISTER;
+        this.status = Status.ACTIONREGISTER.ordinal();
         this.username = username;
         this.password = password;
         this.firstName = firstName;
@@ -22,7 +22,7 @@ public class ActionRegisterMessage extends ActionServerMessage{
         this.email = email;
         this.phone = phone;
         this.gender = gender;
-        if (DOB == null) {
+        if (DOB != null) {
             this.DOB = DOB;
         }
         this.securityQuestion = securityQuestion;

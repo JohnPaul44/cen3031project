@@ -13,7 +13,7 @@ public class ActionSendMessageMessage extends ActionServerMessage {
     private String text;
 
     public ActionSendMessageMessage(ActionSendMessageMessageType type, String toOrConversationKey, String text) {
-        this.status = Status.ACTIONSENDMESSAGE;
+        this.status = Status.ACTIONSENDMESSAGE.ordinal();
 
         if (type == ActionSendMessageMessageType.TO) {
             this.to = toOrConversationKey;

@@ -5,7 +5,7 @@ public class ActionSetTypingMessage extends ActionServerMessage{
     private boolean typing;
 
     public ActionSetTypingMessage(String conversationKey, boolean typing) {
-        this.status = Status.ACTIONSETTYPING;
+        this.status = Status.ACTIONSETTYPING.ordinal();
         this.conversationKey = conversationKey;
         this.typing = typing;
     }

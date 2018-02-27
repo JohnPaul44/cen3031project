@@ -21,6 +21,7 @@ public class Main extends Application {
 
 			login_controller login = loader.getController();
 			login.passConnection(connection);
+			connection.setDelegate(login);
 
 			Parent root = loader.getRoot();
 			Scene scene = new Scene(root,700,500);
