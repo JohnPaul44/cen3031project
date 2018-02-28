@@ -75,7 +75,7 @@ public class Register_View_controller extends ViewController {
     	@FXML
     public void registerButtonClicked(ActionEvent event) throws Exception {
         //error checking for empty fields
-        if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("") || phoneNumber().equals("") || securityAnswer().equals("")) {
+        if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("") || phoneNumberField.getText().equals("") || securityAnswer().equals("")) {
         		status.setText("Please enter: ");
         		if(username().equals("")) {
         			status.setText(status.getText() + "|username|  ");
@@ -92,7 +92,7 @@ public class Register_View_controller extends ViewController {
         		if(email().equals("")) {
         			status.setText(status.getText() + "|email|  ");
         		}
-        		if(phoneNumber().equals("")){
+        		if(phoneNumberField.getText().equals("")){
         		    status.setText(status.getText() + "|phone number|  ");
                 }
                 if(securityAnswer().equals("")){
@@ -105,12 +105,14 @@ public class Register_View_controller extends ViewController {
         		//sets incorrect status in the message
         		return;
         }
+        else if(phoneNumber() == null){
+            status.setText("Invalid Phone Number");
+            return;
+        }
         else {
             connection.registerNewUser(username(), checkedPassword(), firstName(), lastName(), email(), phoneNumber(), gender(), birthDay(), securityQuestion(), securityAnswer());
             status.setText("Register Successful");
 
-            //closes the login screen when the home screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         }
     }
 
@@ -131,6 +133,8 @@ public class Register_View_controller extends ViewController {
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
+
+            registerButton.getScene().getWindow().hide();
         } catch (Exception e) {
             e.printStackTrace();
         }

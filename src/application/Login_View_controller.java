@@ -130,6 +130,7 @@ public class Login_View_controller extends ViewController{
 			registerStage.setScene(scene);
 			registerStage.show();
 
+			loginButton.getScene().getWindow().hide();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -154,7 +155,12 @@ public class Login_View_controller extends ViewController{
 			case NOTIFICATIONERROR:
 				System.out.println("login failed");
 				//prints to the ui that the login failed
-				//status.setText("Incorrect Username or Password");
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        status.setText("Incorrect Username or Password");
+                    }
+                });
 				break;
 			default:
 				break;
