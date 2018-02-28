@@ -129,6 +129,7 @@ public class Login_View_controller extends ViewController{
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			registerStage.setScene(scene);
 			registerStage.show();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

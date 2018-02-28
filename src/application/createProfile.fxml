@@ -12,6 +12,11 @@
 <AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EditProfile_View_Controller">
    <children>
       <Label layoutX="623.0" layoutY="23.0" text="/*Edit*/" textFill="#fbfaf9" />
+      <TextField fx:id="firstName" layoutX="298.0" layoutY="60.0" onKeyPressed="#SaveChangesEventKey" promptText="First Name">
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
+      </TextField>
       <TextField fx:id="email" layoutX="298.0" layoutY="97.0" onKeyPressed="#SaveChangesEventKey" prefHeight="23.0" prefWidth="341.0" promptText="Email">
          <font>
             <Font size="12.0" />
@@ -62,11 +67,6 @@
          </cursor>
       </Button>
       <Label layoutX="62.0" layoutY="23.0" text="System.out.chat()" textFill="#fbfaf9" />
-      <TextField fx:id="firstName" layoutX="298.0" layoutY="60.0" onKeyPressed="#SaveChangesEventKey" promptText="First Name">
-         <cursor>
-            <Cursor fx:constant="TEXT" />
-         </cursor>
-      </TextField>
       <TextField fx:id="lastName" layoutX="472.0" layoutY="60.0" onKeyPressed="#SaveChangesEventKey" promptText="Last Name">
          <cursor>
             <Cursor fx:constant="TEXT" />

@@ -147,7 +147,7 @@ public class Home_View_controller extends ViewController{
                 Platform.runLater(new Runnable(){
                     @Override
                     public void run(){
-                        setValues();
+                        //setValues();
                     }
                 });
                 break;
