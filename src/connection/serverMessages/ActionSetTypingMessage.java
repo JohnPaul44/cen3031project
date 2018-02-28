@@ -1,6 +1,6 @@
 package connection.serverMessages;
 
-public class ActionSetTypingMessage extends ServerMessage{
+public class ActionSetTypingMessage extends ActionServerMessage{
     private String conversationKey;
     private boolean typing;
 

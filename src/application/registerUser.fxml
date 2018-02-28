@@ -10,19 +10,21 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Register_controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Register_View_controller">
    <left>
-      <VBox prefHeight="344.0" prefWidth="210.0" translateX="20.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="522.0" prefWidth="210.0" translateX="20.0" BorderPane.alignment="CENTER">
          <children>
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Username*" translateX="120.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Password*" translateX="120.0" translateY="16.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm Password*" translateX="75.0" translateY="32.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name*" translateX="113.0" translateY="48.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name*" translateX="113.0" translateY="64.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Email*" translateX="133.0" translateY="80.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone #" translateX="125.0" translateY="96.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Gender" translateX="125.0" translateY="112.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Date of Birth" translateX="110.0" translateY="128.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Username*" translateX="120.0" translateY="2.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Password*" translateX="120.0" translateY="20.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm Password*" translateX="75.0" translateY="38.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name*" translateX="113.0" translateY="55.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name*" translateX="113.0" translateY="70.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Email*" translateX="133.0" translateY="90.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone #*" translateX="125.0" translateY="173.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Gender" translateX="125.0" translateY="188.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Date of Birth" translateX="110.0" translateY="202.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question*" translateX="75.0" translateY="58.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question Answer*" translateX="35.0" translateY="72.0" />
          </children>
       </VBox>
    </left>
@@ -30,9 +32,9 @@
       <VBox focusTraversable="true" prefHeight="322.0" prefWidth="160.0" BorderPane.alignment="CENTER" />
    </right>
    <center>
-      <VBox prefHeight="400.0" prefWidth="330.0" translateX="20.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="438.0" prefWidth="330.0" translateX="20.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField fx:id="usernameField" onAction="#registerButtonClicked" onKeyReleased="#registerEnterKey" promptText="Please Enter Your Username" translateY="-5.0">
+            <TextField fx:id="usernameField" onAction="#registerButtonClicked" onKeyReleased="#registerEnterKey" prefHeight="0.0" prefWidth="330.0" promptText="Please Enter Your Username" translateY="-5.0">
                <font>
                   <Font size="14.0" />
                </font>
@@ -80,7 +82,8 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
-            <TextField fx:id="phoneNumberField" onKeyPressed="#registerEnterKey" promptText="(Optional) Please Enter Your Phone #" translateY="25.0">
+            <PasswordField fx:id="securityQuestionAnswer" promptText="Please Enter Your Answer To The Question Selected Above" translateY="65.0" />
+            <TextField fx:id="phoneNumberField" onKeyPressed="#registerEnterKey" promptText="(Optional) Please Enter Your Phone #" translateY="70.0">
                <font>
                   <Font size="14.0" />
                </font>
@@ -88,21 +91,22 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
-            <ChoiceBox fx:id="genderField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="268.0" translateY="30.0">
+            <ChoiceBox fx:id="genderField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="268.0" translateY="75.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ChoiceBox>
-            <DatePicker fx:id="DOBField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="261.0" translateY="35.0">
+            <DatePicker fx:id="DOBField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="261.0" translateY="80.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></DatePicker>
-            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonClicked" prefHeight="30.0" prefWidth="103.0" style="-fx-background-color: #698F3F;" text="Register!" textFill="#fbfaf9" translateX="80.0" translateY="45.0">
+            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonClicked" prefHeight="50.0" prefWidth="103.0" style="-fx-background-color: #698F3F;" text="Register!" textFill="#fbfaf9" translateX="80.0" translateY="120.0">
                <effect>
                   <Reflection />
                </effect>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>
+            <ChoiceBox fx:id="securityQuestion" prefWidth="268.0" translateY="-130.0" />
          </children>
       </VBox>
    </center>

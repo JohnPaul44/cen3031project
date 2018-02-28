@@ -1,6 +1,6 @@
 package connection.serverMessages;
 
-public class ActionAddContactMessage extends ServerMessage{
+public class ActionAddContactMessage extends ActionServerMessage{
     private String username;
 
     public ActionAddContactMessage(String username) {

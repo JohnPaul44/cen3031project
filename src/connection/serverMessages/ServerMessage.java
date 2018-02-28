@@ -1,9 +1,13 @@
 package connection.serverMessages;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 
 public abstract class ServerMessage {
-    enum Status {
+    public enum Status {
         UNINITILIALIZED,
         NOTIFICATIONERROR,
         NOTIFICATIONLOGGEDIN,
@@ -14,6 +18,7 @@ public abstract class ServerMessage {
         NOTIFICATIONPROFILEUPDATED,
         NOTIFICATIONMESSAGERECEIVED,
         NOTIFICATIONMESSAGEUPDATED,
+        NOTIFICATIONMESSAGEREACTION,
         NOTIFICATIONUSERADDEDTOCONVERSATION,
         NOTIFICATIONUSERREMOVEDFROMCONVERSATION,
         NOTIFICATIONMESSAGEREAD,
@@ -27,15 +32,16 @@ public abstract class ServerMessage {
         ACTIONUPDATEPROFILE,
         ACTIONSENDMESSAGE,
         ACTIONUPDATEMESSAGE,
+        ACTIONREACTTOMESSAGE,
         ACTIONADDUSERTOCONVERSATION,
         ACTIONREMOVEDUSERFROMCONVERSATION,
         ACTIONREADMESSAGE,
-        ACTIONSETTYPING
+        ACTIONSETTYPING;
     }
     int status;
 
-    public int getStatus() {
-        return status;
+    public Status getStatus() {
+        return Status.values()[status];
     }
 
     public String toJsonString() {

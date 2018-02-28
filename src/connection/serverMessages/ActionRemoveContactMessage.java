@@ -1,6 +1,6 @@
 package connection.serverMessages;
 
-public class ActionRemoveContactMessage extends ServerMessage{
+public class ActionRemoveContactMessage extends ActionServerMessage{
     private String username;
 
     public ActionRemoveContactMessage(String username) {

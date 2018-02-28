@@ -6,7 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Test" isTestSource="true" />
     </content>
-    <orderEntry type="inheritedJdk" />
+    <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" scope="TEST">
       <library name="JUnit4">
@@ -18,15 +18,15 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="org.mockito:mockito-all:1.10.19" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../gson-2.6.2.jar!/" />
+          <root url="jar://$USER_HOME$/Downloads/gson-2.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="org.mockito:mockito-all:1.10.19" level="project" />
   </component>
 </module>

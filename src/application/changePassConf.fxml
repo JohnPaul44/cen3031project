@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane focusTraversable="true" onKeyPressed="#returnToLoginEventKey" prefHeight="200.0" prefWidth="250.0" style="-fx-background-color: #E7DECD; -fx-border-color: #804E49; -fx-border-width: 6;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ChangePassConf_View_controller">
+   <children>
+      <Label layoutX="21.0" layoutY="83.0" text="Your password has been changed" textFill="#0a122a" />
+      <Label fx:id="username" layoutX="84.0" layoutY="42.0" text="USERNAME" textFill="#0a122a">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Button fx:id="returnButton" layoutX="29.0" layoutY="123.0" mnemonicParsing="false" onAction="#returnToLogin" style="-fx-background-color: #698F3F;" text="Return to System.out.chat()!" textFill="#fbfaf9">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+   </children>
+</AnchorPane>

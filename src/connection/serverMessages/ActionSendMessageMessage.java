@@ -5,7 +5,7 @@ import model.Globals;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ActionSendMessageMessage extends ServerMessage {
+public class ActionSendMessageMessage extends ActionServerMessage {
     public enum ActionSendMessageMessageType {TO, CONVERSATIONKEY}
     private String to;
     private String conversationKey;
