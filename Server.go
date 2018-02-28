@@ -132,8 +132,6 @@ func updateOnlineStatus(user *DSUser, online bool) {
 	msg.Online = &online
 	msg.Username = &user.username
 
-	log.Printf("user (updateOnlineStatus()): %+v", *user)
-
 	// send notification to online contacts
 	for _, contact := range user.contacts {
 		sendServerMessageToUser(contact, msg)
