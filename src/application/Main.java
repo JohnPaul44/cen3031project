@@ -19,7 +19,7 @@ public class Main extends Application {
 			loader.setLocation(getClass().getResource("/application/login.fxml"));
 			loader.load();
 
-			login_controller login = loader.getController();
+			Login_View_controller login = loader.getController();
 			login.passConnection(connection);
 			connection.setDelegate(login);
 
