@@ -82,7 +82,8 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
-            <TextField fx:id="phoneNumberField" onKeyPressed="#registerEnterKey" promptText="(Optional) Please Enter Your Phone #" translateY="90.0">
+            <PasswordField fx:id="securityQuestionAnswer" promptText="Please Enter Your Answer To The Question Selected Above" translateY="65.0" />
+            <TextField fx:id="phoneNumberField" onKeyPressed="#registerEnterKey" promptText="(Optional) Please Enter Your Phone #" translateY="70.0">
                <font>
                   <Font size="14.0" />
                </font>
@@ -90,11 +91,11 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
-            <ChoiceBox fx:id="genderField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="268.0" translateY="95.0">
+            <ChoiceBox fx:id="genderField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="268.0" translateY="75.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ChoiceBox>
-            <DatePicker fx:id="DOBField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="261.0" translateY="100.0">
+            <DatePicker fx:id="DOBField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="261.0" translateY="80.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></DatePicker>
@@ -105,12 +106,7 @@
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>
-            <ChoiceBox fx:id="securityQuestion" prefWidth="268.0" translateY="-105.0" />
-            <TextField fx:id="securityQuestionAnswer" promptText="Please Enter Your Answer To The Question Selected Above" translateY="-100.0">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </TextField>
+            <ChoiceBox fx:id="securityQuestion" prefWidth="268.0" translateY="-130.0" />
          </children>
       </VBox>
    </center>

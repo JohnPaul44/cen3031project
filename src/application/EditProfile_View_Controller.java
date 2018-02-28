@@ -21,6 +21,13 @@ public class EditProfile_View_Controller extends ViewController {
 
     public void passConnection(ServerConnection con){
         connection = con;
+        setUsername(connection.getCurrentUser().getUserName());
+        setFirstName(connection.getCurrentUser().getProfile().getName());
+        setLastName(connection.getCurrentUser().getProfile().getLastName());
+        setEmail(connection.getCurrentUser().getProfile().getEmail());
+        setPhone(connection.getCurrentUser().getProfile().getPhone());
+        setGender(connection.getCurrentUser().getProfile().getGender());
+        setBirthday(connection.getCurrentUser().getProfile().getBirthday());
     }
 
     @FXML
@@ -53,63 +60,63 @@ public class EditProfile_View_Controller extends ViewController {
     }
 
     public void setFirstName(String first){
-        firstName.setPromptText(first);
+        firstName.setText(first);
     }
 
     public void setLastName(String last){
-        lastName.setPromptText(last);
+        lastName.setText(last);
     }
 
     public void setEmail(String e){
-        email.setPromptText(e);
+        email.setText(e);
     }
 
     public void setPhone(String phoneNum){
-        phone.setPromptText(phoneNum);
+        phone.setText(phoneNum);
     }
 
     public void setGender(String gen){
-        gender.setPromptText(gen);
+        gender.setText(gen);
     }
 
     public void setBirthday(String birth){
         if(birth.isEmpty()){
-            dob.setPromptText("N/A");
+            dob.setText("N/A");
         }
         else{
-            dob.setPromptText(birth);
+            dob.setText(birth);
         }
     }
 
     public void setMind(String mindStatement){
-        mind.setPromptText(mindStatement);
+        mind.setText(mindStatement);
     }
 
     public void setBio(String bioStatement){
-        bio.setPromptText(bioStatement);
+        bio.setText(bioStatement);
     }
 
     public void setInterests(String interestList){
-        interest.setPromptText(interestList);
+        interest.setText(interestList);
     }
 
     public void setHobbies(String hob){
-        hobbies.setPromptText(hob);
+        hobbies.setText(hob);
     }
 
     //initializes all the information on the profile
-    @FXML
-    public void initialize(){
-        setUsername(connection.getCurrentUser().getUserName());
-        setFirstName(connection.getCurrentUser().getProfile().getName());
-        setLastName(connection.getCurrentUser().getProfile().getLastName());
-        setEmail(connection.getCurrentUser().getProfile().getEmail());
-        setPhone(connection.getCurrentUser().getProfile().getPhone());
-        setGender(connection.getCurrentUser().getProfile().getGender());
-        setBirthday(connection.getCurrentUser().getProfile().getBirthday());
-
-        //TODO: set the bio, what's on your mind, interests, hobbies. update the profile settings
-    }
+//    @FXML
+//    public void initialize(){
+//        setUsername(connection.getCurrentUser().getUserName());
+//        setFirstName(connection.getCurrentUser().getProfile().getName());
+//        setLastName(connection.getCurrentUser().getProfile().getLastName());
+//        setEmail(connection.getCurrentUser().getProfile().getEmail());
+//        setPhone(connection.getCurrentUser().getProfile().getPhone());
+//        setGender(connection.getCurrentUser().getProfile().getGender());
+//        setBirthday(connection.getCurrentUser().getProfile().getBirthday());
+//
+//        //TODO: set the bio, what's on your mind, interests, hobbies. update the profile settings
+//    }
 
     //event handlers for both when the button is pressed or when the enter key is used
     @FXML
@@ -124,6 +131,9 @@ public class EditProfile_View_Controller extends ViewController {
 
     @FXML
     public void SaveChangesButton(ActionEvent event){
+        //has limited error checking
+        //will update at a later time
+
         if(!firstName().isEmpty()){
             connection.getCurrentUser().getProfile().setName(firstName());
         }
@@ -142,6 +152,8 @@ public class EditProfile_View_Controller extends ViewController {
         if(!birthday().isEmpty()){
             connection.getCurrentUser().getProfile().setBirthday(birthday());
         }
+
+        connection.updateProfile();
 
         //TODO: setting the bio, whats on your mind, interest and hobbies
 
@@ -197,8 +209,6 @@ public class EditProfile_View_Controller extends ViewController {
             e.printStackTrace();
         }
     }
-
-
 
     @Override
     public void notification(ServerMessage message) {

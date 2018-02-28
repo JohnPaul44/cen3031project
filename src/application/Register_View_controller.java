@@ -2,6 +2,7 @@ package application;
 
 import connection.ServerConnection;
 import connection.serverMessages.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -122,7 +123,7 @@ public class Register_View_controller extends ViewController {
             Home_View_controller home = loader.getController();
             home.passConnection(connection);
             connection.setDelegate(home);
-            home.initialize();
+           //home.initialize();
 
             Parent root = loader.getRoot();
             Stage registerStage = new Stage();
@@ -255,7 +256,13 @@ public class Register_View_controller extends ViewController {
         switch(message.getStatus()){
             case NOTIFICATIONLOGGEDIN:
                 status.setText("Register Successful");
-                loggedIn();
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        loggedIn();
+                    }
+                });
+
                 break;
             case NOTIFICATIONERROR:
                 status.setText("Username Unavailable");

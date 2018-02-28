@@ -17,6 +17,17 @@ public class Home_View_controller extends ViewController{
 
     public void passConnection(ServerConnection con){
         connection = con;
+        setValues();
+    }
+
+    public void setValues(){
+        setUsername(connection.getCurrentUser().getUserName());
+        setFirstName(connection.getCurrentUser().getProfile().getName());
+        setLastName(connection.getCurrentUser().getProfile().getLastName());
+        setEmail(connection.getCurrentUser().getProfile().getEmail());
+        setPhone(connection.getCurrentUser().getProfile().getPhone());
+        setGender(connection.getCurrentUser().getProfile().getGender());
+        setBirthday(connection.getCurrentUser().getProfile().getBirthday());
     }
 
     @FXML
@@ -75,19 +86,6 @@ public class Home_View_controller extends ViewController{
         }
     }
 
-    //initializes all the information on the profile
-    @FXML
-    public void initialize(){
-        setUsername(connection.getCurrentUser().getUserName());
-        setFirstName(connection.getCurrentUser().getProfile().getName());
-        setLastName(connection.getCurrentUser().getProfile().getLastName());
-        setEmail(connection.getCurrentUser().getProfile().getEmail());
-        setPhone(connection.getCurrentUser().getProfile().getPhone());
-        setGender(connection.getCurrentUser().getProfile().getGender());
-        setBirthday(connection.getCurrentUser().getProfile().getBirthday());
-
-        //TODO: set the bio, what's on your mind, interests, hobbies. update the profile settings
-    }
 
     @FXML
     public void EditProfile(ActionEvent event){
@@ -114,8 +112,41 @@ public class Home_View_controller extends ViewController{
         }
     }
 
+    @FXML
+    public void Logout(ActionEvent event){
+        connection.logout();
+
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/application/login.fxml"));
+            loader.load();
+
+            Login_View_controller login = loader.getController();
+            login.passConnection(connection);
+            connection.setDelegate(login);
+
+            Parent root = loader.getRoot();
+            Stage registerStage = new Stage();
+            Scene scene = new Scene(root, 700, 500);
+            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+            registerStage.setScene(scene);
+            registerStage.show();
+
+            //closes the login screen when the home screen pops up
+            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void notification(ServerMessage message) {
-
+        switch (message.getStatus()){
+            case NOTIFICATIONPROFILEUPDATED:
+                setValues();
+                break;
+            default:
+                break;
+        }
     }
 }

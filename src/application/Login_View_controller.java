@@ -2,6 +2,7 @@ package application;
 
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -120,7 +121,7 @@ public class Login_View_controller extends ViewController{
 			Home_View_controller home = loader.getController();
 			home.passConnection(connection);
 			connection.setDelegate(home);
-			home.initialize();
+			//home.initialize();
 
 			Parent root = loader.getRoot();
 			Stage registerStage = new Stage();
@@ -141,13 +142,18 @@ public class Login_View_controller extends ViewController{
 			case NOTIFICATIONLOGGEDIN:
 				//opens the next screen
 				System.out.println("login success");
-				status.setText("Login Successful");
-				openHome();
+				//status.setText("Login Successful");
+                Platform.runLater(new Runnable(){
+                    @Override
+                    public void run(){
+                        openHome();
+                    }
+                });
 				break;
 			case NOTIFICATIONERROR:
 				System.out.println("login failed");
 				//prints to the ui that the login failed
-				status.setText("Incorrect Username or Password");
+				//status.setText("Incorrect Username or Password");
 				break;
 			default:
 				break;

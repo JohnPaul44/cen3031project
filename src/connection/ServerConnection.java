@@ -9,10 +9,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.security.ntlm.Server;
 import connection.notificationMessageHandlers.*;
-import connection.serverMessages.ActionLogInMessage;
-import connection.serverMessages.ActionRegisterMessage;
-import connection.serverMessages.MessageFactory;
-import connection.serverMessages.ServerMessage;
+import connection.serverMessages.*;
 import model.CurrentUser;
 import model.Profile;
 import model.UserUpdater;
@@ -103,6 +100,16 @@ public class ServerConnection implements IServerConnection{
                                 String phone, Profile.Gender gender, String DOB, String securityQuestion, String securityAnswer) {
         ActionRegisterMessage message = new ActionRegisterMessage(username, password, firstName, lastName, email, phone,
                 gender, DOB, securityQuestion, securityAnswer);
+        sendMessageToServer(message);
+    }
+
+    public void updateProfile(){
+        ActionUpdateProfileMessage message = new ActionUpdateProfileMessage(this.currentUser.getProfile());
+        sendMessageToServer(message);
+    }
+
+    public void logout(){
+        ActionLogOutMessage message = new ActionLogOutMessage();
         sendMessageToServer(message);
     }
 }
