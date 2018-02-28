@@ -2,6 +2,7 @@ package application;
 
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -143,7 +144,12 @@ public class Home_View_controller extends ViewController{
     public void notification(ServerMessage message) {
         switch (message.getStatus()){
             case NOTIFICATIONPROFILEUPDATED:
-                setValues();
+                Platform.runLater(new Runnable(){
+                    @Override
+                    public void run(){
+                        setValues();
+                    }
+                });
                 break;
             default:
                 break;
