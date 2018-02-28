@@ -174,7 +174,7 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 
 	sendServerMessageToUser(user.username, rsp)
 
-	log.Printf("%s updated %s profile\n", user.username, func() string {
+	log.Printf("%s updated %s profile: %+v\n", user.username, func() string {
 		switch user.Profile.Gender {
 		case GenderFemale:
 			return "her"
@@ -183,7 +183,7 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 		default:
 			return "their"
 		}
-	}())
+	}(), *message.Profile)
 
 	return nil
 }
