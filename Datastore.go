@@ -30,8 +30,8 @@ type DSUser struct {
 	username   string
 	connection *Connection
 	contacts   []string
-	PassHash   []byte  `json:"passHash",datastore:"PassHash"`
-	Profile    Profile `json:"profile",datastore:"Profile"`
+	PassHash   []byte   `json:"passHash",datastore:"PassHash"`
+	Profile    *Profile `json:"profile",datastore:"Profile"`
 }
 
 type DSMessageReaction struct {
@@ -110,7 +110,8 @@ func createUserAccount(username string, password string, profile Profile) (*DSUs
 
 	user := new(DSUser)
 	user.username = username
-	user.Profile = profile
+	user.Profile = new(Profile)
+	*user.Profile = profile
 	user.PassHash, err = bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		return nil, err
@@ -299,7 +300,7 @@ func updateProfile(username string, profile Profile) error {
 		return err
 	}
 
-	user.Profile = profile
+	user.Profile = &profile
 
 	_, err = client.Put(c, getUserKey(username), user)
 	if err != nil {

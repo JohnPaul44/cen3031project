@@ -266,13 +266,12 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		connection.time = time.Now()
 		connection.conn = conn
 		usr.connection = connection
-		log.Printf("user (handleConnect()): %+v\n", *usr)
 		conns.add(usr)
 
 		rsp.clear()
 		rsp.Status = NotificationLoggedIn
 		rsp.Username = &usr.username
-		rsp.Profile = &usr.Profile
+		rsp.Profile = usr.Profile
 		rsp.Contacts = new([]Contact)
 		for _, contact := range usr.contacts {
 			*rsp.Contacts = append(*rsp.Contacts, Contact{Username:contact, Online:conns.contains(contact)})

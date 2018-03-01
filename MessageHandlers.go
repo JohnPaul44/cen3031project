@@ -170,7 +170,7 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 	}
 	rsp.clear()
 	rsp.Status = NotificationProfileUpdated
-	rsp.Profile = &user.Profile
+	rsp.Profile = user.Profile
 
 	sendServerMessageToUser(user.username, rsp)
 
@@ -183,7 +183,7 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 		default:
 			return "their"
 		}
-	}(), *message.Profile)
+	}(), *rsp.Profile)
 
 	return nil
 }

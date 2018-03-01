@@ -31,7 +31,7 @@ func (conns *Connections) add(user *DSUser) {
 	_, contains := (*conns)[user.username]
 	// user is not already in map, so create UserConnection object, set profile and initialize map
 	if !contains {
-		(*conns)[user.username] = UserConnection{&user.Profile, make(map[time.Time]*Connection)}
+		(*conns)[user.username] = UserConnection{user.Profile, make(map[time.Time]*Connection)}
 	}
 	// add connection to connections map
 	(*conns)[user.username].connections[user.connection.time] = user.connection
@@ -60,6 +60,7 @@ func (conns *Connections) remove(user *DSUser) {
 
 func (conns *Connections) updateProfile(user *DSUser, profile Profile) {
 	connsMutex.Lock()
-	(*conns)[user.username] = UserConnection{&profile, (*conns)[user.username].connections}
+	p := (*conns)[user.username].profile
+	*p = profile
 	connsMutex.Unlock()
 }
