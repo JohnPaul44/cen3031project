@@ -62,5 +62,6 @@ func (conns *Connections) updateProfile(user *DSUser, profile Profile) {
 	connsMutex.Lock()
 	p := (*conns)[user.username].profile
 	*p = profile
+	*user.Profile = profile
 	connsMutex.Unlock()
 }
