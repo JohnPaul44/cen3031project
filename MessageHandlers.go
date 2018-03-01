@@ -161,6 +161,7 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 
 	// update local profile (for logging) for all connections with the same username
 	conns.updateProfile(user, *message.Profile)
+	log.Println("after conns.updateProfile(): First Name in conns:", conns[user.username].profile.FirstName, ", First Name in user:", user.Profile.FirstName)
 
 	err := updateProfile(user.username, *message.Profile)
 	if err != nil {
@@ -174,7 +175,7 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 
 	sendServerMessageToUser(user.username, rsp)
 
-	log.Printf("%s updated %s profile: %+v\n", user.username, func() string {
+	log.Printf("%s updated %s first name to: %s\n", user.username, func() string {
 		switch user.Profile.Gender {
 		case GenderFemale:
 			return "her"
@@ -183,7 +184,7 @@ func handleUpdateProfile(user *DSUser, conn net.Conn, message *ServerMessage) er
 		default:
 			return "their"
 		}
-	}(), *rsp.Profile)
+	}(), rsp.Profile.FirstName)
 
 	return nil
 }
