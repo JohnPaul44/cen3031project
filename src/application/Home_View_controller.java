@@ -3,14 +3,19 @@ package application;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
+import model.Profile;
+
+import java.time.LocalDate;
 
 public class Home_View_controller extends ViewController{
 
@@ -34,57 +39,75 @@ public class Home_View_controller extends ViewController{
     @FXML
     private Label username;
     @FXML
-    private Label firstName;
+    private TextField firstName;
     @FXML
-    private Label lastName;
+    private TextField lastName;
     @FXML
-    private Label email;
+    private TextField email;
     @FXML
-    private Label phone;
+    private TextField phone;
     @FXML
-    private Label gender;
+    private ChoiceBox gender;
     @FXML
-    private Label birthday;
+    private DatePicker birthday;
     @FXML
-    private Label bio;
+    private TextArea bio;
     @FXML
-    private Label mind;
+    private TextField mind;
     @FXML
-    private Label interests;
+    private TextArea interests;
     @FXML
-    private Label hobbies;
+    private TextArea hobbies;
 
-    public void setUsername(String user){
+    private void setUsername(String user){
         username.setText(user);
     }
 
-    public void setFirstName(String first){
+    private void setFirstName(String first){
         firstName.setText(first);
     }
 
-    public void setLastName(String last){
+    private void setLastName(String last){
         lastName.setText(last);
     }
 
-    public void setEmail(String e){
+    private void setEmail(String e){
         email.setText(e);
     }
 
-    public void setPhone(String phoneNum){
+    private void setPhone(String phoneNum){
         phone.setText(phoneNum);
     }
 
-    public void setGender(String gen){
-        gender.setText(gen);
-    }
-
-    public void setBirthday(String birth){
-        if(birth == null){
-            birthday.setText("N/A");
+    private void setGender(String gen){
+        if(gen.equalsIgnoreCase("female")){
+            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.FEMALE);
+            gender.setItems(genderList);
+            gender.setValue(Profile.Gender.FEMALE);
+        }
+        else if(gen.equalsIgnoreCase("male")){
+            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.MALE);
+            gender.setItems(genderList);
+            gender.setValue(Profile.Gender.MALE);
+        }
+        else if(gen.equalsIgnoreCase("other")){
+            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.OTHER);
+            gender.setItems(genderList);
+            gender.setValue(Profile.Gender.OTHER);
         }
         else{
-            birthday.setText(birth);
+            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.NA);
+            gender.setItems(genderList);
+            gender.setValue(Profile.Gender.NA);
         }
+    }
+
+    private void setBirthday(String birth){
+        if(birth == null){
+            return;
+        }
+        LocalDate birthdate = LocalDate.parse(birth);
+        birthday.setValue(birthdate);
     }
 
 

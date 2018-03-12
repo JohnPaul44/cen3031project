@@ -36,8 +36,6 @@ public class ChangePassword_View_controller extends ViewController {
 	@FXML
 	private TextField confPass;
 	@FXML
-	private Button backButton;
-	@FXML
 	private Button confirmButton;
 	@FXML
 	private Button changeButton;
@@ -179,8 +177,8 @@ public class ChangePassword_View_controller extends ViewController {
 		return true;
 	}
 	
-	public void close(ActionEvent event) {
-		
+	public void close() {
+		confirmButton.getScene().getWindow().hide();
 	}
 
 	@Override

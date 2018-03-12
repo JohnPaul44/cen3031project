@@ -79,7 +79,6 @@ public class EditProfile_View_Controller extends ViewController {
     }
 
     private void setGender(String gen){
-        System.out.println(gen);
         if(gen.equalsIgnoreCase("female")){
             genderField.setValue(Profile.Gender.FEMALE);
         }
