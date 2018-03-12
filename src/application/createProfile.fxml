@@ -33,22 +33,6 @@
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextField>
-      <TextField fx:id="gender" layoutX="298.0" layoutY="160.0" onKeyPressed="#SaveChangesEventKey" prefHeight="23.0" prefWidth="341.0" promptText="Gender">
-         <font>
-            <Font size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="TEXT" />
-         </cursor>
-      </TextField>
-      <TextField fx:id="dob" layoutX="298.0" layoutY="191.0" onKeyPressed="#SaveChangesEventKey" prefHeight="23.0" prefWidth="341.0" promptText="DOB (Age)">
-         <font>
-            <Font size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="TEXT" />
-         </cursor>
-      </TextField>
       <Label layoutX="298.0" layoutY="242.0" prefHeight="18.0" prefWidth="366.0" text="Interests: (television shows, favorite foods, music, etc.)" textFill="#fbfaf9" />
       <TextArea fx:id="interest" layoutX="298.0" layoutY="274.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Interests">
          <cursor>
@@ -99,5 +83,7 @@
             </TextField>
          </children>
       </AnchorPane>
+      <ChoiceBox fx:id="genderField" layoutX="298.0" layoutY="158.0" prefHeight="27.0" prefWidth="341.0" />
+      <DatePicker fx:id="dob" layoutX="298.0" layoutY="196.0" prefHeight="27.0" prefWidth="341.0" />
    </children>
 </AnchorPane>

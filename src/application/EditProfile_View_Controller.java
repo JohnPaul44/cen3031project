@@ -2,19 +2,21 @@ package application;
 
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import model.Profile;
+
+import java.time.LocalDate;
 
 public class EditProfile_View_Controller extends ViewController {
     ServerConnection connection;
@@ -26,6 +28,7 @@ public class EditProfile_View_Controller extends ViewController {
         setLastName(connection.getCurrentUser().getProfile().getLastName());
         setEmail(connection.getCurrentUser().getProfile().getEmail());
         setPhone(connection.getCurrentUser().getProfile().getPhone());
+        genderField.setItems(genderFieldList);
         setGender(connection.getCurrentUser().getProfile().getGender());
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
     }
@@ -45,9 +48,9 @@ public class EditProfile_View_Controller extends ViewController {
     @FXML
     private TextField phone;
     @FXML
-    private TextField gender;
+    private ChoiceBox genderField;
     @FXML
-    private TextField dob;
+    private DatePicker dob;
     @FXML
     private TextArea interest;
     @FXML
@@ -55,68 +58,65 @@ public class EditProfile_View_Controller extends ViewController {
     @FXML
     private Button save;
 
-    public void setUsername(String user){
+    private void setUsername(String user){
         username.setText(user);
     }
 
-    public void setFirstName(String first){
+    private void setFirstName(String first){
         firstName.setText(first);
     }
 
-    public void setLastName(String last){
+    private void setLastName(String last){
         lastName.setText(last);
     }
 
-    public void setEmail(String e){
+    private void setEmail(String e){
         email.setText(e);
     }
 
-    public void setPhone(String phoneNum){
+    private void setPhone(String phoneNum){
         phone.setText(phoneNum);
     }
 
-    public void setGender(String gen){
-        gender.setText(gen);
-    }
-
-    public void setBirthday(String birth){
-        if(birth.isEmpty()){
-            dob.setText("N/A");
+    private void setGender(String gen){
+        System.out.println(gen);
+        if(gen.equalsIgnoreCase("female")){
+            genderField.setValue(Profile.Gender.FEMALE);
+        }
+        else if(gen.equalsIgnoreCase("male")){
+            genderField.setValue(Profile.Gender.MALE);
+        }
+        else if(gen.equalsIgnoreCase("other")){
+            genderField.setValue(Profile.Gender.OTHER);
         }
         else{
-            dob.setText(birth);
+            genderField.setValue(Profile.Gender.NA);
         }
     }
 
-    public void setMind(String mindStatement){
+    private void setBirthday(String birth){
+        if(birth == null){
+            dob.setValue(null);
+        }
+        LocalDate birthdate = LocalDate.parse(birth);
+        dob.setValue(birthdate);
+    }
+
+    private void setMind(String mindStatement){
         mind.setText(mindStatement);
     }
 
-    public void setBio(String bioStatement){
+    private void setBio(String bioStatement){
         bio.setText(bioStatement);
     }
 
-    public void setInterests(String interestList){
+    private void setInterests(String interestList){
         interest.setText(interestList);
     }
 
-    public void setHobbies(String hob){
+    private void setHobbies(String hob){
         hobbies.setText(hob);
     }
-
-    //initializes all the information on the profile
-//    @FXML
-//    public void initialize(){
-//        setUsername(connection.getCurrentUser().getUserName());
-//        setFirstName(connection.getCurrentUser().getProfile().getName());
-//        setLastName(connection.getCurrentUser().getProfile().getLastName());
-//        setEmail(connection.getCurrentUser().getProfile().getEmail());
-//        setPhone(connection.getCurrentUser().getProfile().getPhone());
-//        setGender(connection.getCurrentUser().getProfile().getGender());
-//        setBirthday(connection.getCurrentUser().getProfile().getBirthday());
-//
-//        //TODO: set the bio, what's on your mind, interests, hobbies. update the profile settings
-//    }
 
     //event handlers for both when the button is pressed or when the enter key is used
     @FXML
@@ -131,9 +131,10 @@ public class EditProfile_View_Controller extends ViewController {
 
     @FXML
     public void SaveChangesButton(ActionEvent event){
-        //has limited error checking
-        //will update at a later time
 
+        //error checks if there is information in the required fields
+        //if there are empty required fields or if the input information is not correct, it just doesn't update the profile
+        //currently, does not alert the user of the incorrect information
         if(!firstName().isEmpty()){
             connection.getCurrentUser().getProfile().setName(firstName());
         }
@@ -143,15 +144,11 @@ public class EditProfile_View_Controller extends ViewController {
         if(!email().isEmpty()){
             connection.getCurrentUser().getProfile().setEmail(email());
         }
-        if(!phone().isEmpty()){
+        if(checkPhoneNumber()){
             connection.getCurrentUser().getProfile().setPhone(phone());
         }
-        if(!gender().isEmpty()){
-            connection.getCurrentUser().getProfile().setGender(gender());
-        }
-        if(!birthday().isEmpty()){
-            connection.getCurrentUser().getProfile().setBirthday(birthday());
-        }
+        connection.getCurrentUser().getProfile().setBirthday(birthday());
+        connection.getCurrentUser().getProfile().setGender(gender());
 
         connection.updateProfile();
 
@@ -161,28 +158,44 @@ public class EditProfile_View_Controller extends ViewController {
         BackButton(event);
     }
 
-    public String firstName(){
+    private String firstName(){
         return firstName.getText();
     }
 
-    public String lastName(){
+    private String lastName(){
         return lastName.getText();
     }
 
-    public String email(){
+    private String email(){
         return email.getText();
     }
 
-    public String phone(){
+    private String phone(){
         return phone.getText();
     }
 
-    public String gender(){
-        return gender.getText();
+    ObservableList<Profile.Gender> genderFieldList = FXCollections.observableArrayList(Profile.Gender.values());
+    private String gender(){
+        return genderField.getValue().toString();
     }
 
-    public String birthday(){
-        return dob.getText();
+    private String birthday(){
+        if(dob.getValue() == null){
+            return "";
+        }
+        return dob.getValue().toString();
+    }
+
+    private boolean checkPhoneNumber() {
+        String phoneNum = phone.getText();
+        if (phoneNum.matches("[0-9]*") && !phoneNum.isEmpty() && phoneNum.length() == 10) {
+            System.out.println("Phone # accepted!");
+            return true;
+        }
+        else {
+            System.out.println("Numbers only! Please re-enter a valid phone number!");
+        }
+        return false;
     }
 
     @FXML

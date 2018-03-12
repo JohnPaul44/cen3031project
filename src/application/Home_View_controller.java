@@ -79,7 +79,7 @@ public class Home_View_controller extends ViewController{
     }
 
     public void setBirthday(String birth){
-        if(birth.isEmpty()){
+        if(birth == null){
             birthday.setText("N/A");
         }
         else{

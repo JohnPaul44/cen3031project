@@ -99,7 +99,7 @@
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></DatePicker>
-            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonClicked" prefHeight="50.0" prefWidth="103.0" style="-fx-background-color: #698F3F;" text="Register!" textFill="#fbfaf9" translateX="80.0" translateY="120.0">
+            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonClicked" prefHeight="50.0" prefWidth="103.0" style="-fx-background-color: #698F3F;" text="Register!" textFill="#fbfaf9" translateX="80.0" translateY="90.0">
                <effect>
                   <Reflection />
                </effect>

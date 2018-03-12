@@ -75,7 +75,7 @@ public class Register_View_controller extends ViewController {
     	@FXML
     public void registerButtonClicked(ActionEvent event) throws Exception {
         //error checking for empty fields
-        if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("") || phoneNumberField.getText().equals("") || securityAnswer().equals("")) {
+        if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("") || phoneNumberField.getText().equals("") || securityAnswer().equals("") || securityQuestion().equals("<Security Questions>")) {
         		status.setText("Please enter: ");
         		if(username().equals("")) {
         			status.setText(status.getText() + "|username|  ");
@@ -95,7 +95,7 @@ public class Register_View_controller extends ViewController {
         		if(phoneNumberField.getText().equals("")){
         		    status.setText(status.getText() + "|phone number|  ");
                 }
-                if(securityAnswer().equals("")){
+                if(securityAnswer().equals("") || securityQuestion().equals("<Security Questions>")){
         		    status.setText(status.getText() + "|security question|  ");
                 }
         		return;
