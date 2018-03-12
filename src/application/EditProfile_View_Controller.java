@@ -96,7 +96,7 @@ public class EditProfile_View_Controller extends ViewController {
 
     private void setBirthday(String birth){
         if(birth == null){
-            dob.setValue(null);
+            return;
         }
         LocalDate birthdate = LocalDate.parse(birth);
         dob.setValue(birthdate);
