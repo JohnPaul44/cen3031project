@@ -103,7 +103,7 @@ public class Home_View_controller extends ViewController{
     }
 
     private void setBirthday(String birth){
-        if(birth == null){
+        if(birth.equals("null")){
             return;
         }
         LocalDate birthdate = LocalDate.parse(birth);
@@ -123,14 +123,14 @@ public class Home_View_controller extends ViewController{
             connection.setDelegate(edit);
 
             Parent root = loader.getRoot();
-            Stage registerStage = new Stage();
+            Stage registerStage = (Stage) firstName.getScene().getWindow();
             Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
 
             //closes the old screen when the new screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+            //((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -150,14 +150,12 @@ public class Home_View_controller extends ViewController{
             connection.setDelegate(login);
 
             Parent root = loader.getRoot();
-            Stage registerStage = new Stage();
+            Stage registerStage = (Stage) firstName.getScene().getWindow();
             Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
 
-            //closes the login screen when the home screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();
         }

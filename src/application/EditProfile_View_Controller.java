@@ -209,14 +209,12 @@ public class EditProfile_View_Controller extends ViewController {
             connection.setDelegate(home);
 
             Parent root = loader.getRoot();
-            Stage registerStage = new Stage();
+            Stage registerStage = (Stage) save.getScene().getWindow();
             Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
 
-            //closes the login screen when the home screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();
         }

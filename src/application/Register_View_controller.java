@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -110,6 +111,7 @@ public class Register_View_controller extends ViewController {
             return;
         }
         else {
+            registerButton.getScene().setCursor(Cursor.WAIT);
             connection.registerNewUser(username(), checkedPassword(), firstName(), lastName(), email(), phoneNumber(), gender(), birthDay(), securityQuestion(), securityAnswer());
             status.setText("Register Successful");
 
@@ -242,14 +244,12 @@ public class Register_View_controller extends ViewController {
             connection.setDelegate(login);
 
             Parent root = loader.getRoot();
-            Stage registerStage = new Stage();
+            Stage registerStage = (Stage) backButton.getScene().getWindow();
             Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
 
-            //closes the login screen when the home screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -269,7 +269,12 @@ public class Register_View_controller extends ViewController {
 
                 break;
             case NOTIFICATIONERROR:
-                status.setText("Username Unavailable");
+                Platform.runLater(new Runnable(){
+                    @Override
+                    public void run(){
+                        status.setText("Username Unavailable");
+                    }
+                });
                 break;
             default:
                 break;

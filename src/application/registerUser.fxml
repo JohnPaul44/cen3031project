@@ -95,7 +95,7 @@
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ChoiceBox>
-            <DatePicker fx:id="DOBField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="261.0" translateY="80.0">
+            <DatePicker fx:id="DOBField" editable="false" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="261.0" translateY="80.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></DatePicker>

@@ -2,6 +2,7 @@ package application;
 
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.scene.Node;
+import javafx.util.Duration;
 
 public class Login_View_controller extends ViewController{
 	ServerConnection connection;
@@ -67,14 +69,12 @@ public class Login_View_controller extends ViewController{
 		connection.setDelegate(reg);
 
 		Parent root = loader.getRoot();
-		Stage changeStage = new Stage();
+		Stage changeStage = (Stage) loginButton.getScene().getWindow();
 		Scene scene = new Scene(root,700,500);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		changeStage.setScene(scene);
 		changeStage.show();
 
-		//closes the login screen when the change password screen pops up
-		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
 	}
 	
 	@FXML
@@ -101,14 +101,11 @@ public class Login_View_controller extends ViewController{
 
 		
 		Parent root = loader.getRoot();
-		Stage changeStage = new Stage();
+		Stage changeStage = (Stage) loginButton.getScene().getWindow();
 		Scene scene = new Scene(root,700,500);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		changeStage.setScene(scene);
 		changeStage.show();
-		
-		//closes the login screen when the change password screen pops up
-		((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
 	}
 
 	@FXML
@@ -124,13 +121,12 @@ public class Login_View_controller extends ViewController{
 			//home.initialize();
 
 			Parent root = loader.getRoot();
-			Stage registerStage = new Stage();
+			Stage registerStage = (Stage) loginButton.getScene().getWindow();
 			Scene scene = new Scene(root, 700, 500);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			registerStage.setScene(scene);
 			registerStage.show();
 
-			loginButton.getScene().getWindow().hide();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

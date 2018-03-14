@@ -71,14 +71,12 @@ public class ChangePassword_View_controller extends ViewController {
             connection.setDelegate(login);
 
             Parent root = loader.getRoot();
-            Stage registerStage = new Stage();
+            Stage registerStage = (Stage) confirmButton.getScene().getWindow();
             Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
 
-            //closes the old screen when the new screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -143,7 +141,7 @@ public class ChangePassword_View_controller extends ViewController {
 		conf.setUsername(username.getText());
 		
 		Parent root = loader.getRoot();
-		Stage changeStage = new Stage();
+		Stage changeStage = (Stage) changeButton.getScene().getWindow();
 		Scene scene = new Scene(root,250,200);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		changeStage.setScene(scene);
