@@ -15,8 +15,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
-import javafx.scene.Node;
-import javafx.util.Duration;
 
 public class Login_View_controller extends ViewController{
 	ServerConnection connection;
