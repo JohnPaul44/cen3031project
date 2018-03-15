@@ -32,29 +32,9 @@ public class Tests {
         Gson gson = new Gson();
         System.out.println(gson.toJson(profile));
     }
-//    @Test
-//    public void receiveErrorMessage() {
-//        startTestServerEcho();
 //
-//        ServerConnection conn = new ServerConnection();
-//        conn.listenToServer();
 //
-//        NotificationErrorMessage m = new NotificationErrorMessage(5, "Error #5");
-//        conn.getOut().println(m.toJsonString());
-//    }
 //
-//    @Test
-//    public void receiveLoggedInMessage() throws InterruptedException {
-//        startTestServerEcho();
-//
-//        ServerConnection conn = new ServerConnection();
-//        conn.listenToServer();
-//
-//        NotificationLoggedInMessage m = createLoggedInMessage();
-//
-//        conn.getOut().println(m.toJsonString());
-//        TimeUnit.SECONDS.sleep(5);
-//    }
 //
 //    @Test
 //    public void receiveUserOnlineStatusMessage() throws InterruptedException {

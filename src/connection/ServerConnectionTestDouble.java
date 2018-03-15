@@ -9,16 +9,23 @@ import model.UserUpdater;
 public class ServerConnectionTestDouble implements IServerConnection{
     private ServerTestDouble serverTestDouble;
     private CurrentUser currentUser;
+    private ServerMessage.Status statusOfLastMessageReceived;
 
     public ServerConnectionTestDouble(ServerConnectionTestDouble serverConnectionTestDouble) {
         this.serverTestDouble = new ServerTestDouble();
-        listenToServer();
     }
 
     public ServerConnectionTestDouble(ServerTestDouble serverTestDouble) {
         this.serverTestDouble = serverTestDouble;
         this.currentUser = new CurrentUser();
-        listenToServer();
+    }
+
+    public CurrentUser getCurrentUser() {
+        return currentUser;
+    }
+
+    public ServerMessage.Status getStatusOfLastMessageReceived() {
+        return statusOfLastMessageReceived;
     }
 
     @Override
@@ -32,11 +39,13 @@ public class ServerConnectionTestDouble implements IServerConnection{
         UserUpdater userUpdater = new UserUpdater(currentUser);
         for (ServerMessage serverMessage : serverTestDouble.getServerMessages()) {
             try {
+                statusOfLastMessageReceived = serverMessage.getStatus();
                 MessageHandler handler = handlerFactory.produce(serverMessage.toJsonString(), userUpdater);
                 handler.handle();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        serverTestDouble.getServerMessages().clear();
     }
 }
