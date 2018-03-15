@@ -10,6 +10,7 @@ public abstract class ServerMessage {
     public enum Status {
         UNINITILIALIZED,
         NOTIFICATIONERROR,
+        NOTIFICATIONCHANGEPASSWORD,
         NOTIFICATIONLOGGEDIN,
         NOTIFICATIONUSERONLINESTATUS,
         NOTIFICATIONLOGGEDOUT,
@@ -25,6 +26,7 @@ public abstract class ServerMessage {
         NOTIFICATIONTYPING,
 
         ACTIONREGISTER,
+        ACTIONREQUESTCHANGEPASSWORD,
         ACTIONLOGIN,
         ACTIONLOGOUT,
         ACTIONADDCONTACT,

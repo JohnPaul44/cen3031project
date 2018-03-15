@@ -9,7 +9,6 @@ public class ActionSendMessageMessage extends ActionServerMessage {
     public enum ActionSendMessageMessageType {TO, CONVERSATIONKEY}
     private String to;
     private String conversationKey;
-    private String clientTime;
     private String text;
 
     public ActionSendMessageMessage(ActionSendMessageMessageType type, String toOrConversationKey, String text) {
@@ -22,7 +21,6 @@ public class ActionSendMessageMessage extends ActionServerMessage {
             this.conversationKey = toOrConversationKey;
         }
 
-        this.clientTime = new SimpleDateFormat(Globals.simpldDateFormat).format(new Date());
         this.text = text;
     }
 }

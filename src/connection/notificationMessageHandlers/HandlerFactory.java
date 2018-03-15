@@ -2,6 +2,7 @@ package connection.notificationMessageHandlers;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import connection.serverMessages.ServerMessage;
 import model.CurrentUser;
 import model.UserUpdater;
 
@@ -12,39 +13,39 @@ public class HandlerFactory {
         JsonObject messageFromServer = parser.parse(serverMessage).getAsJsonObject();
         int status = messageFromServer.get("status").getAsInt();
 
-        switch (status) {
-            case 0: // Uninitialized
+        switch (ServerMessage.Status.values()[status]) {
+            case UNINITILIALIZED: // Uninitialized
                 return new UninitializedMessageHandler();
-            case 1: // Error Message
+            case NOTIFICATIONERROR: // Error Message
                 return new ErrorMessageHandler(messageFromServer);
-            case 2: // Logged In Notification
-            case 3: // User Online Status Notification
-            case 4: // Logged Out Message Notification
-            case 5: // Contact Added Notification
-            case 6: // Contact Removed Notification
-            case 7: // Profile Updated Notification
-            case 8: // Message Received Notification
-            case 9: // Message Updated Notification
-            case 10: // Message Reaction Notification
-            case 11: // User Added to Conversation Notification
-            case 12: // User Removed from Conversation Notification
-            case 13: // Message Read Notification
-            case 14: // Typing Notification
+            case NOTIFICATIONLOGGEDIN: // Logged In Notification
+            case NOTIFICATIONUSERONLINESTATUS: // User Online Status Notification
+            case NOTIFICATIONLOGGEDOUT: // Logged Out Message Notification
+            case NOTIFICATIONCONTACTADDED: // Contact Added Notification
+            case NOTIFICATIONCONTACTREMOVED: // Contact Removed Notification
+            case NOTIFICATIONPROFILEUPDATED: // Profile Updated Notification
+            case NOTIFICATIONMESSAGERECEIVED: // Message Received Notification
+            case NOTIFICATIONMESSAGEUPDATED: // Message Updated Notification
+            case NOTIFICATIONMESSAGEREACTION: // Message Reaction Notification
+            case NOTIFICATIONUSERADDEDTOCONVERSATION: // User Added to Conversation Notification
+            case NOTIFICATIONUSERREMOVEDFROMCONVERSATION: // User Removed from Conversation Notification
+            case NOTIFICATIONMESSAGEREAD: // Message Read Notification
+            case NOTIFICATIONTYPING: // Typing Notification
                 System.out.println("Message received from server with status: " + status);
                 return new ModelUpdateMessageHandler(messageFromServer, userUpdater);
-            case 15: // Register Action
-            case 16: // Log In Action
-            case 17: // Log Out Action
-            case 18: // Add Contact Action
-            case 19: // Remove Contact Action
-            case 20: // Update Profile Action
-            case 21: // Send Message Action
-            case 22: // Update Message Action
-            case 23: // React To Message
-            case 24: // Add User To Conversation Action
-            case 25: // Remove User From Conversation Action
-            case 26: // Read Message Action
-            case 27: // Set Typing Action
+            case ACTIONREGISTER: // Register Action
+            case ACTIONLOGIN: // Log In Action
+            case ACTIONLOGOUT: // Log Out Action
+            case ACTIONADDCONTACT: // Add Contact Action
+            case ACTIONREMOVECONTACT: // Remove Contact Action
+            case ACTIONUPDATEPROFILE: // Update Profile Action
+            case ACTIONSENDMESSAGE: // Send Message Action
+            case ACTIONUPDATEMESSAGE: // Update Message Action
+            case ACTIONREACTTOMESSAGE: // React To Message
+            case ACTIONADDUSERTOCONVERSATION: // Add User To Conversation Action
+            case ACTIONREMOVEDUSERFROMCONVERSATION: // Remove User From Conversation Action
+            case ACTIONREADMESSAGE: // Read Message Action
+            case ACTIONSETTYPING: // Set Typing Action
                 throw new Exception("Action message received. Status of message received: " + status);
             default:
                 throw new Exception("Invalid message received. Status of message received: " + status);
