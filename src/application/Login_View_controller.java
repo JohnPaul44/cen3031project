@@ -120,7 +120,7 @@ public class Login_View_controller extends ViewController{
 
 			Parent root = loader.getRoot();
 			Stage registerStage = (Stage) loginButton.getScene().getWindow();
-			Scene scene = new Scene(root, 700, 500);
+			Scene scene = new Scene(root, 880, 500);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			registerStage.setScene(scene);
 			registerStage.show();

@@ -9,15 +9,15 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Home_View_controller">
+<AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="880.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Home_View_controller">
    <children>
-      <Label layoutX="623.0" layoutY="23.0" text="/*View*/" textFill="#fbfaf9" />
-      <TextField fx:id="firstName" editable="false" layoutX="298.0" layoutY="60.0" promptText="First Name">
+      <Label layoutX="790.0" layoutY="23.0" text="/*View*/" textFill="#fbfaf9" />
+      <TextField fx:id="firstName" editable="false" layoutX="506.0" layoutY="62.0" promptText="First Name">
          <cursor>
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </TextField>
-      <TextField fx:id="email" editable="false" layoutX="298.0" layoutY="97.0" prefHeight="23.0" prefWidth="341.0" promptText="Email">
+      <TextField fx:id="email" editable="false" layoutX="506.0" layoutY="99.0" prefHeight="23.0" prefWidth="341.0" promptText="Email">
          <font>
             <Font size="12.0" />
          </font>
@@ -25,7 +25,7 @@
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </TextField>
-      <TextField fx:id="phone" editable="false" layoutX="298.0" layoutY="129.0" prefHeight="23.0" prefWidth="341.0" promptText="Phone #">
+      <TextField fx:id="phone" editable="false" layoutX="506.0" layoutY="131.0" prefHeight="23.0" prefWidth="341.0" promptText="Phone #">
          <font>
             <Font size="12.0" />
          </font>
@@ -33,30 +33,30 @@
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </TextField>
-      <Label layoutX="298.0" layoutY="242.0" prefHeight="18.0" prefWidth="366.0" text="Interests: (television shows, favorite foods, music, etc.)" textFill="#fbfaf9" />
-      <TextArea fx:id="interests" editable="false" layoutX="298.0" layoutY="274.0" prefHeight="62.0" prefWidth="348.0" promptText="Interests">
+      <Label layoutX="506.0" layoutY="244.0" prefHeight="18.0" prefWidth="366.0" text="Interests: (television shows, favorite foods, music, etc.)" textFill="#fbfaf9" />
+      <TextArea fx:id="interests" editable="false" layoutX="506.0" layoutY="276.0" prefHeight="62.0" prefWidth="348.0" promptText="Interests" wrapText="true">
          <cursor>
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </TextArea>
-      <Label layoutX="298.0" layoutY="348.0" prefHeight="18.0" prefWidth="366.0" text="Hobbies: (video games, instruments, sports, etc.)" textFill="#fbfaf9" />
-      <TextArea fx:id="hobbies" editable="false" layoutX="298.0" layoutY="375.0" prefHeight="62.0" prefWidth="348.0" promptText="Hobbies">
+      <Label layoutX="506.0" layoutY="350.0" prefHeight="18.0" prefWidth="366.0" text="Hobbies: (video games, instruments, sports, etc.)" textFill="#fbfaf9" />
+      <TextArea fx:id="hobbies" editable="false" layoutX="506.0" layoutY="377.0" prefHeight="62.0" prefWidth="348.0" promptText="Hobbies" wrapText="true">
          <cursor>
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </TextArea>
-      <Label layoutX="214.0" layoutY="20.0" prefHeight="23.0" prefWidth="273.0" text="Welcome to System.out.chat()!" textFill="#fbfaf9">
+      <Label layoutX="399.0" layoutY="22.0" prefHeight="23.0" prefWidth="273.0" text="Welcome to System.out.chat()!" textFill="#fbfaf9">
          <font>
             <Font size="18.0" />
          </font></Label>
-      <TextField fx:id="lastName" editable="false" layoutX="472.0" layoutY="60.0" promptText="Last Name">
+      <TextField fx:id="lastName" editable="false" layoutX="680.0" layoutY="62.0" promptText="Last Name">
          <cursor>
             <Cursor fx:constant="DEFAULT" />
          </cursor>
       </TextField>
-      <AnchorPane layoutX="18.0" layoutY="60.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
+      <AnchorPane layoutX="239.0" layoutY="61.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
          <children>
-            <TextArea fx:id="bio" editable="false" layoutX="10.0" layoutY="259.0" prefHeight="117.0" prefWidth="226.0" promptText="Bio">
+            <TextArea fx:id="bio" editable="false" layoutX="10.0" layoutY="259.0" prefHeight="117.0" prefWidth="226.0" promptText="Bio" wrapText="true">
                <cursor>
                   <Cursor fx:constant="DEFAULT" />
                </cursor>
@@ -73,9 +73,73 @@
             </TextField>
          </children>
       </AnchorPane>
-      <ChoiceBox fx:id="gender" layoutX="298.0" layoutY="158.0" prefHeight="27.0" prefWidth="341.0" />
-      <DatePicker fx:id="birthday" disable="true" editable="false" layoutX="298.0" layoutY="196.0" prefHeight="27.0" prefWidth="341.0" />
-      <Button layoutX="339.0" layoutY="458.0" mnemonicParsing="false" onAction="#EditProfile" style="-fx-background-color: #698F3F;" text="Edit Profile" textFill="#fbfaf9" />
-      <Button layoutX="502.0" layoutY="458.0" mnemonicParsing="false" onAction="#Logout" style="-fx-background-color: #ff0000;" text="Log Out" textFill="#fbfaf9" />
+      <ChoiceBox fx:id="gender" layoutX="506.0" layoutY="160.0" prefHeight="27.0" prefWidth="341.0" />
+      <DatePicker fx:id="birthday" disable="true" editable="false" layoutX="506.0" layoutY="198.0" prefHeight="27.0" prefWidth="341.0" />
+      <Button layoutX="549.0" layoutY="454.0" mnemonicParsing="false" onAction="#EditProfile" style="-fx-background-color: #698F3F;" text="Edit Profile" textFill="#fbfaf9">
+         <effect>
+            <Reflection />
+         </effect>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+      <Button layoutX="712.0" layoutY="454.0" mnemonicParsing="false" onAction="#Logout" style="-fx-background-color: #ff0000;" text="Log Out" textFill="#fbfaf9">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <effect>
+            <Reflection />
+         </effect></Button>
+      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="-2.0" layoutY="3.0" prefHeight="495.0" prefWidth="221.0" style="-fx-background-color: #E7DECD;">
+         <content>
+            <Accordion fx:id="conversations" prefHeight="493.0" prefWidth="202.0" style="-fx-background-color: #E7DECD;">
+              <panes>
+                  <TitledPane fx:id="usernameAcc" animated="false" style="-fx-background-color: #E7DECD;" text="username">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #E7DECD;">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#Logout" style="-fx-background-color: #ff0000;" text="Log Out" textFill="#fbfaf9">
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Button>
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
+                <TitledPane animated="false" text="Search Users">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #E7DECD;">
+                           <children>
+                              <TextField fx:id="search" promptText="search for other users">
+                                 <cursor>
+                                    <Cursor fx:constant="TEXT" />
+                                 </cursor>
+                              </TextField>
+                           </children>
+                        </VBox>
+                     </content>
+                </TitledPane>
+                <TitledPane animated="false" text="Explore">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #E7DECD;">
+                           <children>
+                              <Label text="coming soon" />
+                           </children>
+                        </VBox>
+                     </content>
+                </TitledPane>
+              </panes>
+            </Accordion>
+         </content>
+      </ScrollPane>
    </children>
 </AnchorPane>

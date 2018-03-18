@@ -8,14 +8,18 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import model.Contact;
 import model.Profile;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 
 public class Home_View_controller extends ViewController{
 
@@ -24,6 +28,7 @@ public class Home_View_controller extends ViewController{
     public void passConnection(ServerConnection con){
         connection = con;
         setValues();
+        setConversationsList();
     }
 
     public void setValues(){
@@ -34,6 +39,41 @@ public class Home_View_controller extends ViewController{
         setPhone(connection.getCurrentUser().getProfile().getPhone());
         setGender(connection.getCurrentUser().getProfile().getGender());
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
+    }
+
+    public void setConversationsList(){
+        HashMap<String, Contact> contactList = connection.getCurrentUser().getContactList();
+
+        if(!contactList.isEmpty()){
+            for(Contact value: contactList.values()){
+                createNewContact(value.getUsername());
+            }
+        }
+
+        //TODO: import current conversations
+    }
+
+    public void createNewContact(String user){
+        TitledPane newContact = new TitledPane();
+        newContact.setText(user);
+        newContact.setStyle("-fx-background-color: #E7DECD");
+
+        VBox content = new VBox();
+        Label dm = new Label("Direct Message");
+        dm.setCursor(Cursor.HAND);
+        dm.setLabelFor(directMessage);
+        //TODO: set on mouse clicked action
+        Label vp = new Label("View Profile");
+        vp.setCursor(Cursor.HAND);
+        vp.setLabelFor(viewProfile);
+        //TODO: set on mouse clicked action
+        content.setStyle("-fx-background-color: #E7DECD");
+
+        content.getChildren().add(dm);
+        content.getChildren().add(vp);
+
+        newContact.setContent(content);
+        conversations.getPanes().add(newContact);
     }
 
     @FXML
@@ -58,9 +98,22 @@ public class Home_View_controller extends ViewController{
     private TextArea interests;
     @FXML
     private TextArea hobbies;
+    @FXML
+    private ScrollPane scrollPane;
+    @FXML
+    private Accordion conversations;
+    @FXML
+    private TitledPane usernameAcc;
+    @FXML
+    private TextField search;
+    @FXML
+    private Label directMessage;
+    @FXML
+    private Label viewProfile;
 
     private void setUsername(String user){
         username.setText(user);
+        usernameAcc.setText(user);
     }
 
     private void setFirstName(String first){
