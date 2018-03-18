@@ -116,7 +116,7 @@
                      <content>
                         <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #E7DECD;">
                            <children>
-                              <TextField fx:id="search" promptText="search for other users">
+                              <TextField fx:id="search" onKeyPressed="#Search" promptText="search for other users">
                                  <cursor>
                                     <Cursor fx:constant="TEXT" />
                                  </cursor>
