@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Search_View_Controller">
+   <children>
+      <ScrollPane layoutY="38.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="362.0" prefWidth="600.0" style="-fx-background-color: #E7DECD;">
+         <content>
+            <GridPane hgap="3.0" prefHeight="360.0" prefWidth="593.0" style="-fx-background-color: #E7DECD;" vgap="3.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="147.25515747070312" minWidth="10.0" prefWidth="147.25515747070312" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="130.84823608398438" minWidth="10.0" prefWidth="130.84823608398438" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="132.0" minWidth="10.0" prefWidth="120.44134521484375" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="96.0" minWidth="10.0" prefWidth="41.6275634765625" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="126.95166015625" minWidth="10.0" prefWidth="121.3724365234375" />
+              </columnConstraints>
+              <rowConstraints>
+                  <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="40.0" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label style="-fx-background-color: #E7DECD;" text="Username" />
+                  <Label text="Name" GridPane.columnIndex="1" />
+                  <Label prefHeight="17.0" prefWidth="33.0" text="Email" GridPane.columnIndex="2" />
+                  <Label text="Age" GridPane.columnIndex="3" />
+               </children>
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </GridPane>
+         </content>
+      </ScrollPane>
+      <TextField fx:id="searchField" layoutX="309.0" layoutY="5.0" prefHeight="27.0" prefWidth="276.0" promptText="search by username, name, or email">
+         <cursor>
+            <Cursor fx:constant="TEXT" />
+         </cursor>
+      </TextField>
+   </children>
+</AnchorPane>

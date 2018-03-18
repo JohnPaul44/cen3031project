@@ -126,10 +126,8 @@ public class Login_View_controller extends ViewController{
 			registerStage.show();
 
 		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		//TODO: close login screen after opening the home screen, without having an action event
+            e.printStackTrace();
+        }
 	}
 
 	@Override
