@@ -19,6 +19,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Profile;
 
+import javax.swing.*;
+
 public class Direct_Message_View_controller extends ViewController {
     ServerConnection connection;
 
@@ -47,6 +49,12 @@ public class Direct_Message_View_controller extends ViewController {
         new_message.setWrapText(true);
         new_message.setEditable(false);
         new_message.setStyle("-fx-padding: 0 10 0 300");
+
+        JEditorPane dummyEP = new JEditorPane();
+        dummyEP.setSize(100, Short.MAX_VALUE);
+        dummyEP.setText(yourMessageField.getText());
+        new_message.setPrefHeight(dummyEP.getPreferredSize().height);
+        new_message.setMinHeight(30);
         box.getChildren().add(new_message);
         yourMessageField.setText("");
         scroll.vvalueProperty().bind(box.heightProperty());
