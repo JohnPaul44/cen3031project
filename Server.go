@@ -22,8 +22,8 @@ func register(user *ds.User, message *msg.ServerMessage) error {
 	errStr := "cannot register user:"
 
 	// verify new username
-	if message.Username == nil || message.Password == nil || message.Profile == nil {
-		err := e.New("missing username, password and/or profile", e.MissingParameter)
+	if message.Username == nil || message.Password == nil || message.Profile == nil || message.SecurityQuestion == nil || message.SecurityAnswer == nil {
+		err := e.New("missing username, password, profile, and/or security question/answer", e.MissingParameter)
 		log.Println(errStr, err)
 		rsp.SetError(err)
 
@@ -35,8 +35,8 @@ func register(user *ds.User, message *msg.ServerMessage) error {
 	}
 
 	if len(*message.Username) == 0 || len(*message.Password) == 0 || len(message.Profile.FirstName) == 0 || len(message.Profile.LastName) == 0 || len(message.Profile.Email) == 0 ||
-		len(message.Profile.Phone) == 0 || len(message.Profile.SecurityQuestion) == 0 || len(message.Profile.SecurityAnswer) == 0 {
-		err := e.New("empty profile.[firstName | lastName | email | phone | securityQuestion | securityAnswer", e.EmptyParameter)
+		len(message.Profile.Phone) == 0 || len(*message.SecurityQuestion) == 0 || len(*message.SecurityAnswer) == 0 {
+		err := e.New("empty username, password, profile.[firstName | lastName | email | phone], securityQuestion, and/or securityAnswer", e.EmptyParameter)
 		log.Println(errStr, err)
 		rsp.SetError(err)
 
@@ -50,7 +50,7 @@ func register(user *ds.User, message *msg.ServerMessage) error {
 	errStr = fmt.Sprintf("cannot register %s %s as %s:", message.Profile.FirstName, message.Profile.LastName, *message.Username)
 
 	// create account
-	u, err := ds.CreateUserAccount(*message.Username, *message.Password, *message.Profile)
+	u, err := ds.CreateUserAccount(*message.Username, *message.Password, *message.Profile, *message.SecurityQuestion, *message.SecurityAnswer)
 	if err != nil {
 		if err == e.ErrExistingAccount {
 			log.Println(e.Tag, errStr, "account already exists")
@@ -230,12 +230,105 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 					log.Println("cannot register user:", err)
 					if err == e.ErrExistingAccount {
 						rsp.SetError(e.ErrExistingAccount)
-						err = sendServerMessage(conn, rsp)
-						sockClosed = err != nil
+						sockClosed = sendServerMessage(conn, rsp) != nil
 					}
 					break
 				}
 				loggedIn = true
+				break
+			case msg.ActionRequestChangePassword:
+				if message.Username == nil {
+					err := e.New("missing username", e.MissingParameter)
+					rsp.SetError(err)
+					sockClosed = sendServerMessage(conn, rsp) != nil
+					break
+				}
+
+				if len(*message.Username) == 0 {
+					err := e.New("empty username", e.EmptyParameter)
+					rsp.SetError(err)
+					sockClosed = sendServerMessage(conn, rsp) != nil
+					break
+				}
+
+				user, err := ds.GetUserAccount(*message.Username)
+				if err != nil {
+					// handle error
+					if err == e.ErrInvalidUsername {
+						// invalid username
+						rsp.SetError(e.ErrInvalidUsername)
+						sockClosed = sendServerMessage(conn, rsp) != nil
+					} else {
+						log.Println("cannot get user account:", err)
+						rsp.SetError(e.ErrInternalServer)
+						sockClosed = sendServerMessage(conn, rsp) != nil
+					}
+					break
+				}
+
+				rsp.Status = msg.NotificationChangePassword
+				rsp.SecurityQuestion = &user.SecurityQuestion
+				sockClosed = sendServerMessage(conn, rsp) != nil
+				break
+			case msg.ActionChangePassword:
+				if message.Username == nil || message.Password == nil || message.SecurityAnswer == nil || message.Phone == nil {
+					// handle missing parameter
+					err := e.New("missing username, password, securityAnswer and/or phone", e.MissingParameter)
+					rsp.SetError(err)
+					sockClosed = sendServerMessage(conn, rsp) != nil
+					break
+				}
+
+				if len(*message.Username) == 0 || len(*message.Password) == 0 || len(*message.SecurityAnswer) == 0 || len(*message.Phone) == 0 {
+					// handle empty parameter
+					err := e.New("empty username, password, securityAnswer and/or phone", e.EmptyParameter)
+					rsp.SetError(err)
+					sockClosed = sendServerMessage(conn, rsp) != nil
+					break
+				}
+
+				user, err := ds.GetUserAccount(*message.Username)
+				if err != nil {
+					// handle error
+					if err == e.ErrInvalidUsername {
+						// invalid username
+						rsp.SetError(e.ErrInvalidUsername)
+						sockClosed = sendServerMessage(conn, rsp) != nil
+					} else {
+						log.Println("cannot get user account:", err)
+						rsp.SetError(e.ErrInternalServer)
+						sockClosed = sendServerMessage(conn, rsp) != nil
+					}
+					break
+				}
+
+				if *message.SecurityAnswer != user.SecurityAnswer {
+					// handle error
+					err := e.New("security parameters do not match", e.Unauthorized)
+					rsp.SetError(err)
+					sockClosed = sendServerMessage(conn, rsp) != nil
+					break
+				}
+
+				passHash, err := ds.GeneratePasswordHash(*message.Password)
+				if err != nil {
+					// handle error
+					log.Println("cannot generate password hash:", err)
+					rsp.SetError(e.ErrInternalServer)
+					sockClosed = sendServerMessage(conn, rsp) != nil
+					break
+				}
+
+				user.PassHash = passHash
+
+				err = ds.UpdateUserAccount(user)
+				if err != nil {
+					// handle error
+					log.Println("cannot update user account:", err)
+					rsp.SetError(e.ErrInternalServer)
+					sockClosed = sendServerMessage(conn, rsp) != nil
+					break
+				}
 				break
 			default:
 				// any other message requires the user to be logged in
@@ -271,7 +364,8 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		rsp.Clear()
 		rsp.Status = msg.NotificationLoggedIn
 		rsp.Username = &usr.Username
-		rsp.Profile = usr.Profile
+		rsp.Profile = new(msg.Profile)
+		*rsp.Profile = usr.Profile
 		rsp.Contacts = new(map[string]msg.Contact)
 		*rsp.Contacts = make(map[string]msg.Contact)
 

@@ -15,6 +15,7 @@ type ServerMessageHandler func(*ds.User, net.Conn, *msg.ServerMessage) error
 // TODO: implement NotificationMessageReaction and ActionReactToMessage
 var handlerMap = map[int]ServerMessageHandler{
 	msg.ActionLogOut:                     handleLogOut,
+	msg.ActionQueryUsers:                 handleQueryUsers,
 	msg.ActionAddContact:                 handleAddContact,
 	msg.ActionRemoveContact:              handleRemoveContact,
 	msg.ActionUpdateProfile:              handleUpdateProfile,
@@ -52,6 +53,35 @@ func handleLogOut(user *ds.User, conn net.Conn, _ *msg.ServerMessage) error {
 	return sendServerMessage(conn, rsp)
 }
 
+func handleQueryUsers(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
+	rsp := new(msg.ServerMessage)
+
+	if message.Query == nil {
+		err := e.New("missing query", e.MissingParameter)
+		rsp.SetError(err)
+		return sendServerMessage(conn, rsp)
+	}
+
+	if len(*message.Query) == 0 {
+		err := e.New("empty query", e.EmptyParameter)
+		rsp.SetError(err)
+		return sendServerMessage(conn, rsp)
+	}
+
+	// query datastore
+	results, err := ds.QueryUserAcconts(*message.Query)
+	if err != nil {
+		log.Println("cannot query user accounts:", err)
+		rsp.SetError(e.ErrInternalServer)
+		return sendServerMessage(conn, rsp)
+	}
+
+	rsp.Status = msg.NotificationQueryResults
+	rsp.QueryResults = &results
+
+	return sendServerMessage(conn, rsp)
+}
+
 func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
 	errStr := user.Username + " cannot add contact:"
@@ -71,7 +101,6 @@ func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) 
 	}
 
 	errStr = fmt.Sprintf("%s cannot add %s as a contact:", user.Username, *message.Username)
-
 
 	err := ds.AddContact(user.Username, *message.Username)
 	if err != nil {
@@ -155,8 +184,8 @@ func handleUpdateProfile(user *ds.User, conn net.Conn, message *msg.ServerMessag
 	}
 
 	if len(message.Profile.FirstName) == 0 || len(message.Profile.LastName) == 0 || len(message.Profile.Email) == 0 ||
-		len(message.Profile.Phone) == 0 || len(message.Profile.SecurityQuestion) == 0 || len(message.Profile.SecurityAnswer) == 0 {
-		err := e.New("empty profile.[firstName | lastName | email | phone | securityQuestion | securityAnswer", e.EmptyParameter)
+		len(message.Profile.Phone) == 0 {
+		err := e.New("empty profile.[firstName | lastName | email | phone]", e.EmptyParameter)
 		log.Println(errStr, err)
 		rsp.SetError(err)
 		return sendServerMessage(conn, rsp)
@@ -173,7 +202,7 @@ func handleUpdateProfile(user *ds.User, conn net.Conn, message *msg.ServerMessag
 	}
 	rsp.Clear()
 	rsp.Status = msg.NotificationProfileUpdated
-	rsp.Profile = user.Profile
+	rsp.Profile = &user.Profile
 
 	sendServerMessageToUser(user.Username, rsp)
 
@@ -489,7 +518,7 @@ func handleAddUserToConversation(user *ds.User, conn net.Conn, message *msg.Serv
 
 	// send message to new member (message.Username) with all conversation data
 	rsp.Conversations = new([]msg.Conversation)
-	conversation := msg.Conversation{MemberStatus:memberStatuses, LastMessage:conv.LastMessage, ConversationKey:convKey.Name}
+	conversation := msg.Conversation{MemberStatus: memberStatuses, LastMessage: conv.LastMessage, ConversationKey: convKey.Name}
 	(*rsp.Conversations)[0] = conversation
 
 	messages, err := ds.GetMessages(convKey)
@@ -573,9 +602,12 @@ func handleRemoveUserFromConversation(user *ds.User, conn net.Conn, message *msg
 	if user.Username == *message.Username {
 		log.Printf("'%s' removed %s from conversation with: %s\n", user.Username, func() string {
 			switch user.Profile.Gender {
-			case msg.GenderFemale: return "herself"
-			case msg.GenderMale: return "himself"
-			default: return "themself"
+			case msg.GenderFemale:
+				return "herself"
+			case msg.GenderMale:
+				return "himself"
+			default:
+				return "themself"
 			}
 		}(), members)
 	} else {

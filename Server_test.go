@@ -40,7 +40,7 @@ func TestUserExists(t *testing.T) {
 		}
 	}
 
-	_, err = ds.CreateUserAccount(TestUser, TestPass, msg.Profile{})
+	_, err = ds.CreateUserAccount(TestUser, TestPass, msg.Profile{}, TestSecurityQuestion, TestSecurityAnswer)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +92,7 @@ func TestCreateUserAccount(t *testing.T) {
 	}
 
 	_, err = ds.CreateUserAccount(TestUser, TestPass, msg.Profile{FirstName: TestFirstName, LastName: TestLastName, Email: TestEmail,
-		Phone: TestPhone, SecurityQuestion: TestSecurityQuestion, SecurityAnswer: TestSecurityAnswer, Gender: msg.GenderMale, Birthday: TestBirthday})
+		Phone: TestPhone, Gender: msg.GenderMale, Birthday: TestBirthday}, TestSecurityQuestion, TestSecurityAnswer)
 	if err != nil {
 		t.Fatal(err)
 	}

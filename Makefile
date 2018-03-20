@@ -1,6 +1,9 @@
-server:
-	go run Connections.go Datastore.go Errors.go MessageHandlers.go Server.go ServerMessage.go
+build_server:
+	go build MessageHandlers.go Server.go
 
-client:
+run_server:
+	go run MessageHandlers.go Server.go
+
+run_client:
 	go run Errors.go ServerMessage.go Test_Client.go
 
