@@ -19,7 +19,7 @@
          </cursor>
       </Button>
       <TextArea fx:id="yourMessageField" layoutX="14.0" layoutY="283.0" prefHeight="53.0" prefWidth="445.0" promptText="Type Your Message Here..." wrapText="true" />
-      <ScrollPane prefHeight="279.0" prefWidth="550.0">
+      <ScrollPane fx:id="scroll" hbarPolicy="NEVER" prefHeight="279.0" prefWidth="550.0">
          <content>
             <VBox fx:id="box" prefHeight="276.0" prefWidth="548.0" />
          </content>

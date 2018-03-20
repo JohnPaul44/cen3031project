@@ -36,6 +36,8 @@ public class Direct_Message_View_controller extends ViewController {
     private TextField userYou, userThem;
     @FXML
     private VBox box;
+    @FXML
+    private ScrollPane scroll;
 
     ObservableList<String> messages = FXCollections.observableArrayList();
 
@@ -47,6 +49,7 @@ public class Direct_Message_View_controller extends ViewController {
         new_message.setStyle("-fx-padding: 0 10 0 300");
         box.getChildren().add(new_message);
         yourMessageField.setText("");
+        scroll.vvalueProperty().bind(box.heightProperty());
     }
 
     @FXML
