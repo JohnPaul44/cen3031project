@@ -2,31 +2,29 @@ package main
 
 import (
 	"testing"
-	"context"
-	"cloud.google.com/go/datastore"
 	"log"
+	ds "./Datastore"
+	msg "./ServerMessage"
 )
 
 const (
-	TestUser = "test_user"
-	TestPass = "test_password"
-	TestFirstName = "Test"
-	TestLastName = "User"
-	TestEmail = "test@email.com"
-	TestPhone = "1234567890"
+	TestUser             = "test_user"
+	TestPass             = "test_password"
+	TestFirstName        = "Test"
+	TestLastName         = "User"
+	TestEmail            = "test@email.com"
+	TestPhone            = "1234567890"
 	TestSecurityQuestion = "security question"
-	TestSecurityAnswer = "security answer"
-	TestGender = GenderMale
-	TestBirthday = "2018-02-21"
+	TestSecurityAnswer   = "security answer"
+	TestGender           = msg.GenderMale
+	TestBirthday         = "2018-02-21"
 )
 
 func TestMain(m *testing.M) {
-	c = context.Background()
-	cl, err := datastore.NewClient(c, ProjectID)
+	err := ds.Connect()
 	if err != nil {
 		log.Fatal(err)
 	}
-	client = cl
 
 	m.Run()
 }
@@ -34,21 +32,21 @@ func TestMain(m *testing.M) {
 /* Datastore Tests */
 func TestUserExists(t *testing.T) {
 	// create test user
-	exists, err := userExists(TestUser)
+	exists, err := ds.UserExists(TestUser)
 	if exists {
-		err = deleteUserAccount(TestUser)
+		err = ds.DeleteUserAccount(TestUser)
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
-	_, err = createUserAccount(TestUser, TestPass, Profile{})
+	_, err = ds.CreateUserAccount(TestUser, TestPass, msg.Profile{})
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// check if user exists
-	exists, err = userExists(TestUser)
+	exists, err = ds.UserExists(TestUser)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -58,19 +56,19 @@ func TestUserExists(t *testing.T) {
 	}
 
 	// get user account
-	_, err = getUserAccountAuthenticated(TestUser, TestPass)
+	_, err = ds.GetUserAccountAuthenticated(TestUser, TestPass)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// delete user
-	err = deleteUserAccount(TestUser)
+	err = ds.DeleteUserAccount(TestUser)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// check if user exists
-	exists, err = userExists(TestUser)
+	exists, err = ds.UserExists(TestUser)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,30 +79,30 @@ func TestUserExists(t *testing.T) {
 }
 
 func TestCreateUserAccount(t *testing.T) {
-	exists, err := userExists(TestUser)
+	exists, err := ds.UserExists(TestUser)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	if exists {
-		err = deleteUserAccount(TestUser)
+		err = ds.DeleteUserAccount(TestUser)
 		if err != nil {
 			t.Fatal(err)
 		}
 	}
 
-	_, err = createUserAccount(TestUser, TestPass, Profile{FirstName:TestFirstName, LastName:TestLastName, Email:TestEmail,
-	Phone:TestPhone, SecurityQuestion:TestSecurityQuestion, SecurityAnswer:TestSecurityAnswer, Gender:GenderMale, Birthday:TestBirthday})
+	_, err = ds.CreateUserAccount(TestUser, TestPass, msg.Profile{FirstName: TestFirstName, LastName: TestLastName, Email: TestEmail,
+		Phone: TestPhone, SecurityQuestion: TestSecurityQuestion, SecurityAnswer: TestSecurityAnswer, Gender: msg.GenderMale, Birthday: TestBirthday})
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	usr, err := getUserAccountAuthenticated(TestUser, TestPass)
+	usr, err := ds.GetUserAccountAuthenticated(TestUser, TestPass)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if usr.username != TestUser {
+	if usr.Username != TestUser {
 		t.Error("usernames do not match")
 	}
 

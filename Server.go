@@ -5,63 +5,62 @@ import (
 	"github.com/gorilla/mux"
 	"fmt"
 	"log"
-	"context"
-	"cloud.google.com/go/datastore"
 	"time"
 	"encoding/json"
 	"net"
+	e "./Errors"
+	ds "./Datastore"
+	msg "./ServerMessage"
 )
-
-const ProjectID = "cen3031-192414"
 
 // TODO: write tests
 // TODO: implement a toggle switch for editing messages in the conversation
 // TODO: implement authorization tokens
 
-func register(user *DSUser, message *ServerMessage) error {
-	rsp := new(ServerMessage)
+func register(user *ds.User, message *msg.ServerMessage) error {
+	rsp := new(msg.ServerMessage)
 	errStr := "cannot register user:"
 
 	// verify new username
 	if message.Username == nil || message.Password == nil || message.Profile == nil {
-		e := NewError("missing username, password and/or profile", ErrorMissingParameter)
-		log.Println(errStr, e)
-		rsp.setError(e)
+		err := e.New("missing username, password and/or profile", e.MissingParameter)
+		log.Println(errStr, err)
+		rsp.SetError(err)
 
-		serr := sendServerMessage(user.connection.conn, rsp)
+		serr := sendServerMessage(user.Connection.Conn, rsp)
 		if serr != nil {
 			return serr
 		}
-		return ErrMissingParameter
+		return e.ErrMissingParameter
 	}
 
 	if len(*message.Username) == 0 || len(*message.Password) == 0 || len(message.Profile.FirstName) == 0 || len(message.Profile.LastName) == 0 || len(message.Profile.Email) == 0 ||
 		len(message.Profile.Phone) == 0 || len(message.Profile.SecurityQuestion) == 0 || len(message.Profile.SecurityAnswer) == 0 {
-		e := NewError("empty profile.[firstName | lastName | email | phone | securityQuestion | securityAnswer", ErrorEmptyParameter)
-		log.Println(errStr, e)
-		rsp.setError(e)
+		err := e.New("empty profile.[firstName | lastName | email | phone | securityQuestion | securityAnswer", e.EmptyParameter)
+		log.Println(errStr, err)
+		rsp.SetError(err)
 
-		serr := sendServerMessage(user.connection.conn, rsp)
+		serr := sendServerMessage(user.Connection.Conn, rsp)
 		if serr != nil {
 			return serr
 		}
-		return ErrEmptyParameter
+		return e.ErrEmptyParameter
 	}
 
 	errStr = fmt.Sprintf("cannot register %s %s as %s:", message.Profile.FirstName, message.Profile.LastName, *message.Username)
 
 	// create account
-	u, err := createUserAccount(*message.Username, *message.Password, *message.Profile)
+	u, err := ds.CreateUserAccount(*message.Username, *message.Password, *message.Profile)
 	if err != nil {
-		if err == ErrExistingAccount {
-			log.Println(ErrorTag, errStr, "account already exists")
-			rsp.setError(ErrExistingAccount)
+		if err == e.ErrExistingAccount {
+			log.Println(e.Tag, errStr, "account already exists")
+			rsp.SetError(e.ErrExistingAccount)
 		} else {
-			log.Println(ErrorTag, errStr, err)
-			rsp.setError(ErrInternalServer)
+			log.Println(e.Tag, errStr, err)
+			rsp.SetError(e.ErrInternalServer)
 		}
 
-		serr := sendServerMessage(user.connection.conn, rsp)
+		serr := sendServerMessage(user.Connection.Conn, rsp)
 		if serr != nil {
 			return serr
 		}
@@ -70,74 +69,74 @@ func register(user *DSUser, message *ServerMessage) error {
 
 	*user = *u
 
-	log.Printf("%s %s created an account with username %s\n", user.Profile.FirstName, user.Profile.LastName, user.username)
+	log.Printf("%s %s created an account with username %s\n", user.Profile.FirstName, user.Profile.LastName, user.Username)
 
 	return nil
 }
 
-func logIn(user *DSUser, message *ServerMessage) error {
-	rsp := new(ServerMessage)
+func logIn(user *ds.User, message *msg.ServerMessage) error {
+	rsp := new(msg.ServerMessage)
 	errStr := "cannot log user in:"
 
 	// verify credentials
 	if message.Username == nil || message.Password == nil {
-		e := NewError("missing username and/or password", ErrorMissingParameter)
-		log.Println(errStr, e)
-		rsp.setError(e)
+		err := e.New("missing username and/or password", e.MissingParameter)
+		log.Println(errStr, err)
+		rsp.SetError(err)
 
-		err := sendServerMessage(user.connection.conn, rsp)
-		if err != nil {
-			return err
+		serr := sendServerMessage(user.Connection.Conn, rsp)
+		if serr != nil {
+			return serr
 		}
-		return ErrMissingParameter
+		return e.ErrMissingParameter
 	}
 
 	if len(*message.Username) == 0 || len(*message.Password) == 0 {
-		e := NewError("empty username and/or password", ErrorEmptyParameter)
-		log.Println(errStr, e)
-		rsp.setError(e)
+		err := e.New("empty username and/or password", e.EmptyParameter)
+		log.Println(errStr, err)
+		rsp.SetError(err)
 
-		err := sendServerMessage(user.connection.conn, rsp)
-		if err != nil {
-			return err
+		serr := sendServerMessage(user.Connection.Conn, rsp)
+		if serr != nil {
+			return serr
 		}
-		return ErrEmptyParameter
+		return e.ErrEmptyParameter
 	}
 
 	errStr = fmt.Sprintf("cannot log in as '%s':", *message.Username)
 
-	u, err := getUserAccountAuthenticated(*message.Username, *message.Password)
+	u, err := ds.GetUserAccountAuthenticated(*message.Username, *message.Password)
 	if err != nil {
 		return err
 	}
 
 	*user = *u
 
-	contacts, err := getContacts(user)
+	contacts, err := ds.GetContacts(user)
 	if err != nil {
-		log.Println(ErrorTag, errStr, "cannot get contacts:", err)
+		log.Println(e.Tag, errStr, "cannot get contacts:", err)
 	} else {
-		user.contacts = *contacts
+		user.Contacts = *contacts
 	}
 
-	log.Printf("%s logged in\n", user.username)
+	log.Printf("%s logged in\n", user.Username)
 
 	return nil
 }
 
-func updateOnlineStatus(user *DSUser, online bool) {
+func updateOnlineStatus(user *ds.User, online bool) {
 	// create notification message
-	msg := new(ServerMessage)
-	msg.Status = NotificationUserOnlineStatus
-	msg.Online = &online
-	msg.Username = &user.username
+	message := new(msg.ServerMessage)
+	message.Status = msg.NotificationUserOnlineStatus
+	message.Online = &online
+	message.Username = &user.Username
 
 	// send notification to online contacts
-	for _, contact := range user.contacts {
-		sendServerMessageToUser(contact, msg)
+	for _, contact := range user.Contacts {
+		sendServerMessageToUser(contact, message)
 	}
 
-	log.Printf("%s is %s\n", user.username, func() string {
+	log.Printf("%s is %s\n", user.Username, func() string {
 		if online {
 			return "online"
 		} else {
@@ -155,22 +154,20 @@ func remove(s []string, r string) ([]string, bool) {
 	return s, false
 }
 
-func getServerMessage(conn net.Conn, message *ServerMessage) error {
+func getServerMessage(conn net.Conn, message *msg.ServerMessage) error {
 	return json.NewDecoder(conn).Decode(message)
 }
 
-func sendServerMessage(conn net.Conn, message *ServerMessage) error {
+func sendServerMessage(conn net.Conn, message *msg.ServerMessage) error {
 	return json.NewEncoder(conn).Encode(message)
 }
 
-func sendServerMessageToUser(username string, message *ServerMessage) {
-	_, contains := conns[username]
-	if contains {
-		for _, conn := range conns[username].connections {
-			err := sendServerMessage(conn.conn, message)
-			if err != nil {
-				log.Printf("socket closed for '%s'\n", username)
-			}
+func sendServerMessageToUser(username string, message *msg.ServerMessage) {
+	connections := ds.GetConnections(username)
+	for _, conn := range connections {
+		err := sendServerMessage(conn.Conn, message)
+		if err != nil {
+			log.Printf("socket closed for '%s'\n", username)
 		}
 	}
 }
@@ -192,47 +189,47 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 
 	var loggedIn bool
 	sockClosed := false
-	connection := new(Connection)
-	connection.time = time.Now()
-	connection.conn = conn
+	connection := new(ds.Connection)
+	connection.Time = time.Now()
+	connection.Conn = conn
 
 	for !sockClosed {
 		loggedIn = false
-		usr := new(DSUser)
-		usr.connection = connection
-		rsp := new(ServerMessage)
-		msg := new(ServerMessage)
+		usr := new(ds.User)
+		usr.Connection = connection
+		rsp := new(msg.ServerMessage)
+		message := new(msg.ServerMessage)
 
 		for !loggedIn {
 			// first message received is either Login or Register
-			err = getServerMessage(conn, msg)
+			err = getServerMessage(conn, message)
 			if err != nil {
 				log.Println("cannot get message from client:", err)
 				sockClosed = true
 				break
 			}
 
-			switch msg.Status {
-			case ActionLogIn:
-				err = logIn(usr, msg)
+			switch message.Status {
+			case msg.ActionLogIn:
+				err = logIn(usr, message)
 				if err != nil {
 					log.Println("cannot log user in:", err)
-					if err == ErrInvalidUsername || err == ErrInvalidPassword {
-						rsp.setError(ErrInvalidLogin)
+					if err == e.ErrInvalidUsername || err == e.ErrInvalidPassword {
+						rsp.SetError(e.ErrInvalidLogin)
 						err = sendServerMessage(conn, rsp)
 						sockClosed = err != nil
 					}
 					break
 				}
-				log.Println("user logged in:", usr.username)
+				log.Println("user logged in:", usr.Username)
 				loggedIn = true
 				break
-			case ActionRegister:
-				err = register(usr, msg)
+			case msg.ActionRegister:
+				err = register(usr, message)
 				if err != nil {
 					log.Println("cannot register user:", err)
-					if err == ErrExistingAccount {
-						rsp.setError(ErrExistingAccount)
+					if err == e.ErrExistingAccount {
+						rsp.SetError(e.ErrExistingAccount)
 						err = sendServerMessage(conn, rsp)
 						sockClosed = err != nil
 					}
@@ -242,11 +239,11 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				break
 			default:
 				// any other message requires the user to be logged in
-				e := NewError("not logged in", ErrorUnauthorized)
-				log.Println("cannot perform action:", e)
-				rsp.setError(e)
-				err = sendServerMessage(conn, rsp)
-				sockClosed = err != nil
+				err := e.New("not logged in", e.Unauthorized)
+				log.Println("cannot perform action:", err)
+				rsp.SetError(err)
+				serr := sendServerMessage(conn, rsp)
+				sockClosed = serr != nil
 				break
 			}
 
@@ -254,7 +251,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				break
 			}
 
-			rsp.clear()
+			rsp.Clear()
 		}
 
 		if sockClosed {
@@ -262,55 +259,71 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		}
 
 		// add connection to connections map
-		connection := new(Connection)
-		connection.time = time.Now()
-		connection.conn = conn
-		usr.connection = connection
-		conns.add(usr)
-
-		rsp.clear()
-		rsp.Status = NotificationLoggedIn
-		rsp.Username = &usr.username
-		rsp.Profile = usr.Profile
-		rsp.Contacts = new([]Contact)
-		for _, contact := range usr.contacts {
-			*rsp.Contacts = append(*rsp.Contacts, Contact{Username:contact, Online:conns.contains(contact)})
+		connection := new(ds.Connection)
+		connection.Time = time.Now()
+		connection.Conn = conn
+		usr.Connection = connection
+		firstOnline := ds.AddConnection(usr)
+		if firstOnline {
+			updateOnlineStatus(usr, true)
 		}
-		rsp.Conversations, err = getConversations(usr)
+
+		rsp.Clear()
+		rsp.Status = msg.NotificationLoggedIn
+		rsp.Username = &usr.Username
+		rsp.Profile = usr.Profile
+		rsp.Contacts = new(map[string]msg.Contact)
+		*rsp.Contacts = make(map[string]msg.Contact)
+
+		for _, contact := range usr.Contacts {
+			(*rsp.Contacts)[contact] = msg.Contact{
+				Online:           ds.ConnectionsContains(contact),
+				SentMessages:     0,
+				ReceivedMessages: 0,
+				/* TODO
+				Games:,
+				FriendshipLevel:,
+				*/
+			}
+		}
+		rsp.Conversations, err = ds.GetConversations(usr)
 		if err != nil {
-			log.Println(ErrorTag, "cannot get conversations:", err)
+			log.Println(e.Tag, "cannot get conversations:", err)
 			break
 		}
 
 		// return logged in message with user information
 		err = sendServerMessage(conn, rsp)
 		if err != nil {
-			log.Println(ErrorTag, "cannot send response to client:", err)
+			log.Println(e.Tag, "cannot send response to client:", err)
 			break
 		}
 
 		// event loop
 		for loggedIn && !sockClosed {
-			err = getServerMessage(conn, msg)
+			err = getServerMessage(conn, message)
 			if err != nil {
 				log.Println("cannot get message from client:", err)
 				sockClosed = true
 				break
 			}
 
-			err = handleServerMessage(usr, conn, msg)
+			err = handleServerMessage(usr, conn, message)
 			if err != nil {
 				log.Println("cannot handle message from client:", err)
 				sockClosed = true
 				break
 			}
 
-			if msg.Status == ActionLogOut {
+			if message.Status == msg.ActionLogOut {
 				loggedIn = false
 				break
 			}
 		}
-		conns.remove(usr)
+		lastOnline := ds.RemoveConnection(usr)
+		if lastOnline {
+			updateOnlineStatus(usr, false)
+		}
 	}
 
 	log.Println("Socket closed")
@@ -320,14 +333,10 @@ func handleHome(w http.ResponseWriter, _ *http.Request) {
 	w.Write([]byte("<H1>System.Out.Chat()</H1>"))
 }
 
-var c = context.Background()
-var client *datastore.Client
-
 func main() {
-	var err error
-	client, err = datastore.NewClient(c, ProjectID)
+	err := ds.Connect()
 	if err != nil {
-		log.Fatal(ErrorTag, "cannot create datastore client:", err)
+		log.Fatal(e.Tag, "cannot create datastore client:", err)
 	}
 
 	r := mux.NewRouter()

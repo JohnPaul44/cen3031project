@@ -4,6 +4,7 @@ import (
 	"net"
 	"log"
 	"encoding/json"
+	msg "./ServerMessage"
 )
 
 func main() {
@@ -17,14 +18,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	msg := new(ServerMessage)
-	msg.Status = ActionLogIn
-	msg.Username = new(string)
-	*msg.Username = "test_user"
-	msg.Password = new(string)
-	*msg.Password = "test_password"
+	message := new(msg.ServerMessage)
+	message.Status = msg.ActionLogIn
+	message.Username = new(string)
+	*message.Username = "test_user"
+	message.Password = new(string)
+	*message.Password = "test_password"
 
-	bytes, err := json.Marshal(msg)
+	bytes, err := json.Marshal(message)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,9 +36,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	log.Printf("Sent %+v to server\n", *msg)
+	log.Printf("Sent %+v to server\n", *message)
 
-	rsp := new(ServerMessage)
+	rsp := new(msg.ServerMessage)
 	json.NewDecoder(conn).Decode(rsp)
 
 	log.Printf("Received %+v from server\n", *rsp)
