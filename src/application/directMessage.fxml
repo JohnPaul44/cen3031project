@@ -21,12 +21,7 @@
       <TextArea fx:id="yourMessageField" layoutX="14.0" layoutY="283.0" prefHeight="53.0" prefWidth="445.0" promptText="Type Your Message Here..." wrapText="true" />
       <ScrollPane prefHeight="279.0" prefWidth="550.0">
          <content>
-            <TableView prefHeight="278.0" prefWidth="547.0" style="-fx-background-color: #0A122A;">
-              <columns>
-                <TableColumn prefWidth="275.0" text="You" />
-                <TableColumn prefWidth="275.0" text="Them" />
-              </columns>
-            </TableView>
+            <VBox fx:id="box" prefHeight="276.0" prefWidth="548.0" />
          </content>
       </ScrollPane>
    </children>

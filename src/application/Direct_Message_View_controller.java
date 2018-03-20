@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Profile;
 
@@ -33,17 +34,24 @@ public class Direct_Message_View_controller extends ViewController {
     private ListView chatWindow;
     @FXML
     private TextField userYou, userThem;
+    @FXML
+    private VBox box;
 
     ObservableList<String> messages = FXCollections.observableArrayList();
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
-        messages.add("User 1: " + userYou.getText());//get 1st user's text from his/her textfield and add message to observablelist
-        userYou.setText("");//clear 1st user's textfield
+        TextArea new_message = new TextArea();
+        new_message.setText(yourMessageField.getText());
+        new_message.setWrapText(true);
+        new_message.setEditable(false);
+        new_message.setStyle("-fx-padding: 0 10 0 300");
+        box.getChildren().add(new_message);
+        yourMessageField.setText("");
     }
 
     @FXML
     private void initialize(){
-        chatWindow.setItems(messages);
+//        chatWindow.setItems(messages);
     }
 
     @Override
