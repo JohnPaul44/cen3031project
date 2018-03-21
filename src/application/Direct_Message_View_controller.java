@@ -15,6 +15,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Profile;
@@ -40,10 +42,16 @@ public class Direct_Message_View_controller extends ViewController {
     private VBox box;
     @FXML
     private ScrollPane scroll;
+    @FXML
+    private Label username;
 
-    ObservableList<String> messages = FXCollections.observableArrayList();
+    public void setUsername(String user){
+        username.setText(user);
+    }
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
+
+        AnchorPane pane = new AnchorPane();
         TextArea new_message = new TextArea();
         new_message.setText(yourMessageField.getText());
         new_message.setWrapText(true);
@@ -55,7 +63,12 @@ public class Direct_Message_View_controller extends ViewController {
         dummyEP.setText(yourMessageField.getText());
         new_message.setPrefHeight(dummyEP.getPreferredSize().height);
         new_message.setMinHeight(30);
-        box.getChildren().add(new_message);
+
+        pane.setPrefHeight(dummyEP.getPreferredSize().height);
+
+        pane.getChildren().add(new_message);
+        box.getChildren().add(pane);
+
         yourMessageField.setText("");
         scroll.vvalueProperty().bind(box.heightProperty());
     }
