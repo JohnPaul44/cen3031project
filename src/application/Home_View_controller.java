@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -16,12 +17,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.Contact;
 import model.Profile;
 
-import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
 
@@ -43,6 +48,24 @@ public class Home_View_controller extends ViewController{
         setPhone(connection.getCurrentUser().getProfile().getPhone());
         setGender(connection.getCurrentUser().getProfile().getGender());
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
+        setIcon();
+    }
+
+    public void setIcon(){
+        String first_letter = "" + firstName.getText().charAt(0) + lastName.getText().charAt(0);
+        icon_letter.setText(first_letter);
+
+        if(connection.getCurrentUser().getProfile().getColor() == null){
+            String color_green = String.valueOf(Color.GREEN);
+            connection.getCurrentUser().getProfile().setColor(color_green);
+        }
+
+        System.out.println("color saved in profile " + connection.getCurrentUser().getProfile().getColor());
+        Paint icon_color = Paint.valueOf(connection.getCurrentUser().getProfile().getColor());
+        System.out.println("color saved in icon_color " + icon_color);
+        icon.setFill(icon_color);
+        icon_design.setFill(icon_color);
+        icon_design.setOpacity(0.4);
     }
 
     public void setConversationsList(){
@@ -50,20 +73,33 @@ public class Home_View_controller extends ViewController{
 
 //        if(!contactList.isEmpty()){
 //            for(Contact value: contactList.values()){
-//                createNewContact(value.getUsername());
+//                createNewContact(value);
 //            }
 //        }
 
-        createNewContact("testing");
-        createNewContact("another");
-        createNewContact("one more");
+
         //TODO: import current conversations
     }
 
-    public void createNewContact(String user){
+    public void createNewContact(Contact user){
         TitledPane newContact = new TitledPane();
-        newContact.setText(user);
+        newContact.setText(user.getUsername());
         newContact.setStyle("-fx-background-color: #E7DECD");
+
+        StackPane user_icon = new StackPane();
+        user_icon.setPrefHeight(20);
+        user_icon.setPrefWidth(20);
+        user_icon.setMaxWidth(20);
+
+        Circle icon = new Circle(12);
+        Paint color =Paint.valueOf(user.getColor());
+        icon.setFill(color);
+
+        Label initial = new Label();
+        initial.setText("" + user.getUsername().charAt(0));
+        initial.setStyle("-fx-font: 10 system");
+
+        user_icon.getChildren().addAll(icon, initial);
 
         VBox content = new VBox();
         Label dm = new Label("Direct Message");
@@ -73,7 +109,7 @@ public class Home_View_controller extends ViewController{
             @Override
             public void handle(MouseEvent event) {
                 try{
-                    OpenDirectMessage(event, user);
+                    OpenDirectMessage(event, user.getUsername());
                 } catch(Exception e){}
             }
         });
@@ -85,7 +121,7 @@ public class Home_View_controller extends ViewController{
             @Override
             public void handle(MouseEvent event) {
                 try{
-                    ViewOtherProfile(event, user);
+                    ViewOtherProfile(event, user.getUsername());
                 } catch(Exception e){}
             }
         });
@@ -95,7 +131,9 @@ public class Home_View_controller extends ViewController{
         content.getChildren().add(dm);
         content.getChildren().add(vp);
 
+
         newContact.setContent(content);
+        newContact.setGraphic(user_icon);
         conversations.getPanes().add(newContact);
     }
 
@@ -133,6 +171,12 @@ public class Home_View_controller extends ViewController{
     private Label directMessage;
     @FXML
     private Label viewProfile;
+    @FXML
+    private Circle icon;
+    @FXML
+    private Circle icon_design;
+    @FXML
+    private Label icon_letter;
 
     private void setUsername(String user){
         username.setText(user);
@@ -179,7 +223,7 @@ public class Home_View_controller extends ViewController{
     }
 
     private void setBirthday(String birth){
-        if(birth.equals("null")){
+        if(birth == null || birth.equals("null") || birth.equals("")){
             return;
         }
         LocalDate birthdate = LocalDate.parse(birth);
@@ -197,6 +241,9 @@ public class Home_View_controller extends ViewController{
             EditProfile_View_Controller edit = loader.getController();
             edit.passConnection(connection);
             connection.setDelegate(edit);
+
+            String first_letter = "" + firstName.getText().charAt(0) + lastName.getText().charAt(0);
+            edit.setIconLetter(first_letter);
 
             Parent root = loader.getRoot();
             Stage registerStage = (Stage) firstName.getScene().getWindow();
@@ -273,11 +320,12 @@ public class Home_View_controller extends ViewController{
             Direct_Message_View_controller dmScreen = loader.getController();
             dmScreen.passConnection(connection);
             connection.setDelegate(dmScreen);
+            dmScreen.setUsername(user);
             //TODO: pass the user to initialize the message screen
 
             Parent root = loader.getRoot();
             Stage dmStage = new Stage();
-            Scene scene = new Scene(root, 600, 400);
+            Scene scene = new Scene(root, 552, 372);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             dmStage.setScene(scene);
             dmStage.show();

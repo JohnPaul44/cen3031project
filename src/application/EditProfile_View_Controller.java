@@ -5,6 +5,7 @@ import connection.serverMessages.ServerMessage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -13,6 +14,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.Profile;
 
@@ -57,6 +61,24 @@ public class EditProfile_View_Controller extends ViewController {
     private TextArea hobbies;
     @FXML
     private Button save;
+    @FXML
+    private ColorPicker color;
+    @FXML
+    private Circle icon;
+    @FXML
+    private Circle iconDesign;
+    @FXML
+    private Label icon_letter;
+
+    public void setIconLetter(String initials){
+        icon_letter.setText(initials);
+
+
+        Paint icon_color = Paint.valueOf(connection.getCurrentUser().getProfile().getColor());
+        icon.setFill(icon_color);
+        iconDesign.setFill(icon_color);
+        iconDesign.setOpacity(0.4);
+    }
 
     private void setUsername(String user){
         username.setText(user);
@@ -94,7 +116,7 @@ public class EditProfile_View_Controller extends ViewController {
     }
 
     private void setBirthday(String birth){
-        if(birth == null){
+        if(birth == null || birth.equals("null") || birth.equals("")){
             return;
         }
         LocalDate birthdate = LocalDate.parse(birth);
@@ -119,13 +141,20 @@ public class EditProfile_View_Controller extends ViewController {
 
     //event handlers for both when the button is pressed or when the enter key is used
     @FXML
-    public void SaveChangesEventKey(KeyEvent keyEvent) throws Exception{
-        if(keyEvent.getCode() == KeyCode.ENTER) {
+    public void SaveChangesEventKey(KeyEvent keyEvent) throws Exception {
+        if (keyEvent.getCode() == KeyCode.ENTER) {
             //calls the same action that occurs when the button is pressed
             ActionEvent aevent = new ActionEvent(keyEvent.getSource(), save);
             //pass the keyEvent into the button action event
             SaveChangesButton(aevent);
         }
+    }
+
+    public void ChangeIconColor(){
+        System.out.println(color.getValue());
+        icon.setFill(color.getValue());
+        iconDesign.setFill(color.getValue());
+        iconDesign.setOpacity(0.4);
     }
 
     @FXML
@@ -146,10 +175,18 @@ public class EditProfile_View_Controller extends ViewController {
         if(checkPhoneNumber()){
             connection.getCurrentUser().getProfile().setPhone(phone());
         }
-        connection.getCurrentUser().getProfile().setBirthday(birthday());
+        System.out.println("birthday" + birthday());
+        if(!birthday().equals("null")) {
+            connection.getCurrentUser().getProfile().setBirthday(birthday());
+        }
         connection.getCurrentUser().getProfile().setGender(gender());
 
+        System.out.println(color());
+        connection.getCurrentUser().getProfile().setColor(color());
+
         connection.updateProfile();
+
+        System.out.println("what is saved in the profile " + connection.getCurrentUser().getProfile().getColor());
 
         //TODO: setting the bio, whats on your mind, interest and hobbies
 
@@ -176,6 +213,11 @@ public class EditProfile_View_Controller extends ViewController {
     ObservableList<Profile.Gender> genderFieldList = FXCollections.observableArrayList(Profile.Gender.values());
     private String gender(){
         return genderField.getValue().toString();
+    }
+
+    private String color(){
+        String default_color = String.valueOf(color.getValue());
+        return default_color;
     }
 
     private String birthday(){
@@ -210,7 +252,7 @@ public class EditProfile_View_Controller extends ViewController {
 
             Parent root = loader.getRoot();
             Stage registerStage = (Stage) save.getScene().getWindow();
-            Scene scene = new Scene(root, 700, 500);
+            Scene scene = new Scene(root, 880, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();

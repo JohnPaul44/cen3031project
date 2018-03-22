@@ -14,10 +14,11 @@ public class Profile {
     public enum Gender { FEMALE, MALE, OTHER, NA }
     private String gender; // 0 = female, 1 = male, 2 = other, 3 = NA
     private String birthday;
+    private String color;
 
     // Test Constructor
     public Profile(String firstName, String lastName, String email, String phone, String securityQuestion,
-                   String securityAnswer, Gender gender, String birthday) {
+                   String securityAnswer, Gender gender, String birthday, String color) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -28,6 +29,7 @@ public class Profile {
         if (!birthday.equals("")) {
             this.birthday = birthday;
         }
+        this.color = color;
     }
 
     public String getName() {
@@ -54,6 +56,7 @@ public class Profile {
     public String getBirthday() {
         return birthday;
     }
+    public String getColor() {return color;}
     public void setName(String firstName){
         this.firstName = firstName;
     }
@@ -72,5 +75,6 @@ public class Profile {
     public void setBirthday(String birthday){
         this.birthday = birthday;
     }
+    public void setColor(String color){ this.color = color;}
 
 }
