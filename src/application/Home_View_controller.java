@@ -37,7 +37,7 @@ public class Home_View_controller extends ViewController{
 
     public void setValues(){
         setUsername(connection.getCurrentUser().getUserName());
-        setFirstName(connection.getCurrentUser().getProfile().getName());
+        setFirstName(connection.getCurrentUser().getProfile().getFirstName());
         setLastName(connection.getCurrentUser().getProfile().getLastName());
         setEmail(connection.getCurrentUser().getProfile().getEmail());
         setPhone(connection.getCurrentUser().getProfile().getPhone());
@@ -275,7 +275,7 @@ public class Home_View_controller extends ViewController{
             loader.setLocation(getClass().getResource("/application/directMessage.fxml"));
             loader.load();
 
-            Direct_Message_View_controller dmScreen = loader.getController();
+            Conversation_View_controller dmScreen = loader.getController();
             dmScreen.passConnection(connection);
             connection.setDelegate(dmScreen);
             //TODO: pass the user to initialize the message screen
@@ -296,7 +296,7 @@ public class Home_View_controller extends ViewController{
         try{
             FXMLLoader loader = new FXMLLoader();
             //TODO: change out the place holder fxml for view profile
-            loader.setLocation(getClass().getResource("/application/home.fxml"));
+            loader.setLocation(getClass().getResource("/application/viewProfile.fxml"));
             loader.load();
 
             Home_View_controller vpScreen = loader.getController();
