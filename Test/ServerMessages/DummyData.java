@@ -19,6 +19,7 @@ class DummyData {
     public String birthday1 = "06/14/1995";
     public String securityQuestion1 = "Who are you?";
     public String securityAnswer1 = "Me";
+    public String color = "0xb399ffff";
     public Contact contact1;
     public Map<String, Reactions> reactions1 = new HashMap<>();
     public Reactions specificReactions1 = new Reactions(new int[]{1, 2}, username1);
@@ -52,7 +53,7 @@ class DummyData {
     public String errorMessage = "Error Message";
 
     DummyData() {
-        profile = new Profile(firstName1, lastName1, email1, phone1, securityQuestion1, securityAnswer1, gender1, birthday1);
+        profile = new Profile(firstName1, lastName1, email1, phone1, securityQuestion1, securityAnswer1, gender1, birthday1, color);
         setUpReactions();
         setUpContacts();
         setUpMessages();

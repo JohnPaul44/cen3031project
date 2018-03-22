@@ -67,6 +67,18 @@ public class TestNotificationMessages {
         assertTrue(connection.getStatusOfLastMessageReceived().equals(ServerMessage.Status.NOTIFICATIONPASSWORDCHANGED));
     }
 
+    @Test
+    public void receiveUserOnlineStatusMessage() throws InterruptedException {
+        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
+        NotificationUserOnlineStatusMessage userOnlineStatusMessage = new NotificationUserOnlineStatusMessage(true, dummyData.username1);
+        ArrayList<ServerMessage> serverMessages = new ArrayList<>();
+        serverMessages.add(loggedInMessage);
+        serverMessages.add(userOnlineStatusMessage);
+
+        sendAndReceiveMessages(serverMessages);
+        assertTrue(connection.getStatusOfLastMessageReceived().equals(ServerMessage.Status.NOTIFICATIONUSERONLINESTATUS));
+    }
+
     // TODO tests for rest of NotificationMessages including changepassword
 
     private NotificationLoggedInMessage createLoggedInMessage() {
