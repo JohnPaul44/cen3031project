@@ -101,8 +101,8 @@ public class ServerConnection implements IServerConnection{
         sendMessageToServer(message);
     }
 
-    public void changePassword(String username, String securityAnswer, String phone) {
-        ServerMessage message = new ActionChangePassword(username, securityAnswer, phone);
+    public void changePassword(String username, String securityAnswer, String phone, String password) {
+        ServerMessage message = new ActionChangePassword(username, securityAnswer, phone, password);
         sendMessageToServer(message);
     }
 

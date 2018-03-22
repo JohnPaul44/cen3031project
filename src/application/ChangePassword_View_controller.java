@@ -2,6 +2,7 @@ package application;
 
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -95,17 +96,11 @@ public class ChangePassword_View_controller extends ViewController {
 	
 	@FXML
 	public void confirmIdentity(ActionEvent event) throws Exception{
-		//check the validity of the phone number
-		if(/*checkPhone(phone.getText())*/!phone.getText().equals("1234567890")) {
-			status.setText("Incorrect Credentials");
-			return;
-		}
-		//check the security question answer
-		if(/*checkSecurity(answer.getText())*/!answer.getText().equals("ans")) {
-			status.setText("Incorrect Credentials");
-			return;
-		}
-		
+		connection.changePassword(username.getText(), answer.getText(), phone.getText());
+	}
+
+	@FXML
+	public void changePasswordVisible(){
 		confirmButton.setVisible(false);
 		newPass.setVisible(true);
 		confPass.setVisible(true);
@@ -181,6 +176,27 @@ public class ChangePassword_View_controller extends ViewController {
 
 	@Override
 	public void notification(ServerMessage message) {
-
+		switch (message.getStatus()) {
+			case NOTIFICATIONERROR:
+				//prints to the ui that the login failed
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						status.setText("Incorrect Credentials");
+					}
+				});
+				break;
+			case NOTIFICATIONPASSWORDCHANGED:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						changePasswordVisible();
+						status.setText("");
+					}
+				});
+				break;
+			default:
+				break;
+		}
 	}
 }

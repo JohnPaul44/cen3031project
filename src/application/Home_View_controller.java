@@ -42,7 +42,7 @@ public class Home_View_controller extends ViewController{
 
     public void setValues(){
         setUsername(connection.getCurrentUser().getUserName());
-        setFirstName(connection.getCurrentUser().getProfile().getName());
+        setFirstName(connection.getCurrentUser().getProfile().getFirstName());
         setLastName(connection.getCurrentUser().getProfile().getLastName());
         setEmail(connection.getCurrentUser().getProfile().getEmail());
         setPhone(connection.getCurrentUser().getProfile().getPhone());

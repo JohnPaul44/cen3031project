@@ -76,7 +76,7 @@ public class Login_View_controller extends ViewController{
 	}
 	
 	@FXML
-	public void ChangePassEvent(ActionEvent event) throws Exception{
+	public void ChangePassEvent(ActionEvent event) {
 		
 		if(username.getText().equals("")) {
 			status.setText("Please enter your username");
@@ -85,25 +85,34 @@ public class Login_View_controller extends ViewController{
 		
 		//check that username is in the database
 		//if not, then return
-	
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/application/changePass.fxml"));
-		loader.load();
-		
-		//creates instance of the change password controller
-		//passes the username to the change password screen
-		ChangePassword_View_controller pass = loader.getController();
-		pass.setUsername(username.getText());
-		pass.passConnection(connection);
-		connection.setDelegate(pass);
+		connection.requestSecurityQuestion(username.getText());
+	}
 
-		
-		Parent root = loader.getRoot();
-		Stage changeStage = (Stage) loginButton.getScene().getWindow();
-		Scene scene = new Scene(root,700,500);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		changeStage.setScene(scene);
-		changeStage.show();
+	@FXML
+	public void openChangePassword(){
+
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("/application/changePass.fxml"));
+			loader.load();
+
+			//creates instance of the change password controller
+			//passes the username to the change password screen
+			ChangePassword_View_controller pass = loader.getController();
+			pass.setUsername(username.getText());
+			pass.passConnection(connection);
+			connection.setDelegate(pass);
+
+
+			Parent root = loader.getRoot();
+			Stage changeStage = (Stage) loginButton.getScene().getWindow();
+			Scene scene = new Scene(root, 700, 500);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			changeStage.setScene(scene);
+			changeStage.show();
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
@@ -153,6 +162,14 @@ public class Login_View_controller extends ViewController{
                         status.setText("Incorrect Username or Password");
                     }
                 });
+				break;
+			case NOTIFICATIONSECURITYQUESTION:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						openChangePassword();
+					}
+				});
 				break;
 			default:
 				break;

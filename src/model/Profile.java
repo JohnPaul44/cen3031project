@@ -28,7 +28,7 @@ public class Profile {
         this.color = color;
     }
 
-    public String getName() {
+    public String getFirstName() {
         return firstName;
     }
     public String getLastName() {
