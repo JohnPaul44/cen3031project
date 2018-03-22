@@ -40,7 +40,6 @@ public abstract class ServerMessage {
         ACTIONREMOVEDUSERFROMCONVERSATION,
         ACTIONREADMESSAGE,
         ACTIONSETTYPING,
-        ACTIONGETCONTACT
     }
     int status;
 
