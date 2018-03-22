@@ -33,7 +33,7 @@
                   <Font size="15.0" />
                </font>
             </Label>
-            <TextField fx:id="phone" layoutX="90.0" layoutY="91.0" onKeyPressed="#confirmIdentityEventKey" prefHeight="27.0" prefWidth="244.0" promptText="recovery phone number" style="-fx-background-color: #fbfaf9;">
+            <TextField fx:id="phone" layoutX="90.0" layoutY="91.0" onKeyPressed="#changePasswordEventKey" prefHeight="27.0" prefWidth="244.0" promptText="recovery phone number" style="-fx-background-color: #fbfaf9;">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>
@@ -49,14 +49,6 @@
                </font>
             </Label>
             <Label fx:id="status" layoutX="90.0" layoutY="68.0" prefHeight="17.0" prefWidth="294.0" textFill="#fc0e0e" />
-            <Button fx:id="confirmButton" layoutX="90.0" layoutY="196.0" mnemonicParsing="false" onAction="#confirmIdentity" onKeyPressed="#confirmIdentityEventKey" prefHeight="27.0" prefWidth="244.0" style="-fx-background-color: #698F3F;" text="Confirm Identity" textFill="#fbfaf9" visible="false">
-               <effect>
-                  <Reflection />
-               </effect>
-               <cursor>
-                  <Cursor fx:constant="HAND" />
-               </cursor>
-            </Button>
             <PasswordField fx:id="newPass" layoutX="90.0" layoutY="210.0" onKeyPressed="#changePasswordEventKey" prefHeight="27.0" prefWidth="244.0" promptText="New Password">
                <cursor>
                   <Cursor fx:constant="TEXT" />
@@ -67,7 +59,7 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </PasswordField>
-            <PasswordField fx:id="answer" layoutX="91.0" layoutY="162.0" prefHeight="27.0" prefWidth="244.0" promptText="answer" style="-fx-background-color: #fafafa;">
+            <PasswordField fx:id="answer" layoutX="91.0" layoutY="162.0" onKeyPressed="#changePasswordEventKey" prefHeight="27.0" prefWidth="244.0" promptText="answer" style="-fx-background-color: #fafafa;">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>

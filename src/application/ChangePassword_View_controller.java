@@ -2,6 +2,7 @@ package application;
 
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +19,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+
+import java.time.Duration;
 
 public class ChangePassword_View_controller extends ViewController {
 	ServerConnection connection;
@@ -37,13 +40,15 @@ public class ChangePassword_View_controller extends ViewController {
 	@FXML
 	private TextField confPass;
 	@FXML
-	private Button confirmButton;
-	@FXML
 	private Button changeButton;
 	@FXML
 	private Label status;
 	@FXML
 	private ChoiceBox securityQuestion;
+
+	public Button getChangeButton(){
+		return changeButton;
+	}
 	
 	public String getUsername() {
 		return username.getText();
@@ -72,7 +77,7 @@ public class ChangePassword_View_controller extends ViewController {
             connection.setDelegate(login);
 
             Parent root = loader.getRoot();
-            Stage registerStage = (Stage) confirmButton.getScene().getWindow();
+            Stage registerStage = (Stage) changeButton.getScene().getWindow();
             Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
@@ -82,26 +87,7 @@ public class ChangePassword_View_controller extends ViewController {
             e.printStackTrace();
         }
     }
-	
-	//event handlers for both when the login button is pressed or when the enter key is used
-	@FXML
-	public void confirmIdentityEventKey(KeyEvent keyEvent) throws Exception{
-		if(keyEvent.getCode() == KeyCode.ENTER) {
-		//calls the same action that occurs when the button is pressed
-		ActionEvent aevent = new ActionEvent(keyEvent.getSource(), confirmButton);
-		//pass the keyEvent into the button action event
-		confirmIdentity(aevent);
-		}
-	}
-	
-	@FXML
-	public void confirmIdentity(ActionEvent event) throws Exception{
-		confirmButton.setVisible(false);
-		newPass.setVisible(true);
-		confPass.setVisible(true);
-		changeButton.setVisible(true);
-	}
-	
+
 	@FXML
 	public void changePasswordEventKey(KeyEvent keyEvent) throws Exception{
 		if(keyEvent.getCode() == KeyCode.ENTER) {
@@ -125,22 +111,21 @@ public class ChangePassword_View_controller extends ViewController {
 	@FXML
 	public void confPassChanged(){
     	try {
-			//opens confirmation screen
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/application/changePassConf.fxml"));
+			loader.setLocation(getClass().getResource("/application/login.fxml"));
 			loader.load();
 
-			//creates instance of the change password controller
-			//passes the username to the confirmation screen
-			ChangePassConf_View_controller conf = loader.getController();
-			conf.setUsername(username.getText());
+			Login_View_controller login = loader.getController();
+			login.passConnection(connection);
+			connection.setDelegate(login);
 
 			Parent root = loader.getRoot();
-			Stage changeStage = (Stage) changeButton.getScene().getWindow();
-			Scene scene = new Scene(root, 250, 200);
+			Stage registerStage = (Stage) changeButton.getScene().getWindow();
+			Scene scene = new Scene(root, 700, 500);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-			changeStage.setScene(scene);
-			changeStage.show();
+			registerStage.setScene(scene);
+			registerStage.show();
+
 		} catch(Exception e){
     		e.printStackTrace();
 		}
@@ -172,8 +157,14 @@ public class ChangePassword_View_controller extends ViewController {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						confPassChanged();
-						status.setText("");
+						status.setText("Password Changed");
+						PauseTransition pause = new PauseTransition(
+								javafx.util.Duration.seconds(3)
+						);
+						pause.setOnFinished(event -> {
+							confPassChanged();
+						});
+						pause.play();
 					}
 				});
 				break;

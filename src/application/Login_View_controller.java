@@ -34,7 +34,6 @@ public class Login_View_controller extends ViewController{
 	
 	@FXML
 	private Button loginButton;
-
 	
 	//event handlers for both when the login button is pressed or when the enter key is used
 	@FXML
