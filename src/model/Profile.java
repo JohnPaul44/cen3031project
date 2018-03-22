@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Profile {
     /*Name  string  `json:"name"`
     Email string  `json:"email"`
@@ -13,7 +15,12 @@ public class Profile {
     private String gender; // 0 = female, 1 = male, 2 = other, 3 = NA
     private String birthday;
     private String color;
+    private String bio;
+    private ArrayList<String> hobbies;
+    private ArrayList<String> interests;
+    private String status;
 
+    // TODO create new constructor and tests with bio hobbies, interests, status
     // Test Constructor
     public Profile(String firstName, String lastName, String email, String phone, Gender gender, String birthday,
                    String color) {

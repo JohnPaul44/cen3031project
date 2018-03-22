@@ -2,6 +2,7 @@ package connection;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 
 import com.google.gson.Gson;
@@ -12,6 +13,7 @@ import connection.notificationMessageHandlers.*;
 import connection.serverMessages.*;
 import model.CurrentUser;
 import model.Profile;
+import model.Reactions;
 import model.UserUpdater;
 import  application.ViewController;
 
@@ -104,6 +106,53 @@ public class ServerConnection implements IServerConnection{
     public void changePassword(String username, String securityAnswer, String phone, String password) {
         ServerMessage message = new ActionChangePassword(username, securityAnswer, phone, password);
         sendMessageToServer(message);
+    }
+
+    public void queryUsers(String queryString) {
+    }
+
+    public void addContact(String username) {
+    }
+
+    public void removeContact(String username) {
+
+    }
+
+    public void updateProfile(String firstName, String lastName, String email, String phone, String bio, ArrayList<String> hobbies,
+                              ArrayList<String> interests, String status, String gender, String birthday) {
+
+    }
+
+    public void sendFirstMessage(ArrayList<String> to, String text) {
+
+    }
+
+    public void sendMessage(String conversationKey, String text) {
+
+    }
+
+    public void updateMessage(String conversationKey, String messageKey, String text) {
+
+    }
+
+    public void reactToMessage(String conversationKey, String messageKey, Reactions reactions) {
+
+    }
+
+    public void addUserToConversation(String username, String conversationKey) {
+
+    }
+
+    public void removeUserToConversation(String username, String conversationKey) {
+
+    }
+
+    public void readMessage(String conversationKey) {
+
+    }
+
+    public void setTyping(String conversationKey, boolean typing) {
+
     }
 
     public void registerNewUser(String username, String password, String firstName, String lastName, String email,
