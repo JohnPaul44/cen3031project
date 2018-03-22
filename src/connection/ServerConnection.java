@@ -96,6 +96,16 @@ public class ServerConnection implements IServerConnection{
         sendMessageToServer(message);
     }
 
+    public void requestSecurityQuestion(String username) {
+        ServerMessage message = new ActionRequestSecurityQuestion(username);
+        sendMessageToServer(message);
+    }
+
+    public void changePassword(String username, String securityAnswer, String phone) {
+        ServerMessage message = new ActionChangePassword(username, securityAnswer, phone);
+        sendMessageToServer(message);
+    }
+
     public void registerNewUser(String username, String password, String firstName, String lastName, String email,
                                 String phone, Profile.Gender gender, String DOB, String securityQuestion, String securityAnswer, String color) {
         ActionRegisterMessage message = new ActionRegisterMessage(username, password, firstName, lastName, email, phone,

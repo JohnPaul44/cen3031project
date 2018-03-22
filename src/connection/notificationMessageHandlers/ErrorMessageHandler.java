@@ -14,6 +14,7 @@ public class ErrorMessageHandler implements MessageHandler {
     public void handle() {
 
         System.out.println("Error serverMessage received from server");
-        System.out.println("Error Number: " + serverMessage.getErrorNumber() + " Error String: ");
+        System.out.println("Error Number: " + serverMessage.getErrorNumber());
+        System.out.println("Error String: " + serverMessage.getErrorString());
     }
 }
