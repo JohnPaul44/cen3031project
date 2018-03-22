@@ -108,7 +108,7 @@
          <effect>
             <Reflection />
          </effect></Button>
-      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="-2.0" layoutY="3.0" prefHeight="495.0" prefWidth="221.0" style="-fx-background-color: #E7DECD;">
+      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="-2.0" prefHeight="500.0" prefWidth="221.0" style="-fx-background-color: #E7DECD;">
          <content>
             <Accordion fx:id="conversations" prefHeight="493.0" prefWidth="202.0" style="-fx-background-color: #E7DECD;">
               <panes>

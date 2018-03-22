@@ -317,7 +317,7 @@ public class Home_View_controller extends ViewController{
             loader.setLocation(getClass().getResource("/application/directMessage.fxml"));
             loader.load();
 
-            Direct_Message_View_controller dmScreen = loader.getController();
+            Conversation_View_controller dmScreen = loader.getController();
             dmScreen.passConnection(connection);
             connection.setDelegate(dmScreen);
             dmScreen.setUsername(user);
