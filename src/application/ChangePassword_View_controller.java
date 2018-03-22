@@ -2,6 +2,7 @@ package application;
 
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -105,7 +106,11 @@ public class ChangePassword_View_controller extends ViewController {
 			status.setText("Incorrect Credentials");
 			return;
 		}
-		
+		connection.changePassword(username.getText(), phone.getText(), answer.getText());
+	}
+
+	@FXML
+	public void changePasswordVisible(){
 		confirmButton.setVisible(false);
 		newPass.setVisible(true);
 		confPass.setVisible(true);
@@ -181,6 +186,28 @@ public class ChangePassword_View_controller extends ViewController {
 
 	@Override
 	public void notification(ServerMessage message) {
-
+		switch (message.getStatus()) {
+			case NOTIFICATIONERROR:
+				System.out.println("login failed");
+				//prints to the ui that the login failed
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						status.setText("Incorrect Credentials");
+					}
+				});
+				break;
+			case NOTIFICATIONPASSWORDCHANGED:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						changePasswordVisible();
+						status.setText("");
+					}
+				});
+				break;
+			default:
+				break;
+		}
 	}
 }
