@@ -135,6 +135,20 @@ public class TestNotificationMessages {
         assertTrue(connection.getCurrentUser().getProfile().getPhone().equals(dummyData.phone1));
     }
 
+    @Test
+    public void receiveMessageReceivedForExistingConversationMessage() throws InterruptedException {
+        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
+        NotificationMessageReceivedMessage messageReceivedMessage = new NotificationMessageReceivedMessage(
+                dummyData.conversationKey1, dummyData.messageKey1, "2018-03-9 03:00:22.012",
+                dummyData.username1, dummyData.messageText, dummyData.reactions1);
+        ArrayList<ServerMessage> serverMessages = new ArrayList<>();
+        serverMessages.add(loggedInMessage);
+        serverMessages.add(messageReceivedMessage);
+
+        sendAndReceiveMessages(serverMessages);
+        assertTrue(connection.getCurrentUser().getConversationList().get(dummyData.conversationKey1).getTime().equals("2018-03-9 03:00:22.012"));
+    }
+
     // TODO tests for rest of NotificationMessages including changepassword
 
     private NotificationLoggedInMessage createLoggedInMessage() {

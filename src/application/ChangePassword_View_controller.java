@@ -96,7 +96,7 @@ public class ChangePassword_View_controller extends ViewController {
 	
 	@FXML
 	public void confirmIdentity(ActionEvent event) throws Exception{
-		connection.changePassword(username.getText(), answer.getText(), phone.getText());
+		//connection.changePassword(username.getText(), answer.getText(), phone.getText());
 	}
 
 	@FXML
