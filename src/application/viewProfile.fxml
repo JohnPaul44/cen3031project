@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewProfile_View_Controller">
+    <children>
+        <Button fx:id="backButton" layoutX="20.0" layoutY="18.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #698F3F;" text="&lt;" textFill="#fbfaf9">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
+        <Label layoutX="62.0" layoutY="23.0" text="System.out.chat()" textFill="#fbfaf9" />
+        <AnchorPane layoutX="18.0" layoutY="60.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
+            <children>
+                <TextArea fx:id="bio" layoutX="10.0" layoutY="259.0" prefHeight="117.0" prefWidth="226.0" text="Bio">
+                    <cursor>
+                        <Cursor fx:constant="TEXT" />
+                    </cursor>
+                </TextArea>
+                <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="89.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME" textFill="#fbfaf9">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Label>
+            <Label fx:id="mind" layoutX="24.0" layoutY="189.0" prefHeight="21.0" prefWidth="200.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="status" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            </children>
+        </AnchorPane>
+        <Pane layoutX="277.0" layoutY="12.0" prefHeight="477.0" prefWidth="417.0" style="-fx-background-color: #E7DECD; -fx-border-color: #804E49; -fx-border-width: 1;">
+            <children>
+                <Label layoutX="14.0" layoutY="14.0" text="Name: " textFill="#401b1b">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <Label layoutX="14.0" layoutY="36.0" text="Email:" textFill="#401b1b">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <Label layoutX="14.0" layoutY="102.0" text="Level:" textFill="#401b1b">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <Label layoutX="14.0" layoutY="80.0" text="D.O.B.:" textFill="#401b1b">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <Label layoutX="14.0" layoutY="58.0" text="Gender:" textFill="#401b1b">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <Label layoutX="16.0" layoutY="298.0" text="Hobbies:" textFill="#401b1b">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <Label layoutX="16.0" layoutY="390.0" text="Interests:" textFill="#401b1b">
+                    <font>
+                        <Font size="13.0" />
+                    </font>
+                </Label>
+                <TextArea fx:id="interests" layoutX="16.0" layoutY="409.0" prefHeight="62.0" prefWidth="348.0" />
+                <TextArea fx:id="hobbies" layoutX="16.0" layoutY="317.0" prefHeight="62.0" prefWidth="348.0" />
+                <ProgressBar fx:id="levelProgress" layoutX="70.0" layoutY="102.0" prefHeight="18.0" prefWidth="148.0" progress="0.25" style="-fx-border-color: #804E49;">
+               <effect>
+                  <SepiaTone />
+               </effect></ProgressBar>
+              <Label fx:id="name" layoutX="70.0" layoutY="14.0" prefHeight="21.0" prefWidth="200.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="name" textFill="#401b1b">
+                  <font>
+                      <Font size="13.0" />
+                  </font>
+              </Label>
+            <Label fx:id="email" layoutX="70.0" layoutY="36.0" prefHeight="21.0" prefWidth="200.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="email" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label fx:id="gender" layoutX="70.0" layoutY="58.0" prefHeight="21.0" prefWidth="91.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="gender" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label fx:id="dob" layoutX="70.0" layoutY="80.0" prefHeight="21.0" prefWidth="91.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="dob" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label fx:id="level" layoutX="136.0" layoutY="102.0" prefHeight="21.0" prefWidth="50.0" text="level" textAlignment="CENTER" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label fx:id="game1Wins" layoutX="106.0" layoutY="165.0" prefHeight="21.0" prefWidth="48.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="win" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label fx:id="game1Losses" layoutX="153.0" layoutY="165.0" prefHeight="21.0" prefWidth="48.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="loss" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label fx:id="game1Ties" layoutX="200.0" layoutY="165.0" prefHeight="21.0" prefWidth="48.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="tie" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="14.0" layoutY="165.0" prefHeight="19.0" prefWidth="45.0" text="Game1:" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="106.0" layoutY="149.0" text="wins:" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="153.0" layoutY="149.0" text="losses:" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="200.0" layoutY="149.0" text="ties:" textFill="#401b1b">
+               <font>
+                  <Font size="13.0" />
+               </font>
+            </Label>
+            </children>
+        </Pane>
+    </children>
+</AnchorPane>
