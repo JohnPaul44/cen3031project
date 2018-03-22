@@ -28,9 +28,9 @@ public class TestActionMessages {
 
     @Test
     public void sendRegisterMessage() {
-        ActionRegisterMessage message = new ActionRegisterMessage(dummyData.username, dummyData.password, dummyData.firstName,
-                dummyData.lastName, dummyData.email, dummyData.phone, dummyData.gender, dummyData.birthday,
-                dummyData.securityQuestion, dummyData.securityAnswer);
+        ActionRegisterMessage message = new ActionRegisterMessage(dummyData.username1, dummyData.password1, dummyData.firstName1,
+                dummyData.lastName1, dummyData.email1, dummyData.phone1, dummyData.gender1, dummyData.birthday1,
+                dummyData.securityQuestion1, dummyData.securityAnswer1, dummyData.color);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONREGISTER));
@@ -38,7 +38,7 @@ public class TestActionMessages {
 
     @Test
     public void sendLogInMessage() {
-        ActionLogInMessage message = new ActionLogInMessage(dummyData.username, dummyData.password);
+        ActionLogInMessage message = new ActionLogInMessage(dummyData.username1, dummyData.password1);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONLOGIN));
@@ -46,7 +46,7 @@ public class TestActionMessages {
 
     @Test
     public void sendRequestSecurityQuestionMessage() {
-        ActionRequestSecurityQuestion message = new ActionRequestSecurityQuestion(dummyData.username);
+        ActionRequestSecurityQuestion message = new ActionRequestSecurityQuestion(dummyData.username1);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONREQUESTSECURITYQUESTION));
@@ -54,7 +54,7 @@ public class TestActionMessages {
 
     @Test
     public void sendChangePasswordMessage() {
-        ActionChangePassword message = new ActionChangePassword(dummyData.username, dummyData.securityAnswer, dummyData.phone);
+        ActionChangePassword message = new ActionChangePassword(dummyData.username1, dummyData.securityAnswer1, dummyData.phone1);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONCHANGEPASSWORD));
@@ -70,7 +70,7 @@ public class TestActionMessages {
 
     @Test
     public void sendAddContactMessage() {
-        ActionAddContactMessage message = new ActionAddContactMessage(dummyData.username);
+        ActionAddContactMessage message = new ActionAddContactMessage(dummyData.username1);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONADDCONTACT));
@@ -78,7 +78,7 @@ public class TestActionMessages {
 
     @Test
     public void sendRemoveContactMessage() {
-        ActionRemoveContactMessage message = new ActionRemoveContactMessage(dummyData.username);
+        ActionRemoveContactMessage message = new ActionRemoveContactMessage(dummyData.username1);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONREMOVECONTACT));
@@ -96,7 +96,7 @@ public class TestActionMessages {
     public void sendSendMessageMessageUsingToUsername() {
         ActionSendMessageMessage message = new ActionSendMessageMessage(
                 ActionSendMessageMessage.ActionSendMessageMessageType.TO,
-                dummyData.username, dummyData.messageText1);
+                dummyData.username1, dummyData.messageText);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONSENDMESSAGE));
@@ -106,7 +106,7 @@ public class TestActionMessages {
     public void sendSendMessageMessageUsingToConversationKey() {
         ActionSendMessageMessage message = new ActionSendMessageMessage(
                 ActionSendMessageMessage.ActionSendMessageMessageType.CONVERSATIONKEY,
-                dummyData.conversationKey1, dummyData.messageText1);
+                dummyData.conversationKey1, dummyData.messageText);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONSENDMESSAGE));
@@ -115,7 +115,7 @@ public class TestActionMessages {
     @Test
     public void sendUpdateMessageMessage() {
         ActionUpdateMessageMessage message = new ActionUpdateMessageMessage(dummyData.conversationKey1, dummyData.messageKey1,
-                dummyData.messageText1);
+                dummyData.messageText);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONUPDATEMESSAGE));
@@ -132,7 +132,7 @@ public class TestActionMessages {
 
     @Test
     public void sendAddUserToConversationMessage() {
-        ActionAddUserToConversationMessage message = new ActionAddUserToConversationMessage(dummyData.username,
+        ActionAddUserToConversationMessage message = new ActionAddUserToConversationMessage(dummyData.username1,
                 dummyData.conversationKey1);
 
         connection.sendMessageToServer(message);
@@ -141,7 +141,7 @@ public class TestActionMessages {
 
     @Test
     public void sendRemoveUserFromConversationMessage() {
-        ActionRemoveUserFromConversationMessage message = new ActionRemoveUserFromConversationMessage(dummyData.username,
+        ActionRemoveUserFromConversationMessage message = new ActionRemoveUserFromConversationMessage(dummyData.username1,
                 dummyData.conversationKey1);
 
         connection.sendMessageToServer(message);
@@ -164,34 +164,34 @@ public class TestActionMessages {
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONSETTYPING));
     }
 
-    class DummyData {
-        private String username = "thead9";
-        private String password = "bogus";
-        private String firstName = "Thomas";
-        private String lastName = "Headley";
-        private String email = "thead9@ufl.edu";
-        private String phone = "4074086638";
-        private Profile.Gender gender = Profile.Gender.MALE;
-        private String birthday = "06/14/1995";
-        private String securityQuestion = "Who are you?";
-        private String securityAnswer = "Me";
-
-        private Profile profile;
-
-        private String conversationKey1 = "conversationKey1";
-        private String messageText1 = "Message Text";
-        private String messageKey1 = "messageKey1";
-
-        private Map<String, Reactions> reactions1 = new HashMap<>();
-        private Reactions specificReactions1 = new Reactions(new int[]{1, 2}, username);
-
-        DummyData() {
-            profile = new Profile(firstName, lastName, email, phone, securityQuestion, securityAnswer, gender, birthday);
-            setUpReactions();
-        }
-
-        private void setUpReactions() {
-            reactions1.put(username, specificReactions1);
-        }
-    }
+//    class DummyData {
+//        private String username = "thead9";
+//        private String password = "bogus";
+//        private String firstName = "Thomas";
+//        private String lastName = "Headley";
+//        private String email = "thead9@ufl.edu";
+//        private String phone = "4074086638";
+//        private Profile.Gender gender = Profile.Gender.MALE;
+//        private String birthday = "06/14/1995";
+//        private String securityQuestion = "Who are you?";
+//        private String securityAnswer = "Me";
+//
+//        private Profile profile;
+//
+//        private String conversationKey1 = "conversationKey1";
+//        private String messageText1 = "Message Text";
+//        private String messageKey1 = "messageKey1";
+//
+//        private Map<String, Reactions> reactions1 = new HashMap<>();
+//        private Reactions specificReactions1 = new Reactions(new int[]{1, 2}, username);
+//
+//        DummyData() {
+//            profile = new Profile(firstName, lastName, email, phone, securityQuestion, securityAnswer, gender, birthday);
+//            setUpReactions();
+//        }
+//
+//        private void setUpReactions() {
+//            reactions1.put(username, specificReactions1);
+//        }
+//    }
 }

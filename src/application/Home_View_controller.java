@@ -92,8 +92,8 @@ public class Home_View_controller extends ViewController{
         user_icon.setMaxWidth(20);
 
         Circle icon = new Circle(12);
-        Paint color =Paint.valueOf(user.getColor());
-        icon.setFill(color);
+        //Paint color =Paint.valueOf(user.getColor());
+        //icon.setFill(color);
 
         Label initial = new Label();
         initial.setText("" + user.getUsername().charAt(0));
