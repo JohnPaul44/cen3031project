@@ -29,6 +29,6 @@
             </ScrollPane>
          </children>
       </AnchorPane>
-      <Label fx:id="username" layoutX="14.0" layoutY="6.0" prefHeight="17.0" prefWidth="110.0" text="username" textFill="WHITE" />
+      <Label fx:id="username" layoutX="14.0" layoutY="6.0" prefHeight="17.0" prefWidth="333.0" text="username" textFill="WHITE" />
    </children>
 </AnchorPane>
