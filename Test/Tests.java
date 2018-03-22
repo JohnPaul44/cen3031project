@@ -28,7 +28,7 @@ public class Tests {
     @Test
     public void testProfileConstructor() {
         Profile profile = new Profile("Thomas", "Headley", "thead9@ufl.edu", "4074086638",
-                "Who", "He", null, "", "");
+                null, "", "");
         Gson gson = new Gson();
         System.out.println(gson.toJson(profile));
     }

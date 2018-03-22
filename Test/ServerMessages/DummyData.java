@@ -53,7 +53,7 @@ class DummyData {
     public String errorMessage = "Error Message";
 
     DummyData() {
-        profile = new Profile(firstName1, lastName1, email1, phone1, securityQuestion1, securityAnswer1, gender1, birthday1, color);
+        profile = new Profile(firstName1, lastName1, email1, phone1, gender1, birthday1, color);
         setUpReactions();
         setUpContacts();
         setUpMessages();
