@@ -24,24 +24,6 @@ public class Tests {
 
     // TODO create test for sorting messages
     // TODO create test for sorting conversations
-
-//    @Test
-//    public void receiveProfileUpdatedMessage() throws InterruptedException {
-//
-//        startTestServerEcho();
-//
-//        ServerConnection conn = new ServerConnection();
-//        conn.listenToServer();
-//
-//        NotificationLoggedInMessage message = createLoggedInMessage();
-//        conn.getOut().println(message.toJsonString());
-//        NotificationProfileUpdatedMessage m = new NotificationProfileUpdatedMessage(new Profile("Thomas Headley", "thead9@ufl.edu", "4074086638"));
-//        conn.getOut().println(m.toJsonString());
-//        TimeUnit.SECONDS.sleep(4);
-//        assertTrue(conn.getCurrentUser().getProfile().getName().equals("Thomas Headley"));
-//        assertTrue(conn.getCurrentUser().getProfile().getEmail().equals("thead9@ufl.edu"));
-//        assertTrue(conn.getCurrentUser().getProfile().getPhone().equals("4074086638"));
-//    }
 //
 //    @Test
 //    public void receiveMessageReceivedForExistingConversationMessage() throws InterruptedException {
