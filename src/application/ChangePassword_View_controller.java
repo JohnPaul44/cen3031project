@@ -96,17 +96,7 @@ public class ChangePassword_View_controller extends ViewController {
 	
 	@FXML
 	public void confirmIdentity(ActionEvent event) throws Exception{
-		//check the validity of the phone number
-		if(/*checkPhone(phone.getText())*/!phone.getText().equals("1234567890")) {
-			status.setText("Incorrect Credentials");
-			return;
-		}
-		//check the security question answer
-		if(/*checkSecurity(answer.getText())*/!answer.getText().equals("ans")) {
-			status.setText("Incorrect Credentials");
-			return;
-		}
-		connection.changePassword(username.getText(), phone.getText(), answer.getText());
+		connection.changePassword(username.getText(), answer.getText(), phone.getText());
 	}
 
 	@FXML
@@ -188,7 +178,6 @@ public class ChangePassword_View_controller extends ViewController {
 	public void notification(ServerMessage message) {
 		switch (message.getStatus()) {
 			case NOTIFICATIONERROR:
-				System.out.println("login failed");
 				//prints to the ui that the login failed
 				Platform.runLater(new Runnable() {
 					@Override
