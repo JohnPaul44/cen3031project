@@ -94,19 +94,7 @@ public class TestActionMessages {
 
     @Test
     public void sendSendMessageMessageUsingToUsername() {
-        ActionSendMessageMessage message = new ActionSendMessageMessage(
-                ActionSendMessageMessage.ActionSendMessageMessageType.TO,
-                dummyData.username1, dummyData.messageText);
-
-        connection.sendMessageToServer(message);
-        assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONSENDMESSAGE));
-    }
-
-    @Test
-    public void sendSendMessageMessageUsingToConversationKey() {
-        ActionSendMessageMessage message = new ActionSendMessageMessage(
-                ActionSendMessageMessage.ActionSendMessageMessageType.CONVERSATIONKEY,
-                dummyData.conversationKey1, dummyData.messageText);
+        ActionSendMessageMessage message = new ActionSendMessageMessage(dummyData.message1);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONSENDMESSAGE));

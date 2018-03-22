@@ -9,22 +9,18 @@ public class Profile {
     private String lastName;
     private String email;
     private String phone;
-    private String securityQuestion;
-    private String securityAnswer;
     public enum Gender { FEMALE, MALE, OTHER, NA }
     private String gender; // 0 = female, 1 = male, 2 = other, 3 = NA
     private String birthday;
     private String color;
 
     // Test Constructor
-    public Profile(String firstName, String lastName, String email, String phone, String securityQuestion,
-                   String securityAnswer, Gender gender, String birthday, String color) {
+    public Profile(String firstName, String lastName, String email, String phone, Gender gender, String birthday,
+                   String color) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
-        this.securityQuestion = securityQuestion;
-        this.securityAnswer = securityAnswer;
         this.gender = gender.toString().toLowerCase();
         if (!birthday.equals("")) {
             this.birthday = birthday;
@@ -43,12 +39,6 @@ public class Profile {
     }
     public String getPhone() {
         return phone;
-    }
-    public String getSecurityQuestion() {
-        return securityQuestion;
-    }
-    public String getSecurityAnswer() {
-        return securityAnswer;
     }
     public String getGender() {
         return gender;
