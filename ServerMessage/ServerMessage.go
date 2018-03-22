@@ -57,7 +57,9 @@ type ContactGame struct {
 }
 
 type Contact struct {
-	Online bool `json:"online"`
+	Online  bool      `json:"online"`
+	Added   time.Time `json:"added"` // when contact was first added
+	Profile Profile   `json:"profile"`
 
 	// TODO: implement in methods
 	SentMessages     int                    `json:"sentMessages"`
@@ -77,6 +79,7 @@ const (
 	GenderUnknown = "na"
 )
 
+// TODO: add field for profile picture color in Profile and in datastore
 type Profile struct {
 	// Required
 	FirstName string `json:"firstName"`
@@ -114,6 +117,11 @@ func (msg *ServerMessage) Clear() {
 	msg.Username = nil
 	msg.Password = nil
 	msg.Profile = nil
+	msg.Query = nil
+	msg.QueryResults = nil
+	msg.SecurityQuestion = nil
+	msg.SecurityAnswer = nil
+	msg.Phone = nil
 	msg.Contacts = nil
 	msg.Online = nil
 	msg.Conversations = nil
@@ -136,7 +144,8 @@ const (
 	NotificationError                       = iota // returns ErrorNumber and ErrorString
 	NotificationLoggedIn                    = iota // returns Username, Profile, Contacts, ConversationKeys
 	NotificationUserOnlineStatus            = iota // returns Online, Username
-	NotificationChangePassword              = iota // returns SecurityQuestion
+	NotificationSecurityQuestion            = iota // returns SecurityQuestion
+	NotificationPasswordChanged             = iota
 	NotificationLoggedOut                   = iota // session has ended, returns nothing
 	NotificationQueryResults                = iota // returns QueryResults
 	NotificationContactAdded                = iota // returns Username
@@ -149,14 +158,15 @@ const (
 	NotificationUserRemovedFromConversation = iota // returns Username, Message.ConversationKey
 	NotificationMessageRead                 = iota // returns Message.[ConversationKey, From]
 	NotificationTyping                      = iota // returns Message.[ConversationKey, From, Typing]
+	NotifiactionContactUpdated              = iota // returns Contacts[Username]
 
 	// Actions are received from client devices
 	ActionRegister                   = iota // requires Username, Password, First Name, Last Name, Email, Security Question & Answer, phone; optionally DOB, gender
 	ActionLogIn                      = iota // requires Username, Password
-	ActionRequestChangePassword      = iota // requires Username
-	ActionChangePassword             = iota // requires Username, SecurityAnswer, Phone
+	ActionRequestSecurityQuestion    = iota // requires Username
+	ActionChangePassword             = iota // requires Username, Password, SecurityAnswer, Phone
 	ActionLogOut                     = iota // request to end session, requires nothing
-	ActionQueryUsers                 = iota // requires query
+	ActionQueryUsers                 = iota // requires Query
 	ActionAddContact                 = iota // requires Username
 	ActionRemoveContact              = iota // requires Username
 	ActionUpdateProfile              = iota // requires Profile
@@ -167,4 +177,5 @@ const (
 	ActionRemoveUserFromConversation = iota // requires Username, Message.ConversationKey
 	ActionReadMessage                = iota // requires ConversationKey
 	ActionSetTyping                  = iota // requires Message.ConversationKey, Message.Typing
+	ActionGetContact                 = iota // requires Username
 )

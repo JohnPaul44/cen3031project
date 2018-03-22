@@ -9,7 +9,7 @@ import (
 
 type Connection struct {
 	Conn net.Conn  // interface for reading and writing to the connection
-	Time time.Time // Time that the connection was established (used for differentiating different Connections with same username)
+	Time time.Time // Added that the connection was established (used for differentiating different Connections with same username)
 }
 
 type userConnection struct {

@@ -46,5 +46,6 @@ var (
 	ErrInvalidMessageKey      = New("invalid messageKey", InvalidMessageKey)
 	ErrInvalidStatus          = New("invalid Status", InvalidStatus)
 
+
 	ErrInvalidPassword = errors.New("invalid password")
 )

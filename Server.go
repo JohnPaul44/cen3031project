@@ -13,7 +13,6 @@ import (
 	msg "./ServerMessage"
 )
 
-// TODO: write tests
 // TODO: implement a toggle switch for editing messages in the conversation
 // TODO: implement authorization tokens
 
@@ -116,7 +115,7 @@ func logIn(user *ds.User, message *msg.ServerMessage) error {
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot get contacts:", err)
 	} else {
-		user.Contacts = *contacts
+		user.Contacts = contacts
 	}
 
 	log.Printf("%s logged in\n", user.Username)
@@ -133,7 +132,7 @@ func updateOnlineStatus(user *ds.User, online bool) {
 
 	// send notification to online contacts
 	for _, contact := range user.Contacts {
-		sendServerMessageToUser(contact, message)
+		sendServerMessageToUser(contact.Contact, message)
 	}
 
 	log.Printf("%s is %s\n", user.Username, func() string {
@@ -201,7 +200,6 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		message := new(msg.ServerMessage)
 
 		for !loggedIn {
-			// first message received is either Login or Register
 			err = getServerMessage(conn, message)
 			if err != nil {
 				log.Println("cannot get message from client:", err)
@@ -236,7 +234,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				}
 				loggedIn = true
 				break
-			case msg.ActionRequestChangePassword:
+			case msg.ActionRequestSecurityQuestion:
 				if message.Username == nil {
 					err := e.New("missing username", e.MissingParameter)
 					rsp.SetError(err)
@@ -266,7 +264,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 					break
 				}
 
-				rsp.Status = msg.NotificationChangePassword
+				rsp.Status = msg.NotificationSecurityQuestion
 				rsp.SecurityQuestion = &user.SecurityQuestion
 				sockClosed = sendServerMessage(conn, rsp) != nil
 				break
@@ -329,6 +327,11 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 					sockClosed = sendServerMessage(conn, rsp) != nil
 					break
 				}
+
+				// send msg.NotificationPasswordChanged
+				rsp.Status = msg.NotificationPasswordChanged
+				sockClosed = sendServerMessage(conn, rsp) != nil
+
 				break
 			default:
 				// any other message requires the user to be logged in
@@ -370,11 +373,12 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		*rsp.Contacts = make(map[string]msg.Contact)
 
 		for _, contact := range usr.Contacts {
-			(*rsp.Contacts)[contact] = msg.Contact{
-				Online:           ds.ConnectionsContains(contact),
-				SentMessages:     0,
-				ReceivedMessages: 0,
-				/* TODO
+			(*rsp.Contacts)[contact.Contact] = msg.Contact{
+				Online: ds.ConnectionsContains(contact.Contact),
+				Added:  contact.Added,
+				/*Profile: ,
+				SentMessages:     ,
+				ReceivedMessages: ,
 				Games:,
 				FriendshipLevel:,
 				*/

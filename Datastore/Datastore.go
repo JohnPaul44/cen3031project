@@ -23,20 +23,20 @@ const (
 
 type UserContact struct {
 	// KindUserContact, key=KindUser(contact username), parent=KindUser(contact owner)
-	Time    time.Time // when the user was added to contacts
-	contact *datastore.Key
-	owner   *datastore.Key
+	Added   time.Time // when the user was added to contacts
+	Contact string `datastore:"-"`
+	Owner   string `datastore:"-"`
 }
 
 type User struct {
 	// key: username, parent: nil
-	Username         string      `datastore:"-"`
-	Connection       *Connection `datastore:"-"`
-	Contacts         []string    `datastore:"-"`
-	PassHash         []byte      `json:"passHash"`
-	Profile          msg.Profile `json:"profile"`
-	SecurityQuestion string      `json:"securityQuestion"`
-	SecurityAnswer   string      `json:"securityAnswer"`
+	Username         string        `datastore:"-"`
+	Connection       *Connection   `datastore:"-"`
+	Contacts         []UserContact `datastore:"-"`
+	PassHash         []byte        `json:"passHash"`
+	Profile          msg.Profile   `json:"profile"`
+	SecurityQuestion string        `json:"securityQuestion"`
+	SecurityAnswer   string        `json:"securityAnswer"`
 }
 
 type MessageReaction struct {
@@ -56,8 +56,7 @@ type Message struct {
 type ConversationMember struct {
 	// KindConversationMember, key=KindUser(username), parent=KindConversation
 	msg.Status
-	member          *datastore.Key
-	conversationKey *datastore.Key
+	Member string
 }
 
 type Conversation struct {
@@ -265,34 +264,40 @@ func ContactExists(owner string, contact string) (bool, error) {
 	return true, nil
 }
 
-func AddContact(username string, contact string) error {
+func AddContact(username string, contact string) (UserContact, error) {
 	errStr := "cannot add contact:"
+
+	var userContact UserContact
 
 	authorized, err := CanModifyContact(username, contact)
 	if err != nil {
 		log.Println(e.Tag, errStr, err)
-		return err
+		return userContact, err
 	}
 
 	if !authorized {
-		return e.ErrUnauthorized
+		return userContact, e.ErrUnauthorized
 	}
 
 	exists, err := ContactExists(username, contact)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot determine if contact exists:", err)
-		return err
+		return userContact, err
 	}
 
 	if exists {
-		return nil
+		return userContact, nil
 	}
 
 	// add contact
 	contactKey := GetContactKey(username, contact)
-	newContact := UserContact{Time: time.Now()}
-	_, err = client.Put(c, contactKey, &newContact)
-	return err
+	userContact = UserContact{
+		Added:   time.Now(),
+		Contact: contact,
+		Owner:   username,
+	}
+	_, err = client.Put(c, contactKey, &userContact)
+	return userContact, err
 }
 
 func RemoveContact(username string, contact string) error {
@@ -323,16 +328,22 @@ func RemoveContact(username string, contact string) error {
 	return client.Delete(c, contactKey)
 }
 
-func GetContacts(user *User) (*[]string, error) {
-	q := datastore.NewQuery(KindUserContact).Ancestor(GetUserKey(user.Username)).KeysOnly()
-	dsUserContacts, err := client.GetAll(c, q, nil)
+func GetContacts(user *User) ([]UserContact, error) {
+	var contacts []UserContact
+
+	q := datastore.NewQuery(KindUserContact).Ancestor(GetUserKey(user.Username))
+	var dsUserContacts []UserContact
+	dsUserContactKeys, err := client.GetAll(c, q, &dsUserContacts)
 	if err != nil {
-		return nil, err
+		return contacts, err
 	}
 
-	contacts := new([]string)
-	for _, dsContact := range dsUserContacts {
-		*contacts = append(*contacts, dsContact.Name)
+	for i, dsContact := range dsUserContacts {
+		contacts = append(contacts, UserContact{
+			Added:   dsContact.Added,
+			Contact: dsUserContactKeys[i].Name,
+			Owner:   user.Username,
+		})
 	}
 
 	return contacts, nil
@@ -391,9 +402,13 @@ func CreateConversation(username string, members []string) (*Conversation, error
 			return nil, err
 		}
 		if exists {
-			memberKey := GetMemberKey(username, conversationKey)
-			memberStatus := msg.Status{Read: false, Typing: false}
-			_, err = client.Put(c, memberKey, &memberStatus)
+			memberKey := GetMemberKey(member, conversationKey)
+			conversationMember := ConversationMember{
+				Status: msg.Status{Read: false, Typing: false},
+				Member: member,
+			}
+
+			_, err = client.Put(c, memberKey, &conversationMember)
 			if err != nil {
 				log.Println(e.Tag, errStr, "cannot add member to conversation:", err)
 				return nil, err
@@ -403,8 +418,11 @@ func CreateConversation(username string, members []string) (*Conversation, error
 
 	// add the user who sent the message to conversation
 	memberKey := GetMemberKey(username, conversationKey)
-	memberStatus := msg.Status{Read: true, Typing: false}
-	_, err = client.Put(c, memberKey, &memberStatus)
+	conversationMember := ConversationMember{
+		Status: msg.Status{Read: true, Typing: false},
+		Member: username,
+	}
+	_, err = client.Put(c, memberKey, &conversationMember)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot add user to conversation:", err)
 		return nil, err
@@ -512,8 +530,9 @@ func GetConversationMemberStatuses(conversationKey *datastore.Key) (map[string]m
 
 	for {
 		var member ConversationMember
-		memberKey, err := it.Next(member)
-		if err != nil {
+		memberKey, memberErr := it.Next(&member)
+		if memberErr != nil {
+			err = memberErr
 			break
 		}
 
@@ -533,31 +552,40 @@ func GetConversations(user *User) (*[]msg.Conversation, error) {
 
 	conversations := new([]msg.Conversation)
 
-	q := datastore.NewQuery(KindConversationMember).Filter("__key__ =", GetUserKey(user.Username))
+	q := datastore.NewQuery(KindConversationMember).Filter("Member =", user.Username)
 	it := client.Run(c, q)
 
 	var err error
 
 	for {
-		var dsConversation Conversation
-		convKey, err := it.Next(dsConversation)
-		if err != nil {
+		var conversationMember ConversationMember
+		memberKey, convMemberErr := it.Next(&conversationMember)
+		if convMemberErr != nil {
+			err = convMemberErr
+			break
+		}
+
+		conv, convErr := GetConversation(memberKey.Parent)
+		if convErr != nil {
+			err = convErr
 			break
 		}
 
 		var conversation msg.Conversation
-		conversation.ConversationKey = convKey.Name
-		conversation.LastMessage = dsConversation.LastMessage
+		conversation.ConversationKey = conv.Key.Name
+		conversation.LastMessage = conv.LastMessage
+		conversation.Created = conv.Created
 		conversation.MemberStatus = make(map[string]msg.Status)
 
 		// get members of conversation
-		q = datastore.NewQuery(KindConversationMember).Ancestor(convKey)
-		memberIt := client.Run(c, q)
+		memberQuery := datastore.NewQuery(KindConversationMember).Ancestor(conv.Key)
+		memberIt := client.Run(c, memberQuery)
 
 		for {
 			var member ConversationMember
-			memberKey, err := memberIt.Next(member)
-			if err != nil {
+			memberKey, memberErr := memberIt.Next(&member)
+			if memberErr != nil {
+				err = memberErr
 				break
 			}
 			conversation.MemberStatus[memberKey.Name] = msg.Status{Read: member.Read, Typing: member.Typing}
@@ -569,13 +597,14 @@ func GetConversations(user *User) (*[]msg.Conversation, error) {
 		}
 
 		// get messages
-		q = datastore.NewQuery(KindConversationMessage)
-		messageIt := client.Run(c, q)
+		messageQuery := datastore.NewQuery(KindConversationMessage)
+		messageIt := client.Run(c, messageQuery)
 
 		for {
 			var dsMessage Message
-			msgKey, err := messageIt.Next(dsMessage)
-			if err != nil {
+			msgKey, messageErr := messageIt.Next(&dsMessage)
+			if messageErr != nil {
+				err = messageErr
 				break
 			}
 
@@ -584,16 +613,18 @@ func GetConversations(user *User) (*[]msg.Conversation, error) {
 			message.ServerTime = &dsMessage.Time
 			message.From = &dsMessage.From.Name
 			message.Text = &dsMessage.Text
+			message.Reactions = new(map[string]msg.Reactions)
 			*message.Reactions = make(map[string]msg.Reactions)
 
 			// get reactions
-			q = datastore.NewQuery(KindConversationMessageReaction).Ancestor(msgKey)
-			reactionIt := client.Run(c, q)
+			reactionsQuery := datastore.NewQuery(KindConversationMessageReaction).Ancestor(msgKey)
+			reactionsIt := client.Run(c, reactionsQuery)
 
 			for {
 				var dsReaction MessageReaction
-				reactionKey, err := reactionIt.Next(dsReaction)
-				if err != nil {
+				reactionKey, reactionsErr := reactionsIt.Next(&dsReaction)
+				if reactionsErr != nil {
+					err = reactionsErr
 					break
 				}
 
@@ -614,7 +645,7 @@ func GetConversations(user *User) (*[]msg.Conversation, error) {
 		*conversations = append(*conversations, conversation)
 	}
 
-	if err != nil && err != iterator.Done {
+	if err != iterator.Done {
 		log.Println(e.Tag, errStr, "cannot get conversation from datastore:", err)
 		return nil, err
 	}

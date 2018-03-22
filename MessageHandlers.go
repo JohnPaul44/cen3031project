@@ -25,6 +25,7 @@ var handlerMap = map[int]ServerMessageHandler{
 	msg.ActionUpdateMessage:              handleUpdateMessage,
 	msg.ActionAddUserToConversation:      handleAddUserToConversation,
 	msg.ActionRemoveUserFromConversation: handleRemoveUserFromConversation,
+	//msg.ActionGetContact:                 handleGetContact,
 }
 
 func handleServerMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
@@ -53,7 +54,7 @@ func handleLogOut(user *ds.User, conn net.Conn, _ *msg.ServerMessage) error {
 	return sendServerMessage(conn, rsp)
 }
 
-func handleQueryUsers(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
+func handleQueryUsers(_ *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
 
 	if message.Query == nil {
@@ -102,7 +103,7 @@ func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) 
 
 	errStr = fmt.Sprintf("%s cannot add %s as a contact:", user.Username, *message.Username)
 
-	err := ds.AddContact(user.Username, *message.Username)
+	contact, err := ds.AddContact(user.Username, *message.Username)
 	if err != nil {
 		if err == e.ErrInvalidUsername {
 			serr := e.ErrInvalidUsername
@@ -116,7 +117,7 @@ func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) 
 		return sendServerMessage(conn, rsp)
 	}
 
-	user.Contacts = append(user.Contacts, *message.Username)
+	user.Contacts = append(user.Contacts, contact)
 
 	rsp.Status = msg.NotificationContactAdded
 	rsp.Username = message.Username
@@ -161,7 +162,13 @@ func handleRemoveContact(user *ds.User, conn net.Conn, message *msg.ServerMessag
 		return sendServerMessage(conn, rsp)
 	}
 
-	user.Contacts, _ = remove(user.Contacts, *message.Username)
+	// remove contact from local copy
+	for i, c := range user.Contacts {
+		if c.Contact == *message.Username {
+			user.Contacts = append(user.Contacts[:i], user.Contacts[i+1:]...)
+			break
+		}
+	}
 
 	rsp.Status = msg.NotificationContactRemoved
 	rsp.Username = message.Username
@@ -618,6 +625,21 @@ func handleRemoveUserFromConversation(user *ds.User, conn net.Conn, message *msg
 	return nil
 }
 
+/*func handleGetContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
+	rsp := new(msg.ServerMessage)
+	errStr := user.Username + " cannot get contact:"
+
+	if message.Username == nil {
+
+	}
+
+	if len(*message.Username) == 0 {
+
+	}
+
+
+}*/
+
 func handleReadMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
 	errStr := user.Username + " cannot read message:"
@@ -672,3 +694,5 @@ func handleReadMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 
 	return nil
 }
+
+// TODO: call API to get contact information when contact is added
