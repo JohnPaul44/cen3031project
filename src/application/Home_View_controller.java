@@ -91,15 +91,15 @@ public class Home_View_controller extends ViewController{
         user_icon.setPrefWidth(20);
         user_icon.setMaxWidth(20);
 
-        Circle icon = new Circle(12);
-        Paint color =Paint.valueOf(user.getColor());
-        icon.setFill(color);
-
-        Label initial = new Label();
-        initial.setText("" + user.getUsername().charAt(0));
-        initial.setStyle("-fx-font: 10 system");
-
-        user_icon.getChildren().addAll(icon, initial);
+//        Circle icon = new Circle(12);
+//        Paint color =Paint.valueOf(user.getColor());
+//        icon.setFill(color);
+//
+//        Label initial = new Label();
+//        initial.setText("" + user.getUsername().charAt(0));
+//        initial.setStyle("-fx-font: 10 system");
+//
+//        user_icon.getChildren().addAll(icon, initial);
 
         VBox content = new VBox();
         Label dm = new Label("Direct Message");
