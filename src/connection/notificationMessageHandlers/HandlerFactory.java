@@ -19,6 +19,8 @@ public class HandlerFactory {
             case NOTIFICATIONERROR: // Error Message
                 return new ErrorMessageHandler(messageFromServer);
             case NOTIFICATIONLOGGEDIN: // Logged In Notification
+            case NOTIFICATIONSECURITYQUESTION: // Security Question Notification
+            case NOTIFICATIONPASSWORDCHANGED: // Password Changed Notification
             case NOTIFICATIONUSERONLINESTATUS: // User Online Status Notification
             case NOTIFICATIONLOGGEDOUT: // Logged Out Message Notification
             case NOTIFICATIONCONTACTADDED: // Contact Added Notification
@@ -35,6 +37,8 @@ public class HandlerFactory {
                 return new ModelUpdateMessageHandler(messageFromServer, userUpdater);
             case ACTIONREGISTER: // Register Action
             case ACTIONLOGIN: // Log In Action
+            case ACTIONREQUESTSECURITYQUESTION: // Request Security Question Action
+            case ACTIONCHANGEPASSWORD: // Change Password Action
             case ACTIONLOGOUT: // Log Out Action
             case ACTIONADDCONTACT: // Add Contact Action
             case ACTIONREMOVECONTACT: // Remove Contact Action

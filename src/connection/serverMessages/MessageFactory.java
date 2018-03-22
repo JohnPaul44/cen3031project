@@ -14,6 +14,9 @@ public class MessageFactory {
                 return gson.fromJson(jsonObject, NotificationErrorMessage.class);
             case NOTIFICATIONLOGGEDIN: // Logged In Message
                 return gson.fromJson(jsonObject, NotificationLoggedInMessage.class);
+            case NOTIFICATIONSECURITYQUESTION: // Security Question
+                return gson.fromJson(jsonObject, NotificationSecurityQuestion.class);
+            case NOTIFICATIONPASSWORDCHANGED: // Password Changed
             case NOTIFICATIONUSERONLINESTATUS: // User Online Status
                 return gson.fromJson(jsonObject, NotificationUserOnlineStatusMessage.class);
             case NOTIFICATIONLOGGEDOUT: // Logged Out Message

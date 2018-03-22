@@ -45,6 +45,22 @@ public class TestActionMessages {
     }
 
     @Test
+    public void sendRequestSecurityQuestionMessage() {
+        ActionRequestSecurityQuestion message = new ActionRequestSecurityQuestion(dummyData.username);
+
+        connection.sendMessageToServer(message);
+        assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONREQUESTSECURITYQUESTION));
+    }
+
+    @Test
+    public void sendChangePasswordMessage() {
+        ActionChangePassword message = new ActionChangePassword(dummyData.username, dummyData.securityAnswer, dummyData.phone);
+
+        connection.sendMessageToServer(message);
+        assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONCHANGEPASSWORD));
+    }
+
+    @Test
     public void sendLogOutMessage() {
         ActionLogOutMessage message = new ActionLogOutMessage();
 

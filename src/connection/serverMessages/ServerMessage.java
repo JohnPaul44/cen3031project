@@ -1,18 +1,15 @@
 package connection.serverMessages;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
 
 public abstract class ServerMessage {
     public enum Status {
         UNINITILIALIZED,
         NOTIFICATIONERROR,
-        NOTIFICATIONCHANGEPASSWORD,
         NOTIFICATIONLOGGEDIN,
         NOTIFICATIONUSERONLINESTATUS,
+        NOTIFICATIONSECURITYQUESTION,
+        NOTIFICATIONPASSWORDCHANGED,
         NOTIFICATIONLOGGEDOUT,
         NOTIFICATIONCONTACTADDED,
         NOTIFICATIONCONTACTREMOVED,
@@ -26,8 +23,9 @@ public abstract class ServerMessage {
         NOTIFICATIONTYPING,
 
         ACTIONREGISTER,
-        ACTIONREQUESTCHANGEPASSWORD,
         ACTIONLOGIN,
+        ACTIONREQUESTSECURITYQUESTION,
+        ACTIONCHANGEPASSWORD,
         ACTIONLOGOUT,
         ACTIONADDCONTACT,
         ACTIONREMOVECONTACT,
@@ -38,7 +36,7 @@ public abstract class ServerMessage {
         ACTIONADDUSERTOCONVERSATION,
         ACTIONREMOVEDUSERFROMCONVERSATION,
         ACTIONREADMESSAGE,
-        ACTIONSETTYPING;
+        ACTIONSETTYPING
     }
     int status;
 

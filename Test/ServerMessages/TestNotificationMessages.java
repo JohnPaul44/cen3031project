@@ -2,9 +2,7 @@ package ServerMessages;
 
 import connection.ServerConnectionTestDouble;
 import connection.ServerTestDouble;
-import connection.serverMessages.NotificationErrorMessage;
-import connection.serverMessages.NotificationLoggedInMessage;
-import connection.serverMessages.ServerMessage;
+import connection.serverMessages.*;
 import model.Contact;
 import model.Conversation;
 import model.Message;
@@ -12,6 +10,7 @@ import model.Status;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +45,26 @@ public class TestNotificationMessages {
 
         connection.listenToServer();
         assertTrue(connection.getStatusOfLastMessageReceived().equals(ServerMessage.Status.NOTIFICATIONLOGGEDIN));
+        // TODO make oop
         assertTrue(connection.getCurrentUser().getUserName().equals(dummyData.username1));
+    }
+
+    @Test
+    public void receiveSecurityQuestionMessage() {
+        NotificationSecurityQuestion securityQuestion = new NotificationSecurityQuestion(dummyData.securityQuestion1);
+        server.addMessageToSend(securityQuestion);
+
+        connection.listenToServer();
+        assertTrue(connection.getStatusOfLastMessageReceived().equals(ServerMessage.Status.NOTIFICATIONSECURITYQUESTION));
+    }
+
+    @Test
+    public void receivePasswordChangedMessage() {
+        NotificationPasswordChanged message = new NotificationPasswordChanged();
+        server.addMessageToSend(message);
+
+        connection.listenToServer();
+        assertTrue(connection.getStatusOfLastMessageReceived().equals(ServerMessage.Status.NOTIFICATIONPASSWORDCHANGED));
     }
 
     // TODO tests for rest of NotificationMessages including changepassword
@@ -88,5 +106,12 @@ public class TestNotificationMessages {
                 contactList, conversationList);
 
         return message;
+    }
+
+    private void sendAndReceiveMessages(ArrayList<ServerMessage> messages) {
+        for (ServerMessage message : messages) {
+            server.addMessageToSend(message);
+            connection.listenToServer();
+        }
     }
 }
