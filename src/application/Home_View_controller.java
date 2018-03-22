@@ -19,6 +19,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Contact;
+import model.Conversation;
+import model.Message;
 import model.Profile;
 
 import java.awt.event.KeyEvent;
@@ -60,6 +62,11 @@ public class Home_View_controller extends ViewController{
         //TODO: import current conversations
     }
 
+    //Create a new conversation using conversation/message API
+//    public String createNewConversation(String[] users, String text) {
+//     return Conversation.createConversation(Message.createFirstMessage(users, text));
+//    }
+
     public void createNewContact(String user){
         TitledPane newContact = new TitledPane();
         newContact.setText(user);
@@ -97,6 +104,10 @@ public class Home_View_controller extends ViewController{
 
         newContact.setContent(content);
         conversations.getPanes().add(newContact);
+
+//        String[] users = {connection.getCurrentUser().getUserName(), user};
+//        String greeting = connection.getCurrentUser().getProfile().getName() + " " + connection.getCurrentUser().getProfile().getLastName() + " (" + connection.getCurrentUser().getUserName() + ") has added you as a friend!";
+//        String conversationKey = createNewConversation(users, greeting);
     }
 
     @FXML
@@ -291,17 +302,17 @@ public class Home_View_controller extends ViewController{
         try{
             FXMLLoader loader = new FXMLLoader();
             //TODO: change out the place holder fxml for view profile
-            loader.setLocation(getClass().getResource("/application/home.fxml"));
+            loader.setLocation(getClass().getResource("/application/viewProfile.fxml"));
             loader.load();
 
-            Home_View_controller vpScreen = loader.getController();
+            ViewProfile_View_Controller vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
             connection.setDelegate(vpScreen);
 
             Parent root = loader.getRoot();
             Stage vpStage = new Stage();
-            Scene scene = new Scene(root, 600, 400);
+            Scene scene = new Scene(root, 700, 600);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             vpStage.setScene(scene);
             vpStage.show();
