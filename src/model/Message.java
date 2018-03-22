@@ -76,6 +76,9 @@ public class Message implements Comparable<Message> {
     public String getMessageKey() { return messageKey; }
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
+    public void setClientTime(String clientTime) {
+        this.clientTime = clientTime;
+    }
 
     public void updateMessage(NotificationMessageUpdatedMessage message) {
         text = message.getText();
