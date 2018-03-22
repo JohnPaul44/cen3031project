@@ -74,6 +74,7 @@ public class ServerConnection implements IServerConnection{
             try {
                 while ((messageFromServer = in.readLine()) != null) {
                     MessageHandler handler = handlerFactory.produce(messageFromServer, userUpdater);
+                    // TODO pass delegate to handle
                     handler.handle();
 
                     JsonParser parser = new JsonParser();
