@@ -36,36 +36,9 @@ public class Home_View_controller extends ViewController{
 
     public void passConnection(ServerConnection con){
         connection = con;
-        setValues();
         setConversationsList();
-    }
-
-    public void setValues(){
         setUsername(connection.getCurrentUser().getUserName());
-        setFirstName(connection.getCurrentUser().getProfile().getFirstName());
-        setLastName(connection.getCurrentUser().getProfile().getLastName());
-        setEmail(connection.getCurrentUser().getProfile().getEmail());
-        setPhone(connection.getCurrentUser().getProfile().getPhone());
-        setGender(connection.getCurrentUser().getProfile().getGender());
-        setBirthday(connection.getCurrentUser().getProfile().getBirthday());
-        setIcon();
-    }
-
-    public void setIcon(){
-        String first_letter = "" + firstName.getText().charAt(0) + lastName.getText().charAt(0);
-        icon_letter.setText(first_letter);
-
-        if(connection.getCurrentUser().getProfile().getColor() == null){
-            String color_green = String.valueOf(Color.GREEN);
-            connection.getCurrentUser().getProfile().setColor(color_green);
-        }
-
-        System.out.println("color saved in profile " + connection.getCurrentUser().getProfile().getColor());
-        Paint icon_color = Paint.valueOf(connection.getCurrentUser().getProfile().getColor());
-        System.out.println("color saved in icon_color " + icon_color);
-        icon.setFill(icon_color);
-        icon_design.setFill(icon_color);
-        icon_design.setOpacity(0.4);
+        loadCurrentProfile();
     }
 
     public void setConversationsList(){
@@ -138,28 +111,6 @@ public class Home_View_controller extends ViewController{
     }
 
     @FXML
-    private Label username;
-    @FXML
-    private TextField firstName;
-    @FXML
-    private TextField lastName;
-    @FXML
-    private TextField email;
-    @FXML
-    private TextField phone;
-    @FXML
-    private ChoiceBox gender;
-    @FXML
-    private DatePicker birthday;
-    @FXML
-    private TextArea bio;
-    @FXML
-    private TextField mind;
-    @FXML
-    private TextArea interests;
-    @FXML
-    private TextArea hobbies;
-    @FXML
     private ScrollPane scrollPane;
     @FXML
     private Accordion conversations;
@@ -172,89 +123,20 @@ public class Home_View_controller extends ViewController{
     @FXML
     private Label viewProfile;
     @FXML
-    private Circle icon;
+    private SplitPane split;
     @FXML
-    private Circle icon_design;
-    @FXML
-    private Label icon_letter;
+    private AnchorPane view;
+
 
     private void setUsername(String user){
-        username.setText(user);
         usernameAcc.setText(user);
     }
 
-    private void setFirstName(String first){
-        firstName.setText(first);
-    }
-
-    private void setLastName(String last){
-        lastName.setText(last);
-    }
-
-    private void setEmail(String e){
-        email.setText(e);
-    }
-
-    private void setPhone(String phoneNum){
-        phone.setText(phoneNum);
-    }
-
-    private void setGender(String gen){
-        if(gen.equalsIgnoreCase("female")){
-            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.FEMALE);
-            gender.setItems(genderList);
-            gender.setValue(Profile.Gender.FEMALE);
-        }
-        else if(gen.equalsIgnoreCase("male")){
-            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.MALE);
-            gender.setItems(genderList);
-            gender.setValue(Profile.Gender.MALE);
-        }
-        else if(gen.equalsIgnoreCase("other")){
-            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.OTHER);
-            gender.setItems(genderList);
-            gender.setValue(Profile.Gender.OTHER);
-        }
-        else{
-            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.NA);
-            gender.setItems(genderList);
-            gender.setValue(Profile.Gender.NA);
-        }
-    }
-
-    private void setBirthday(String birth){
-        if(birth == null || birth.equals("null") || birth.equals("")){
-            return;
-        }
-        LocalDate birthdate = LocalDate.parse(birth);
-        birthday.setValue(birthdate);
-    }
-
-
-    @FXML
-    public void EditProfile(ActionEvent event){
+    public void loadCurrentProfile(){
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/application/createProfile.fxml"));
-            loader.load();
-
-            EditProfile_View_Controller edit = loader.getController();
-            edit.passConnection(connection);
-            connection.setDelegate(edit);
-
-            String first_letter = "" + firstName.getText().charAt(0) + lastName.getText().charAt(0);
-            edit.setIconLetter(first_letter);
-
-            Parent root = loader.getRoot();
-            Stage registerStage = (Stage) firstName.getScene().getWindow();
-            Scene scene = new Scene(root, 700, 500);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            registerStage.setScene(scene);
-            registerStage.show();
-
-            //closes the old screen when the new screen pops up
-            //((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
-        } catch (Exception e) {
+            view = FXMLLoader.load(getClass().getResource("/application/viewCurrentUser.fxml"));
+            split.getItems().set(1, view);
+        } catch(Exception e){
             e.printStackTrace();
         }
     }
@@ -273,7 +155,7 @@ public class Home_View_controller extends ViewController{
             connection.setDelegate(login);
 
             Parent root = loader.getRoot();
-            Stage registerStage = (Stage) firstName.getScene().getWindow();
+            Stage registerStage = (Stage) scrollPane.getScene().getWindow();
             Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
