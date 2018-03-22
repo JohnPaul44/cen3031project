@@ -8,34 +8,38 @@ public class MessageFactory {
 
     // TODO make proper exception
     public ServerMessage produce(JsonObject jsonObject) throws Exception {
-        switch(jsonObject.get("status").getAsInt()) {
-            case 1: // Error Message
+        int status = jsonObject.get("status").getAsInt();
+        switch(ServerMessage.Status.values()[status]) {
+            case NOTIFICATIONERROR: // Error Message
                 return gson.fromJson(jsonObject, NotificationErrorMessage.class);
-            case 2: // Logged In Message
+            case NOTIFICATIONLOGGEDIN: // Logged In Message
                 return gson.fromJson(jsonObject, NotificationLoggedInMessage.class);
-            case 3: // User Online Status
+            case NOTIFICATIONSECURITYQUESTION: // Security Question
+                return gson.fromJson(jsonObject, NotificationSecurityQuestion.class);
+            case NOTIFICATIONPASSWORDCHANGED: // Password Changed
+            case NOTIFICATIONUSERONLINESTATUS: // User Online Status
                 return gson.fromJson(jsonObject, NotificationUserOnlineStatusMessage.class);
-            case 4: // Logged Out Message
+            case NOTIFICATIONLOGGEDOUT: // Logged Out Message
                 return gson.fromJson(jsonObject, NotificationLoggedOutMessage.class);
-            case 5: // Contact Added
+            case NOTIFICATIONCONTACTADDED: // Contact Added
                 return gson.fromJson(jsonObject, NotificationContactAddedMessage.class);
-            case 6: // Contact Removed
+            case NOTIFICATIONCONTACTREMOVED: // Contact Removed
                 return gson.fromJson(jsonObject, NotificationContactRemovedMessage.class);
-            case 7: // Profile Updated
+            case NOTIFICATIONPROFILEUPDATED: // Profile Updated
                 return gson.fromJson(jsonObject, NotificationProfileUpdatedMessage.class);
-            case 8: // Message Received
+            case NOTIFICATIONMESSAGERECEIVED: // Message Received
                 return gson.fromJson(jsonObject, NotificationMessageReceivedMessage.class);
-            case 9: // Message Updated
+            case NOTIFICATIONMESSAGEUPDATED: // Message Updated
                 return gson.fromJson(jsonObject, NotificationMessageUpdatedMessage.class);
-            case 10: // Message Reaction
+            case NOTIFICATIONMESSAGEREACTION: // Message Reaction
                 return gson.fromJson(jsonObject, NotificationMessageReaction.class);
-            case 11: // User Added to Conversation
+            case NOTIFICATIONUSERADDEDTOCONVERSATION: // User Added to Conversation
                 return gson.fromJson(jsonObject, NotificationUserAddedToConversationMessage.class);
-            case 12: // User Removed from Conversation
+            case NOTIFICATIONUSERREMOVEDFROMCONVERSATION: // User Removed from Conversation
                 return gson.fromJson(jsonObject, NotificationUserRemovedFromConversationMessage.class);
-            case 13: // Message Read
+            case NOTIFICATIONMESSAGEREAD: // Message Read
                 return gson.fromJson(jsonObject, NotificationMessageReadMessage.class);
-            case 14: // Typing
+            case NOTIFICATIONTYPING: // Typing
                 return gson.fromJson(jsonObject, NotificationTypingMessage.class);
             default:
                 throw new Exception("Invalid message trying to be produced. Status of message: " + jsonObject.get("status").getAsInt());
