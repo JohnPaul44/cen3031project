@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static junit.framework.TestCase.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class TestNotificationMessages {
@@ -68,7 +70,7 @@ public class TestNotificationMessages {
     }
 
     @Test
-    public void receiveUserOnlineStatusMessage() throws InterruptedException {
+    public void receiveUserOnlineStatusMessage() {
         NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
         NotificationUserOnlineStatusMessage userOnlineStatusMessage = new NotificationUserOnlineStatusMessage(true, dummyData.username1);
         ArrayList<ServerMessage> serverMessages = new ArrayList<>();
@@ -77,6 +79,60 @@ public class TestNotificationMessages {
 
         sendAndReceiveMessages(serverMessages);
         assertTrue(connection.getStatusOfLastMessageReceived().equals(ServerMessage.Status.NOTIFICATIONUSERONLINESTATUS));
+    }
+
+    @Test
+    public void receiveLoggedOutMessage() {
+        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
+        NotificationLoggedOutMessage loggedOutMessage = new NotificationLoggedOutMessage();
+        ArrayList<ServerMessage> serverMessages = new ArrayList<>();
+        serverMessages.add(loggedInMessage);
+        serverMessages.add(loggedOutMessage);
+
+        sendAndReceiveMessages(serverMessages);
+        assertNull(connection.getCurrentUser().getUserName());
+        assertNull(connection.getCurrentUser().getContactList());
+        assertNull(connection.getCurrentUser().getConversationList());
+        assertNull(connection.getCurrentUser().getProfile());
+    }
+
+    @Test
+    public void receiveContactAddedMessage() throws InterruptedException {
+        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
+        NotificationContactAddedMessage contactAddedMessage = new NotificationContactAddedMessage(dummyData.username1);
+        ArrayList<ServerMessage> serverMessages = new ArrayList<>();
+        serverMessages.add(loggedInMessage);
+        serverMessages.add(contactAddedMessage);
+
+        sendAndReceiveMessages(serverMessages);
+        assertTrue(connection.getCurrentUser().getContactList().get(dummyData.username1).getUsername().equals(dummyData.username1));
+        assertFalse(connection.getCurrentUser().getContactList().get(dummyData.username1).getOnline());
+    }
+
+    @Test
+    public void receiveContactRemovedMessage() throws InterruptedException {
+        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
+        NotificationContactRemovedMessage contactRemovedMessage = new NotificationContactRemovedMessage(dummyData.username1);
+        ArrayList<ServerMessage> serverMessages = new ArrayList<>();
+        serverMessages.add(loggedInMessage);
+        serverMessages.add(contactRemovedMessage);
+
+        sendAndReceiveMessages(serverMessages);
+        assertNull(connection.getCurrentUser().getContactList().get(dummyData.username1));
+    }
+
+    @Test
+    public void receiveProfileUpdatedMessage() throws InterruptedException {
+        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
+        NotificationProfileUpdatedMessage profileUpdatedMessage = new NotificationProfileUpdatedMessage(dummyData.profile);
+        ArrayList<ServerMessage> serverMessages = new ArrayList<>();
+        serverMessages.add(loggedInMessage);
+        serverMessages.add(profileUpdatedMessage);
+
+        sendAndReceiveMessages(serverMessages);
+        assertTrue(connection.getCurrentUser().getProfile().getFirstName().equals(dummyData.firstName1));
+        assertTrue(connection.getCurrentUser().getProfile().getEmail().equals(dummyData.email1));
+        assertTrue(connection.getCurrentUser().getProfile().getPhone().equals(dummyData.phone1));
     }
 
     // TODO tests for rest of NotificationMessages including changepassword
