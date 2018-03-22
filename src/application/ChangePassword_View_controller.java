@@ -96,11 +96,6 @@ public class ChangePassword_View_controller extends ViewController {
 	
 	@FXML
 	public void confirmIdentity(ActionEvent event) throws Exception{
-		connection.changePassword(username.getText(), answer.getText(), phone.getText());
-	}
-
-	@FXML
-	public void changePasswordVisible(){
 		confirmButton.setVisible(false);
 		newPass.setVisible(true);
 		confPass.setVisible(true);
@@ -124,25 +119,34 @@ public class ChangePassword_View_controller extends ViewController {
 			return;
 		}
 		//send the information to the database
-		
-		//opens confirmation screen
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/application/changePassConf.fxml"));
-		loader.load();
-		
-		//creates instance of the change password controller
-		//passes the username to the confirmation screen
-		ChangePassConf_View_controller conf = loader.getController();
-		conf.setUsername(username.getText());
-		
-		Parent root = loader.getRoot();
-		Stage changeStage = (Stage) changeButton.getScene().getWindow();
-		Scene scene = new Scene(root,250,200);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		changeStage.setScene(scene);
-		changeStage.show();
+		connection.changePassword(username.getText(), answer.getText(), phone.getText(), newPass.getText());
 	}
-	
+
+	@FXML
+	public void confPassChanged(){
+    	try {
+			//opens confirmation screen
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("/application/changePassConf.fxml"));
+			loader.load();
+
+			//creates instance of the change password controller
+			//passes the username to the confirmation screen
+			ChangePassConf_View_controller conf = loader.getController();
+			conf.setUsername(username.getText());
+
+			Parent root = loader.getRoot();
+			Stage changeStage = (Stage) changeButton.getScene().getWindow();
+			Scene scene = new Scene(root, 250, 200);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			changeStage.setScene(scene);
+			changeStage.show();
+		} catch(Exception e){
+    		e.printStackTrace();
+		}
+
+	}
+
 	@FXML
 	public boolean confPassword() {
 		if(!newPass.getText().equals(confPass.getText())) {
@@ -150,28 +154,6 @@ public class ChangePassword_View_controller extends ViewController {
 			return false;
 		}
 		return true;
-	}
-	
-	@FXML
-	public boolean checkPhone(String number) {
-		if(/*number is not associated with the username*/true){
-			status.setText("Incorrect phone number");
-			return false;
-		}
-		return true;
-	}
-	
-	@FXML
-	public boolean checkSecurityQuestion(String ans) {
-		if(/*answers do not match*/true) {
-			status.setText("Incorrect information");
-			return false;
-		}
-		return true;
-	}
-	
-	public void close() {
-		confirmButton.getScene().getWindow().hide();
 	}
 
 	@Override
@@ -190,7 +172,7 @@ public class ChangePassword_View_controller extends ViewController {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						changePasswordVisible();
+						confPassChanged();
 						status.setText("");
 					}
 				});
