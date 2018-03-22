@@ -20,6 +20,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import model.Profile;
 
@@ -112,9 +114,10 @@ public class Register_View_controller extends ViewController {
         }
         else {
             registerButton.getScene().setCursor(Cursor.WAIT);
-            connection.registerNewUser(username(), checkedPassword(), firstName(), lastName(), email(), phoneNumber(), gender(), birthDay(), securityQuestion(), securityAnswer());
-            status.setText("Register Successful");
 
+            String default_color = String.valueOf(Color.GREEN);
+            connection.registerNewUser(username(), checkedPassword(), firstName(), lastName(), email(), phoneNumber(), gender(), birthDay(), securityQuestion(), securityAnswer(), default_color);
+            status.setText("Register Successful");
         }
     }
 
@@ -131,7 +134,7 @@ public class Register_View_controller extends ViewController {
 
             Parent root = loader.getRoot();
             Stage registerStage = new Stage();
-            Scene scene = new Scene(root, 700, 500);
+            Scene scene = new Scene(root, 880, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();

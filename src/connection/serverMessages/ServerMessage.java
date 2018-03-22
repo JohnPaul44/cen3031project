@@ -1,10 +1,6 @@
 package connection.serverMessages;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
 
 public abstract class ServerMessage {
     public enum Status {
@@ -12,7 +8,10 @@ public abstract class ServerMessage {
         NOTIFICATIONERROR,
         NOTIFICATIONLOGGEDIN,
         NOTIFICATIONUSERONLINESTATUS,
+        NOTIFICATIONSECURITYQUESTION,
+        NOTIFICATIONPASSWORDCHANGED,
         NOTIFICATIONLOGGEDOUT,
+        NOTIFICATIONQUERYRESULTS,
         NOTIFICATIONCONTACTADDED,
         NOTIFICATIONCONTACTREMOVED,
         NOTIFICATIONPROFILEUPDATED,
@@ -23,10 +22,14 @@ public abstract class ServerMessage {
         NOTIFICATIONUSERREMOVEDFROMCONVERSATION,
         NOTIFICATIONMESSAGEREAD,
         NOTIFICATIONTYPING,
+        NOTIFICATIONCONTACTUPDATED,
 
         ACTIONREGISTER,
         ACTIONLOGIN,
+        ACTIONREQUESTSECURITYQUESTION,
+        ACTIONCHANGEPASSWORD,
         ACTIONLOGOUT,
+        ACTIONQUERYUSERS,
         ACTIONADDCONTACT,
         ACTIONREMOVECONTACT,
         ACTIONUPDATEPROFILE,
@@ -36,7 +39,7 @@ public abstract class ServerMessage {
         ACTIONADDUSERTOCONVERSATION,
         ACTIONREMOVEDUSERFROMCONVERSATION,
         ACTIONREADMESSAGE,
-        ACTIONSETTYPING;
+        ACTIONSETTYPING,
     }
     int status;
 

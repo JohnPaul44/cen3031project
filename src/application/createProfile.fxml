@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
@@ -71,7 +73,7 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextArea>
-            <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="89.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME" textFill="#fbfaf9">
+            <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="12.0" layoutY="4.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME" textFill="#030303">
                <font>
                   <Font size="16.0" />
                </font>
@@ -81,6 +83,24 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
+            <Circle fx:id="iconDesign" layoutX="145.0" layoutY="95.0" radius="72.0" stroke="BLACK" strokeType="INSIDE">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#698f3f" />
+                        <Stop color="#698f3f" offset="0.007434944237918215" />
+                        <Stop color="WHITE" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </fill>
+            </Circle>
+            <Circle fx:id="icon" fill="#698f3f" layoutX="104.0" layoutY="95.0" radius="72.0" stroke="BLACK" strokeType="INSIDE" />
+            <Label fx:id="icon_letter" alignment="CENTER" layoutX="32.0" layoutY="64.0" prefHeight="63.0" prefWidth="144.0" text="UN">
+               <font>
+                  <Font name="Verdana Bold" size="48.0" />
+               </font>
+            </Label>
+            <ColorPicker fx:id="color" layoutX="60.0" layoutY="179.0" onAction="#ChangeIconColor" />
          </children>
       </AnchorPane>
       <ChoiceBox fx:id="genderField" layoutX="298.0" layoutY="158.0" prefHeight="27.0" prefWidth="341.0" />

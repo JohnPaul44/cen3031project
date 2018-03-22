@@ -15,13 +15,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Profile;
 
 import javax.swing.*;
 
-public class Direct_Message_View_controller extends ViewController {
+public class Conversation_View_controller extends ViewController {
     ServerConnection connection;
 
     public void passConnection(ServerConnection con){
@@ -40,10 +42,16 @@ public class Direct_Message_View_controller extends ViewController {
     private VBox box;
     @FXML
     private ScrollPane scroll;
+    @FXML
+    private Label username;
 
-    ObservableList<String> messages = FXCollections.observableArrayList();
+    public void setUsername(String user){
+        username.setText(user);
+    }
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
+
+        AnchorPane pane = new AnchorPane();
         TextArea new_message = new TextArea();
         new_message.setText(yourMessageField.getText());
         new_message.setWrapText(true);
@@ -55,17 +63,44 @@ public class Direct_Message_View_controller extends ViewController {
         dummyEP.setText(yourMessageField.getText());
         new_message.setPrefHeight(dummyEP.getPreferredSize().height);
         new_message.setMinHeight(30);
-        box.getChildren().add(new_message);
+
+        pane.setPrefHeight(dummyEP.getPreferredSize().height);
+
+        pane.getChildren().add(new_message);
+        box.getChildren().add(pane);
+
         yourMessageField.setText("");
+        scroll.vvalueProperty().bind(box.heightProperty());
+    }
+    public void receivedMessage(){
+        AnchorPane receivedPane = new AnchorPane();
+        TextArea received_message = new TextArea();
+        received_message.setText(yourMessageField.getText());
+        received_message.setWrapText(true);
+        received_message.setEditable(false);
+        received_message.setStyle("-fx-padding: 0 300 0 10");
+
+        JEditorPane dummyEP = new JEditorPane();
+        dummyEP.setSize(100, Short.MAX_VALUE);
+        dummyEP.setText(yourMessageField.getText());
+        received_message.setPrefHeight(dummyEP.getPreferredSize().height);
+        received_message.setMinHeight(30);
+
+        receivedPane.setPrefHeight(dummyEP.getPreferredSize().height);
+
+        receivedPane.getChildren().add(received_message);
+        box.getChildren().add(receivedPane);
         scroll.vvalueProperty().bind(box.heightProperty());
     }
 
     @FXML
     private void initialize(){
-//        chatWindow.setItems(messages);
     }
 
     @Override
     public void notification(ServerMessage message) {
+        switch (message.getStatus()){
+
+        }
     }
 }

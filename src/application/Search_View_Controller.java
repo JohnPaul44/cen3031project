@@ -20,7 +20,7 @@ public class Search_View_Controller extends ViewController{
     }
 
     //TODO: function that searches and returns the information from users
-    
+
     @Override
     public void notification(ServerMessage message) {
 

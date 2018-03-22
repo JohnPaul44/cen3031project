@@ -19,8 +19,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Contact;
-import model.Conversation;
-import model.Message;
 import model.Profile;
 
 import java.awt.event.KeyEvent;
@@ -104,10 +102,6 @@ public class Home_View_controller extends ViewController{
 
         newContact.setContent(content);
         conversations.getPanes().add(newContact);
-
-//        String[] users = {connection.getCurrentUser().getUserName(), user};
-//        String greeting = connection.getCurrentUser().getProfile().getName() + " " + connection.getCurrentUser().getProfile().getLastName() + " (" + connection.getCurrentUser().getUserName() + ") has added you as a friend!";
-//        String conversationKey = createNewConversation(users, greeting);
     }
 
     @FXML
@@ -302,17 +296,17 @@ public class Home_View_controller extends ViewController{
         try{
             FXMLLoader loader = new FXMLLoader();
             //TODO: change out the place holder fxml for view profile
-            loader.setLocation(getClass().getResource("/application/viewProfile.fxml"));
+            loader.setLocation(getClass().getResource("/application/home.fxml"));
             loader.load();
 
-            ViewProfile_View_Controller vpScreen = loader.getController();
+            Home_View_controller vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
             connection.setDelegate(vpScreen);
 
             Parent root = loader.getRoot();
             Stage vpStage = new Stage();
-            Scene scene = new Scene(root, 700, 600);
+            Scene scene = new Scene(root, 600, 400);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             vpStage.setScene(scene);
             vpStage.show();

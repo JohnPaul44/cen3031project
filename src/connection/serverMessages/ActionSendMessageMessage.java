@@ -1,28 +1,22 @@
 package connection.serverMessages;
 
 import model.Globals;
+import model.Message;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ActionSendMessageMessage extends ActionServerMessage {
-    public enum ActionSendMessageMessageType {TO, CONVERSATIONKEY}
-    private String to;
-    private String conversationKey;
-    private String clientTime;
-    private String text;
+    private Message message;
 
-    public ActionSendMessageMessage(ActionSendMessageMessageType type, String toOrConversationKey, String text) {
+    public ActionSendMessageMessage(Message message) {
         this.status = Status.ACTIONSENDMESSAGE.ordinal();
 
-        if (type == ActionSendMessageMessageType.TO) {
-            this.to = toOrConversationKey;
-        }
-        if (type == ActionSendMessageMessageType.CONVERSATIONKEY) {
-            this.conversationKey = toOrConversationKey;
-        }
+        this.message = message;
+        setMessageClientTime();
+    }
 
-        this.clientTime = new SimpleDateFormat(Globals.simpldDateFormat).format(new Date());
-        this.text = text;
+    private void setMessageClientTime() {
+        message.setClientTime(clientTime);
     }
 }

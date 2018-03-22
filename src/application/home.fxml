@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
@@ -56,12 +58,23 @@
       </TextField>
       <AnchorPane layoutX="239.0" layoutY="61.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
          <children>
+            <Circle fx:id="icon_design" layoutX="153.0" layoutY="92.0" radius="72.0" stroke="BLACK" strokeType="INSIDE">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#698f3f" />
+                        <Stop color="#698f3f" offset="0.007434944237918215" />
+                        <Stop color="WHITE" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </fill>
+            </Circle>
             <TextArea fx:id="bio" editable="false" layoutX="10.0" layoutY="259.0" prefHeight="117.0" prefWidth="226.0" promptText="Bio" wrapText="true">
                <cursor>
                   <Cursor fx:constant="DEFAULT" />
                </cursor>
             </TextArea>
-            <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="89.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME" textFill="#fbfaf9">
+            <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="12.0" layoutY="179.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME">
                <font>
                   <Font size="16.0" />
                </font>
@@ -71,6 +84,12 @@
                   <Cursor fx:constant="DEFAULT" />
                </cursor>
             </TextField>
+            <Circle fx:id="icon" fill="#698f3f" layoutX="112.0" layoutY="92.0" radius="72.0" stroke="BLACK" strokeType="INSIDE" />
+            <Label fx:id="icon_letter" alignment="CENTER" layoutX="39.0" layoutY="61.0" prefHeight="63.0" prefWidth="144.0" text="U">
+               <font>
+                  <Font name="Verdana Bold" size="48.0" />
+               </font>
+            </Label>
          </children>
       </AnchorPane>
       <ChoiceBox fx:id="gender" layoutX="506.0" layoutY="160.0" prefHeight="27.0" prefWidth="341.0" />
@@ -89,7 +108,7 @@
          <effect>
             <Reflection />
          </effect></Button>
-      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="-2.0" layoutY="3.0" prefHeight="495.0" prefWidth="221.0" style="-fx-background-color: #E7DECD;">
+      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutX="-2.0" prefHeight="500.0" prefWidth="221.0" style="-fx-background-color: #E7DECD;">
          <content>
             <Accordion fx:id="conversations" prefHeight="493.0" prefWidth="202.0" style="-fx-background-color: #E7DECD;">
               <panes>
@@ -105,6 +124,7 @@
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                               </Button>
+                              <StackPane maxHeight="20.0" maxWidth="20.0" minHeight="20.0" minWidth="20.0" prefHeight="20.0" prefWidth="20.0" />
                            </children>
                         </VBox>
                      </content>
