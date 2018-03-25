@@ -26,6 +26,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.Contact;
 import model.Profile;
+import sun.plugin.javascript.navig.Anchor;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -134,15 +135,47 @@ public class Home_View_controller extends ViewController{
 
     public void loadCurrentProfile(){
         try {
-            view = FXMLLoader.load(getClass().getResource("/application/viewCurrentUser.fxml"));
-            split.getItems().set(1, view);
+            AnchorPane temp = new AnchorPane();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/application/viewCurrentUser.fxml"));
+            temp = loader.load();
+            view.getChildren().add(temp);
+
+            ViewCurrentUser_View_controller profile = loader.getController();
+            profile.passConnection(connection);
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void loadEditProfile(){
+        try {
+            AnchorPane temp = new AnchorPane();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/application/createProfile.fxml"));
+            temp = loader.load();
+            setView(temp);
+
+            EditProfile_View_Controller edit = loader.getController();
+            edit.passConnection(connection);
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void setView(AnchorPane anchor){
+        System.out.println("setting the view");
+        try{
+            view.getChildren().add(anchor);
         } catch(Exception e){
             e.printStackTrace();
         }
     }
 
     @FXML
-    public void Logout(ActionEvent event){
+    public void Logout(){
         connection.logout();
 
         try {
@@ -172,19 +205,15 @@ public class Home_View_controller extends ViewController{
             try {
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(getClass().getResource("/application/search.fxml"));
-                loader.load();
+                AnchorPane anchor = new AnchorPane();
+                anchor = loader.load();
+
+                setView(anchor);
 
                 Search_View_Controller searchScreen = loader.getController();
                 searchScreen.passConnection(connection);
                 searchScreen.setSearchField(search.getText());
                 connection.setDelegate(searchScreen);
-
-                Parent root = loader.getRoot();
-                Stage searchStage = new Stage();
-                Scene scene = new Scene(root, 600, 400);
-                scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-                searchStage.setScene(scene);
-                searchStage.show();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -197,7 +226,9 @@ public class Home_View_controller extends ViewController{
         try{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/directMessage.fxml"));
-            loader.load();
+            AnchorPane anchor = new AnchorPane();
+            anchor = loader.load();
+            setView(anchor);
 
             Conversation_View_controller dmScreen = loader.getController();
             dmScreen.passConnection(connection);
@@ -205,12 +236,6 @@ public class Home_View_controller extends ViewController{
             dmScreen.setUsername(user);
             //TODO: pass the user to initialize the message screen
 
-            Parent root = loader.getRoot();
-            Stage dmStage = new Stage();
-            Scene scene = new Scene(root, 552, 372);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            dmStage.setScene(scene);
-            dmStage.show();
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -222,19 +247,15 @@ public class Home_View_controller extends ViewController{
             FXMLLoader loader = new FXMLLoader();
             //TODO: change out the place holder fxml for view profile
             loader.setLocation(getClass().getResource("/application/home.fxml"));
-            loader.load();
+            AnchorPane anchor = new AnchorPane();
+            anchor = loader.load();
+            setView(anchor);
 
             Home_View_controller vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
             connection.setDelegate(vpScreen);
 
-            Parent root = loader.getRoot();
-            Stage vpStage = new Stage();
-            Scene scene = new Scene(root, 600, 400);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            vpStage.setScene(scene);
-            vpStage.show();
         } catch(Exception e){
             e.printStackTrace();
         }

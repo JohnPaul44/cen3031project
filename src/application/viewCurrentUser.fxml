@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane focusTraversable="true" maxWidth="504.0" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewCurrentUser_View_controller">
+<AnchorPane fx:id="anchor" focusTraversable="true" maxWidth="504.0" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewCurrentUser_View_controller">
     <children>
         <Label layoutX="569.0" layoutY="27.0" text="/*View*/" textFill="#fbfaf9" />
         <TextField fx:id="firstName" editable="false" layoutX="285.0" layoutY="66.0" promptText="First Name">
@@ -94,7 +94,7 @@
         </AnchorPane>
         <ChoiceBox fx:id="gender" layoutX="285.0" layoutY="164.0" prefHeight="27.0" prefWidth="341.0" />
         <DatePicker fx:id="birthday" disable="true" editable="false" layoutX="285.0" layoutY="202.0" prefHeight="27.0" prefWidth="341.0" />
-        <Button layoutX="328.0" layoutY="458.0" mnemonicParsing="false" onAction="#EditProfile" style="-fx-background-color: #698F3F;" text="Edit Profile" textFill="#fbfaf9">
+        <Button fx:id="editProfile" layoutX="328.0" layoutY="458.0" mnemonicParsing="false" onAction="#EditProfile" style="-fx-background-color: #698F3F;" text="Edit Profile" textFill="#fbfaf9">
             <effect>
                 <Reflection />
             </effect>

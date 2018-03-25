@@ -12,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -32,6 +34,7 @@ public class EditProfile_View_Controller extends ViewController {
         genderField.setItems(genderFieldList);
         setGender(connection.getCurrentUser().getProfile().getGender());
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
+        setColorPicker();
     }
 
     @FXML
@@ -66,15 +69,21 @@ public class EditProfile_View_Controller extends ViewController {
     private Circle iconDesign;
     @FXML
     private Label icon_letter;
+    @FXML
+    private AnchorPane anchor;
 
-    public void setIconLetter(String initials){
-        icon_letter.setText(initials);
+    public void setIconLetter(){
+        icon_letter.setText("" + connection.getCurrentUser().getUserName().charAt((0)));
 
 
         Paint icon_color = Paint.valueOf(connection.getCurrentUser().getProfile().getColor());
         icon.setFill(icon_color);
         iconDesign.setFill(icon_color);
         iconDesign.setOpacity(0.4);
+    }
+
+    public void setColorPicker(){
+        color.setValue((Color)icon.getFill());
     }
 
     private void setUsername(String user){
@@ -240,19 +249,18 @@ public class EditProfile_View_Controller extends ViewController {
     public void BackButton(ActionEvent event){
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/application/home.fxml"));
-            loader.load();
+            loader.setLocation(getClass().getResource("/application/viewCurrentUser.fxml"));
+            AnchorPane temp = new AnchorPane();
+            try{
+                temp = loader.load();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            anchor.getChildren().add(temp);
 
-            Home_View_controller home = loader.getController();
-            home.passConnection(connection);
-            connection.setDelegate(home);
-
-            Parent root = loader.getRoot();
-            Stage registerStage = (Stage) save.getScene().getWindow();
-            Scene scene = new Scene(root, 880, 500);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            registerStage.setScene(scene);
-            registerStage.show();
+            ViewCurrentUser_View_controller view = loader.getController();
+            view.passConnection(connection);
+            connection.setDelegate(view);
 
         } catch (Exception e) {
             e.printStackTrace();

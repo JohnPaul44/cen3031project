@@ -11,7 +11,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <SplitPane fx:id="split" dividerPositions="0.5" prefHeight="500.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Home_View_controller">
    <items>
       <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="500.0" maxWidth="200.0" minHeight="500.0" minWidth="200.0" prefHeight="500.0" prefWidth="200.0" style="-fx-background-color: #E7DECD;">
@@ -23,13 +22,23 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <content>
-                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #E7DECD;">
+                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="3.0" style="-fx-background-color: #E7DECD;">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#Logout" style="-fx-background-color: #ff0000;" text="Log Out" textFill="#fbfaf9">
+                              <Label onMouseClicked="#loadCurrentProfile" text="View Profile">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
-                              </Button>
+                              </Label>
+                              <Label onMouseClicked="#loadEditProfile" text="Edit Profile">
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Label>
+                              <Label onMouseClicked="#Logout" text="Log Out">
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Label>
                            </children>
                         </VBox>
                      </content>

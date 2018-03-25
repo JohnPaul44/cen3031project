@@ -95,6 +95,10 @@ public class ViewCurrentUser_View_controller extends ViewController{
     private Circle icon_design;
     @FXML
     private Label icon_letter;
+    @FXML
+    private Button editProfile;
+    @FXML
+    private AnchorPane anchor;
 
     private void setUsername(String user){
         username.setText(user);
@@ -149,31 +153,20 @@ public class ViewCurrentUser_View_controller extends ViewController{
 
 
     @FXML
-    public void EditProfile(ActionEvent event){
+    public void EditProfile(){
+
+        FXMLLoader loadEdit = new FXMLLoader();
+        loadEdit.setLocation(getClass().getResource("/application/createProfile.fxml"));
+        AnchorPane temp = new AnchorPane();
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/application/createProfile.fxml"));
-            loader.load();
-
-            EditProfile_View_Controller edit = loader.getController();
-            edit.passConnection(connection);
-            connection.setDelegate(edit);
-
-            String first_letter = "" + firstName.getText().charAt(0) + lastName.getText().charAt(0);
-            edit.setIconLetter(first_letter);
-
-            Parent root = loader.getRoot();
-            Stage registerStage = (Stage) firstName.getScene().getWindow();
-            Scene scene = new Scene(root, 700, 500);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            registerStage.setScene(scene);
-            registerStage.show();
-
-            //closes the old screen when the new screen pops up
-            //((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
-        } catch (Exception e) {
+            temp = loadEdit.load();
+        } catch(Exception e){
             e.printStackTrace();
         }
+        anchor.getChildren().add(temp);
+
+        EditProfile_View_Controller edit = loadEdit.getController();
+        edit.passConnection(connection);
     }
 
     @FXML

@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EditProfile_View_Controller">
+<AnchorPane fx:id="anchor" focusTraversable="true" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EditProfile_View_Controller">
    <children>
-      <Label layoutX="623.0" layoutY="23.0" text="/*Edit*/" textFill="#fbfaf9" />
+      <Label layoutX="594.0" layoutY="23.0" text="/*Edit*/" textFill="#fbfaf9" />
       <TextField fx:id="firstName" layoutX="298.0" layoutY="60.0" onKeyPressed="#SaveChangesEventKey" promptText="First Name">
          <cursor>
             <Cursor fx:constant="TEXT" />
@@ -47,18 +47,20 @@
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextArea>
-      <Button fx:id="backButton" layoutX="20.0" layoutY="18.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #698F3F;" text="&lt;" textFill="#fbfaf9">
+      <Button fx:id="backButton" layoutX="465.0" layoutY="452.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #ff0000;" text="Discard Changes" textFill="#fbfaf9">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
+         <effect>
+            <Reflection />
+         </effect>
       </Button>
-      <Label layoutX="62.0" layoutY="23.0" text="System.out.chat()" textFill="#fbfaf9" />
       <TextField fx:id="lastName" layoutX="472.0" layoutY="60.0" onKeyPressed="#SaveChangesEventKey" promptText="Last Name">
          <cursor>
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextField>
-      <Button fx:id="save" layoutX="419.0" layoutY="452.0" mnemonicParsing="false" onAction="#SaveChangesButton" style="-fx-background-color: #698F3F;" text="Save Changes" textFill="#fbfaf9">
+      <Button fx:id="save" layoutX="329.0" layoutY="452.0" mnemonicParsing="false" onAction="#SaveChangesButton" style="-fx-background-color: #698F3F;" text="Save Changes" textFill="#fbfaf9">
          <effect>
             <Reflection />
          </effect>
