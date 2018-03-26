@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 abstract public class ViewController {
-    public abstract void notification(ServerMessage message);
+    public void notification(ServerMessage message) {}
 
 
     /********************************************

@@ -1,5 +1,6 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
 import javafx.animation.FadeTransition;
@@ -139,20 +140,19 @@ public class Login_View_controller extends ViewController{
 	}
 
 	@Override
-	public void notification(ServerMessage message) {
-		switch (message.getStatus()) {
-			case NOTIFICATIONLOGGEDIN:
-				//opens the next screen
-				System.out.println("login success");
-				//status.setText("Login Successful");
-                Platform.runLater(new Runnable(){
-                    @Override
-                    public void run(){
-                        openHome();
-                    }
-                });
-				break;
-			case NOTIFICATIONERROR:
+	public void loggedInNotification (ErrorInformation errorInformation) {
+		if (errorInformation.getErrorNumber() == 0) {
+			//opens the next screen
+			//status.setText("Login Successful");
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					openHome();
+				}
+			});
+		}
+		else {
+				System.out.println(errorInformation.getErrorString());
 				System.out.println("login failed");
 				//prints to the ui that the login failed
                 Platform.runLater(new Runnable() {
@@ -161,17 +161,26 @@ public class Login_View_controller extends ViewController{
                         status.setText("Incorrect Username or Password");
                     }
                 });
-				break;
-			case NOTIFICATIONSECURITYQUESTION:
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						openChangePassword();
-					}
-				});
-				break;
-			default:
-				break;
+		}
+	}
+	@Override
+	public void securityQuestionNotification (ErrorInformation errorInformation, String securityQuestion){
+		if (errorInformation.getErrorNumber() == 0) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					openChangePassword();
+				}
+			});
+		}
+		else{
+			System.out.println(errorInformation.getErrorString());
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					status.setText("Incorrect Username or Password");
+				}
+			});
 		}
 	}
 }
