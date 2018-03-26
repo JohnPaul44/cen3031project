@@ -110,57 +110,69 @@ public class ServerConnection implements IServerConnection {
     }
 
     public void changePassword(String username, String securityAnswer, String phone, String password) {
-        ServerMessage message = new ActionChangePassword(username, securityAnswer, phone, password);
+        ServerMessage message = new ActionChangePasswordMessage(username, securityAnswer, phone, password);
         sendMessageToServer(message);
     }
 
     public void queryUsers(String queryString) {
-     ServerMessage message = new ActionQueryUsers(queryString);
+     ServerMessage message = new ActionQueryUsersMessage(queryString);
      sendMessageToServer(message);
     }
 
     public void addContact(String username) {
+        // TODO
+        // Construct and send ActionAddContactMessage
     }
 
     public void removeContact(String username) {
-
+        // TODO
+        // Construct and send ActionRemoveContactMessage
     }
 
     public void updateProfile(String firstName, String lastName, String email, String phone, String bio, ArrayList<String> hobbies,
                               ArrayList<String> interests, String status, String gender, String birthday) {
-
+        // TODO
+        // Construct and send ActionUpdateProfileMessage
     }
 
     public void sendFirstMessage(ArrayList<String> to, String text) {
-
+        // TODO
+        // Construct and send ActionSendMessageMessage
     }
 
     public void sendMessage(String conversationKey, String text) {
-
+        // TODO
+        // Construct and send ActionSendMessageMessage
     }
 
     public void updateMessage(String conversationKey, String messageKey, String text) {
-
+        // TODO
+        // Construct and send ActionUpdateMessageMessage
     }
 
     public void reactToMessage(String conversationKey, String messageKey, Reactions reactions) {
-
+        // TODO
+        // Construct and send ActionReactToMessage
     }
 
     public void addUserToConversation(String username, String conversationKey) {
-
+        // TODO
+        // Construct and send ActionAddUserToConversationMessage
     }
 
     public void removeUserToConversation(String username, String conversationKey) {
-
+        // TODO
+        // Construct and send ActionRemoveUserFromConversationMessage
     }
 
     public void readMessage(String conversationKey) {
-
+        // TODO
+        // Construct and send ActionReadMessageMessage
     }
 
     public void setTyping(String conversationKey, boolean typing) {
-
+        // TODO
+        // Construct and send ActionSetTypingMessage
     }
 
     public void registerNewUser(String username, String password, String firstName, String lastName, String email,

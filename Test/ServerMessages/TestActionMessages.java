@@ -50,7 +50,7 @@ public class TestActionMessages {
 
     @Test
     public void sendChangePasswordMessage() {
-        ActionChangePassword message = new ActionChangePassword(dummyData.username1, dummyData.securityAnswer1, dummyData.phone1, dummyData.password1);
+        ActionChangePasswordMessage message = new ActionChangePasswordMessage(dummyData.username1, dummyData.securityAnswer1, dummyData.phone1, dummyData.password1);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONCHANGEPASSWORD));
