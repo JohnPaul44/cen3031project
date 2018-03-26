@@ -20,8 +20,8 @@ public class MessageReactionMessageHandler extends ModelUpdateMessageHandler imp
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
+        updateUser(serverMessage);
         delegate.messageReactionNotification(errorInformation, serverMessage.getConversationKey(),
                 serverMessage.getMessageKey(), serverMessage.getReactions());
-        updateUser(serverMessage);
     }
 }

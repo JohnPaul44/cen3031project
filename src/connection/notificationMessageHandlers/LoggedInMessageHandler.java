@@ -19,7 +19,7 @@ public class LoggedInMessageHandler extends ModelUpdateMessageHandler implements
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
-        delegate.loggedInNotification(errorInformation);
         updateUser(serverMessage);
+        delegate.loggedInNotification(errorInformation);
     }
 }

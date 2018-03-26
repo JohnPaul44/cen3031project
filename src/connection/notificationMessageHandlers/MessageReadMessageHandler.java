@@ -20,7 +20,7 @@ public class MessageReadMessageHandler extends ModelUpdateMessageHandler impleme
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
-        delegate.messageReadNotification(errorInformation, serverMessage.getConversationKey(), serverMessage.getFrom());
         updateUser(serverMessage);
+        delegate.messageReadNotification(errorInformation, serverMessage.getConversationKey(), serverMessage.getFrom());
     }
 }

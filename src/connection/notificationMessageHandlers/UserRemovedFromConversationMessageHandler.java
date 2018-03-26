@@ -20,8 +20,8 @@ public class UserRemovedFromConversationMessageHandler extends ModelUpdateMessag
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
+        updateUser(serverMessage);
         delegate.userRemovedFromConversationNotification(errorInformation, serverMessage.getUsername(), serverMessage.getConversationKey(),
                 serverMessage.getConversation());
-        updateUser(serverMessage);
     }
 }

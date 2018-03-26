@@ -20,7 +20,7 @@ public class ContactAddedMessageHandler extends ModelUpdateMessageHandler implem
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
-        delegate.contactAddedNotification(errorInformation, serverMessage.getUsername());
         updateUser(serverMessage);
+        delegate.contactAddedNotification(errorInformation, serverMessage.getUsername());
     }
 }

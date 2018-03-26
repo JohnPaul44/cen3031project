@@ -20,7 +20,7 @@ public class ProfileUpdatedMessageHandler extends ModelUpdateMessageHandler impl
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
-        delegate.profileUpdatedNotification(errorInformation, serverMessage.getProfile());
         updateUser(serverMessage);
+        delegate.profileUpdatedNotification(errorInformation, serverMessage.getProfile());
     }
 }

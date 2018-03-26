@@ -21,7 +21,7 @@ public class UserAddedToConversationMessageHandler extends ModelUpdateMessageHan
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
-        delegate.userAddedToConversationNotification(errorInformation, serverMessage.getUsername(), serverMessage.getConversationKey());
         updateUser(serverMessage);
+        delegate.userAddedToConversationNotification(errorInformation, serverMessage.getUsername(), serverMessage.getConversationKey());
     }
 }

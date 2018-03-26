@@ -20,8 +20,8 @@ public class MessageReceivedMessageHandler extends ModelUpdateMessageHandler imp
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
+        updateUser(serverMessage);
         delegate.messageReceivedNotification(errorInformation, serverMessage.getConversationKey(), serverMessage.getMessageKey(),
                 serverMessage.getServerTime(), serverMessage.getFrom(), serverMessage.getText(), serverMessage.getReactions());
-        updateUser(serverMessage);
     }
 }
