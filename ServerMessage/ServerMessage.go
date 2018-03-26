@@ -24,7 +24,6 @@ func (r *Reactions) set(reaction Reactions) {
 }
 
 type Message struct {
-	ResponseKey     *string               `json:"responseKey,omitempty"`
 	ServerTime      *time.Time            `json:"serverTime,omitempty"`
 	ClientTime      *string               `json:"clientTime,omitempty"`
 	To              *[]string             `json:"to,omitempty"`
@@ -56,12 +55,8 @@ type ContactGame struct {
 	Ties   int `json:"ties"`
 }
 
-type Contact struct {
-	Online  bool      `json:"online"`
-	Added   time.Time `json:"added"` // when contact was first added
-	Profile Profile   `json:"profile"`
-
-	// TODO: implement in methods
+type FriendshipStatistics struct {
+	// TODO: push updates to client
 	SentMessages     int                    `json:"sentMessages"`
 	ReceivedMessages int                    `json:"receivedMessages"`
 	Games            map[string]ContactGame `json:"games"`
@@ -72,6 +67,13 @@ type Contact struct {
 	*/
 }
 
+type Contact struct {
+	Online     bool                 `json:"online"`
+	Added      time.Time            `json:"added"` // when contact was first added
+	Profile    Profile              `json:"profile"`
+	Statistics FriendshipStatistics `json:"statistics"`
+}
+
 const (
 	GenderFemale  = "female"
 	GenderMale    = "male"
@@ -79,13 +81,18 @@ const (
 	GenderUnknown = "na"
 )
 
-// TODO: add field for profile picture color in Profile and in datastore
 type Profile struct {
 	// Required
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
 	Email     string `json:"email"`
 	Phone     string `json:"phone"`
+
+	Bio       string   `json:"bio"`
+	Hobbies   []string `json:"hobbies"`
+	Interests []string `json:"interests"`
+	Status    string   `json:"status"`
+	Color     string   `json:"color"`
 
 	// Optional
 	Gender   string `json:"gender,omitempty"`
@@ -108,6 +115,7 @@ type ServerMessage struct {
 	Online           *bool               `json:"online,omitempty"`
 	Conversations    *[]Conversation     `json:"conversations,omitempty"`
 	Message          *Message            `json:"message,omitempty"`
+	ClientTime       *string             `json:"clientTime"`
 }
 
 func (msg *ServerMessage) Clear() {
@@ -129,7 +137,6 @@ func (msg *ServerMessage) Clear() {
 }
 
 func (msg *ServerMessage) SetError(err e.Error) {
-	msg.Status = NotificationError
 	msg.ErrorNumber = new(int)
 	*msg.ErrorNumber = err.Id()
 	msg.ErrorString = new(string)
@@ -177,5 +184,6 @@ const (
 	ActionRemoveUserFromConversation = iota // requires Username, Message.ConversationKey
 	ActionReadMessage                = iota // requires ConversationKey
 	ActionSetTyping                  = iota // requires Message.ConversationKey, Message.Typing
-	ActionGetContact                 = iota // requires Username
 )
+
+// TODO: send ClientTime back with every Action

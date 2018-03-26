@@ -18,6 +18,7 @@ import (
 
 func register(user *ds.User, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationLoggedIn
 	errStr := "cannot register user:"
 
 	// verify new username
@@ -34,8 +35,8 @@ func register(user *ds.User, message *msg.ServerMessage) error {
 	}
 
 	if len(*message.Username) == 0 || len(*message.Password) == 0 || len(message.Profile.FirstName) == 0 || len(message.Profile.LastName) == 0 || len(message.Profile.Email) == 0 ||
-		len(message.Profile.Phone) == 0 || len(*message.SecurityQuestion) == 0 || len(*message.SecurityAnswer) == 0 {
-		err := e.New("empty username, password, profile.[firstName | lastName | email | phone], securityQuestion, and/or securityAnswer", e.EmptyParameter)
+		len(message.Profile.Phone) == 0 || len(message.Profile.Color) == 0 || len(*message.SecurityQuestion) == 0 || len(*message.SecurityAnswer) == 0 {
+		err := e.New("empty username, password, profile.[firstName | lastName | email | phone | color], securityQuestion, and/or securityAnswer", e.EmptyParameter)
 		log.Println(errStr, err)
 		rsp.SetError(err)
 
@@ -75,6 +76,7 @@ func register(user *ds.User, message *msg.ServerMessage) error {
 
 func logIn(user *ds.User, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationLoggedIn
 	errStr := "cannot log user in:"
 
 	// verify credentials
@@ -206,6 +208,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				sockClosed = true
 				break
 			}
+			rsp.Status = message.Status
 
 			switch message.Status {
 			case msg.ActionLogIn:
@@ -328,6 +331,8 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 					break
 				}
 
+				log.Println("user changed password")
+
 				// send msg.NotificationPasswordChanged
 				rsp.Status = msg.NotificationPasswordChanged
 				sockClosed = sendServerMessage(conn, rsp) != nil
@@ -373,17 +378,19 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		*rsp.Contacts = make(map[string]msg.Contact)
 
 		for _, contact := range usr.Contacts {
+			contactProfile, err := ds.GetUserProfile(contact.Contact)
+			if err != nil {
+				continue
+			}
+
 			(*rsp.Contacts)[contact.Contact] = msg.Contact{
 				Online: ds.ConnectionsContains(contact.Contact),
-				Added:  contact.Added,
-				/*Profile: ,
-				SentMessages:     ,
-				ReceivedMessages: ,
-				Games:,
-				FriendshipLevel:,
-				*/
+				Added: contact.Added,
+				Profile: contactProfile,
+				Statistics: contact.Statistics,
 			}
 		}
+
 		rsp.Conversations, err = ds.GetConversations(usr)
 		if err != nil {
 			log.Println(e.Tag, "cannot get conversations:", err)

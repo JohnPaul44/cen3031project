@@ -23,9 +23,10 @@ const (
 
 type UserContact struct {
 	// KindUserContact, key=KindUser(contact username), parent=KindUser(contact owner)
-	Added   time.Time // when the user was added to contacts
-	Contact string `datastore:"-"`
-	Owner   string `datastore:"-"`
+	Added      time.Time // when the user was added to contacts
+	Statistics msg.FriendshipStatistics
+	Contact    string `datastore:"-"`
+	Owner      string `datastore:"-"`
 }
 
 type User struct {
@@ -197,6 +198,17 @@ func DeleteUserAccount(username string) error {
 	return err
 }
 
+func GetUserProfile(username string) (msg.Profile, error) {
+	var profile msg.Profile
+
+	user, err := GetUserAccount(username)
+	if err != nil {
+		return profile, err
+	}
+
+	return user.Profile, nil
+}
+
 func QueryUserAcconts(query string) (map[string]msg.Profile, error) {
 	usernameQuery := datastore.NewQuery(KindUser).Filter("__key__ =", GetUserKey(query))
 	it := client.Run(c, usernameQuery)
@@ -293,11 +305,52 @@ func AddContact(username string, contact string) (UserContact, error) {
 	contactKey := GetContactKey(username, contact)
 	userContact = UserContact{
 		Added:   time.Now(),
+		Statistics: msg.FriendshipStatistics{
+			SentMessages: 0,
+			ReceivedMessages: 0,
+			Games: make(map[string]msg.ContactGame),
+			FriendshipLevel: 0,
+		},
 		Contact: contact,
 		Owner:   username,
 	}
 	_, err = client.Put(c, contactKey, &userContact)
 	return userContact, err
+}
+
+func calculateFriendshipStatistics(username1 string, username2 string) (msg.FriendshipStatistics) {
+	// TODO: calculate friendship statistics
+	return msg.FriendshipStatistics{}
+}
+
+func GetContact(username string, contactUsername string) (msg.Contact, error) {
+	var contact msg.Contact
+	errStr := "cannot get contact from datastore:"
+
+	// get contact from datastore
+	var userContact UserContact
+	err := client.Get(c, GetContactKey(username, contactUsername), &userContact)
+	if err != nil {
+		if err != datastore.ErrNoSuchEntity {
+			log.Println(e.Tag, errStr, err)
+		}
+		return contact, err
+	}
+
+	// get contact profile from datastore
+	userProfile, err := GetUserProfile(contactUsername)
+	if err != nil {
+		return contact, err
+	}
+
+	contact = msg.Contact{
+		Online: ConnectionsContains(contactUsername),
+		Added: userContact.Added,
+		Profile: userProfile,
+		Statistics: userContact.Statistics,
+	}
+
+	return contact, nil
 }
 
 func RemoveContact(username string, contact string) error {
@@ -341,6 +394,7 @@ func GetContacts(user *User) ([]UserContact, error) {
 	for i, dsContact := range dsUserContacts {
 		contacts = append(contacts, UserContact{
 			Added:   dsContact.Added,
+			Statistics: calculateFriendshipStatistics(user.Username, dsUserContactKeys[i].Name),
 			Contact: dsUserContactKeys[i].Name,
 			Owner:   user.Username,
 		})

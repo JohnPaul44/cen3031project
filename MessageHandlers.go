@@ -12,7 +12,6 @@ import (
 
 type ServerMessageHandler func(*ds.User, net.Conn, *msg.ServerMessage) error
 
-// TODO: implement NotificationMessageReaction and ActionReactToMessage
 var handlerMap = map[int]ServerMessageHandler{
 	msg.ActionLogOut:                     handleLogOut,
 	msg.ActionQueryUsers:                 handleQueryUsers,
@@ -20,12 +19,12 @@ var handlerMap = map[int]ServerMessageHandler{
 	msg.ActionRemoveContact:              handleRemoveContact,
 	msg.ActionUpdateProfile:              handleUpdateProfile,
 	msg.ActionSendMessage:                handleSendMessage,
-	msg.ActionReadMessage:                handleReadMessage,
-	msg.ActionSetTyping:                  handleSetTyping,
 	msg.ActionUpdateMessage:              handleUpdateMessage,
+	msg.ActionReactToMessage:             handleReactToMessage,
 	msg.ActionAddUserToConversation:      handleAddUserToConversation,
 	msg.ActionRemoveUserFromConversation: handleRemoveUserFromConversation,
-	//msg.ActionGetContact:                 handleGetContact,
+	msg.ActionReadMessage:                handleReadMessage,
+	msg.ActionSetTyping:                  handleSetTyping,
 }
 
 func handleServerMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
@@ -56,6 +55,7 @@ func handleLogOut(user *ds.User, conn net.Conn, _ *msg.ServerMessage) error {
 
 func handleQueryUsers(_ *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationQueryResults
 
 	if message.Query == nil {
 		err := e.New("missing query", e.MissingParameter)
@@ -77,7 +77,6 @@ func handleQueryUsers(_ *ds.User, conn net.Conn, message *msg.ServerMessage) err
 		return sendServerMessage(conn, rsp)
 	}
 
-	rsp.Status = msg.NotificationQueryResults
 	rsp.QueryResults = &results
 
 	return sendServerMessage(conn, rsp)
@@ -85,6 +84,7 @@ func handleQueryUsers(_ *ds.User, conn net.Conn, message *msg.ServerMessage) err
 
 func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationContactAdded
 	errStr := user.Username + " cannot add contact:"
 
 	if message.Username == nil {
@@ -119,7 +119,6 @@ func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) 
 
 	user.Contacts = append(user.Contacts, contact)
 
-	rsp.Status = msg.NotificationContactAdded
 	rsp.Username = message.Username
 
 	sendServerMessageToUser(user.Username, rsp)
@@ -130,6 +129,7 @@ func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) 
 
 func handleRemoveContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationContactRemoved
 	errStr := user.Username + " cannot remove contact:"
 
 	if message.Username == nil {
@@ -170,7 +170,6 @@ func handleRemoveContact(user *ds.User, conn net.Conn, message *msg.ServerMessag
 		}
 	}
 
-	rsp.Status = msg.NotificationContactRemoved
 	rsp.Username = message.Username
 
 	sendServerMessageToUser(user.Username, rsp)
@@ -181,6 +180,7 @@ func handleRemoveContact(user *ds.User, conn net.Conn, message *msg.ServerMessag
 
 func handleUpdateProfile(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationProfileUpdated
 	errStr := user.Username + " cannot update profile:"
 
 	if message.Profile == nil {
@@ -191,8 +191,8 @@ func handleUpdateProfile(user *ds.User, conn net.Conn, message *msg.ServerMessag
 	}
 
 	if len(message.Profile.FirstName) == 0 || len(message.Profile.LastName) == 0 || len(message.Profile.Email) == 0 ||
-		len(message.Profile.Phone) == 0 {
-		err := e.New("empty profile.[firstName | lastName | email | phone]", e.EmptyParameter)
+		len(message.Profile.Phone) == 0 || len(message.Profile.Color) == 0{
+		err := e.New("empty profile.[firstName | lastName | email | phone | color]", e.EmptyParameter)
 		log.Println(errStr, err)
 		rsp.SetError(err)
 		return sendServerMessage(conn, rsp)
@@ -207,8 +207,7 @@ func handleUpdateProfile(user *ds.User, conn net.Conn, message *msg.ServerMessag
 		rsp.SetError(e.ErrInternalServer)
 		return sendServerMessage(conn, rsp)
 	}
-	rsp.Clear()
-	rsp.Status = msg.NotificationProfileUpdated
+
 	rsp.Profile = &user.Profile
 
 	sendServerMessageToUser(user.Username, rsp)
@@ -227,70 +226,9 @@ func handleUpdateProfile(user *ds.User, conn net.Conn, message *msg.ServerMessag
 	return nil
 }
 
-func handleSetTyping(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
-	rsp := new(msg.ServerMessage)
-	errStr := user.Username + " cannot update typing status:"
-
-	if message.Message == nil {
-		err := e.New("missing message", e.MissingParameter)
-		log.Println(errStr, err)
-		rsp.SetError(err)
-		return sendServerMessage(conn, rsp)
-	}
-
-	if message.Message.ConversationKey == nil || message.Message.Typing == nil {
-		err := e.New("missing message.conversationKey and/or message.typing", e.MissingParameter)
-		log.Println(errStr, err)
-		rsp.SetError(err)
-		return sendServerMessage(conn, rsp)
-	}
-
-	if len(*message.Message.ConversationKey) == 0 {
-		err := e.New("empty message.conversationKey", e.EmptyParameter)
-		log.Println(errStr, err)
-		rsp.SetError(err)
-		return sendServerMessage(conn, rsp)
-	}
-
-	convKey := ds.GetConversationKey(*message.Message.ConversationKey)
-
-	err := ds.SetTypingStatus(user.Username, convKey, *message.Message.Typing)
-	if err != nil {
-		log.Println(e.Tag, errStr, err)
-		rsp.SetError(e.ErrInternalServer)
-		return sendServerMessage(conn, rsp)
-	}
-
-	rsp.Status = msg.NotificationTyping
-	rsp.Message.ConversationKey = message.Message.ConversationKey
-	rsp.Message.From = &user.Username
-	rsp.Message.Typing = message.Message.Typing
-
-	// notify members of conversation
-	members, err := ds.GetConversationMembers(convKey)
-	if err != nil {
-		log.Println(e.Tag, errStr, err)
-		rsp.SetError(e.ErrInternalServer)
-		return sendServerMessage(conn, rsp)
-	}
-
-	for _, member := range *members {
-		sendServerMessageToUser(member, rsp)
-	}
-
-	log.Printf("%s %s typing\n", user.Username, func() string {
-		if *message.Message.Typing {
-			return "started"
-		} else {
-			return "stopped"
-		}
-	}())
-
-	return nil
-}
-
 func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationMessageReceived
 	errStr := user.Username + " cannot send message:"
 
 	if message.Message == nil {
@@ -327,7 +265,6 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 	}
 
 	// notify members that a message was received
-	rsp.Status = msg.NotificationMessageReceived
 	memberMsg := new(msg.Message)
 	memberMsg.MessageKey = &m.Key.Name
 	memberMsg.ConversationKey = &m.Key.Parent.Name
@@ -380,6 +317,7 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 
 func handleUpdateMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationMessageUpdated
 	errStr := user.Username + " cannot update message:"
 
 	if message.Message == nil {
@@ -447,7 +385,6 @@ func handleUpdateMessage(user *ds.User, conn net.Conn, message *msg.ServerMessag
 	}
 
 	// notify all users in Conversation (NotificationMessageUpdated), including the sender
-	rsp.Status = msg.NotificationMessageUpdated
 	rsp.Message = new(msg.Message)
 	rsp.Message.ConversationKey = message.Message.ConversationKey
 	rsp.Message.MessageKey = message.Message.MessageKey
@@ -469,8 +406,14 @@ func handleUpdateMessage(user *ds.User, conn net.Conn, message *msg.ServerMessag
 	return nil
 }
 
+func handleReactToMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
+	// TODO
+	return nil
+}
+
 func handleAddUserToConversation(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationUserAddedToConversation
 	errStr := user.Username + " cannot add user to conversation:"
 
 	if message.Message == nil {
@@ -507,7 +450,6 @@ func handleAddUserToConversation(user *ds.User, conn net.Conn, message *msg.Serv
 	}
 
 	// notify all users in Conversation
-	rsp.Status = msg.NotificationUserAddedToConversation
 	rsp.Message = new(msg.Message)
 	rsp.Message.ConversationKey = message.Message.ConversationKey
 	rsp.Username = message.Username
@@ -551,6 +493,7 @@ func handleAddUserToConversation(user *ds.User, conn net.Conn, message *msg.Serv
 
 func handleRemoveUserFromConversation(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationUserRemovedFromConversation
 	errStr := user.Username + " cannot remove user from conversation:"
 
 	if message.Message == nil || message.Username == nil {
@@ -589,7 +532,6 @@ func handleRemoveUserFromConversation(user *ds.User, conn net.Conn, message *msg
 	}
 
 	// notify all users in Conversation (NotificationUserRemovedFromConversation)
-	rsp.Status = msg.NotificationUserRemovedFromConversation
 	rsp.Message = new(msg.Message)
 	rsp.Message.ConversationKey = message.Message.ConversationKey
 	rsp.Username = message.Username
@@ -625,23 +567,9 @@ func handleRemoveUserFromConversation(user *ds.User, conn net.Conn, message *msg
 	return nil
 }
 
-/*func handleGetContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
-	rsp := new(msg.ServerMessage)
-	errStr := user.Username + " cannot get contact:"
-
-	if message.Username == nil {
-
-	}
-
-	if len(*message.Username) == 0 {
-
-	}
-
-
-}*/
-
 func handleReadMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationMessageRead
 	errStr := user.Username + " cannot read message:"
 
 	if message.Message == nil {
@@ -674,7 +602,6 @@ func handleReadMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		return sendServerMessage(conn, rsp)
 	}
 
-	rsp.Status = msg.NotificationMessageRead
 	rsp.Message.ConversationKey = message.Message.ConversationKey
 	rsp.Message.From = &user.Username
 
@@ -695,4 +622,64 @@ func handleReadMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 	return nil
 }
 
-// TODO: call API to get contact information when contact is added
+func handleSetTyping(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
+	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationTyping
+	errStr := user.Username + " cannot update typing status:"
+
+	if message.Message == nil {
+		err := e.New("missing message", e.MissingParameter)
+		log.Println(errStr, err)
+		rsp.SetError(err)
+		return sendServerMessage(conn, rsp)
+	}
+
+	if message.Message.ConversationKey == nil || message.Message.Typing == nil {
+		err := e.New("missing message.conversationKey and/or message.typing", e.MissingParameter)
+		log.Println(errStr, err)
+		rsp.SetError(err)
+		return sendServerMessage(conn, rsp)
+	}
+
+	if len(*message.Message.ConversationKey) == 0 {
+		err := e.New("empty message.conversationKey", e.EmptyParameter)
+		log.Println(errStr, err)
+		rsp.SetError(err)
+		return sendServerMessage(conn, rsp)
+	}
+
+	convKey := ds.GetConversationKey(*message.Message.ConversationKey)
+
+	err := ds.SetTypingStatus(user.Username, convKey, *message.Message.Typing)
+	if err != nil {
+		log.Println(e.Tag, errStr, err)
+		rsp.SetError(e.ErrInternalServer)
+		return sendServerMessage(conn, rsp)
+	}
+
+	rsp.Message.ConversationKey = message.Message.ConversationKey
+	rsp.Message.From = &user.Username
+	rsp.Message.Typing = message.Message.Typing
+
+	// notify members of conversation
+	members, err := ds.GetConversationMembers(convKey)
+	if err != nil {
+		log.Println(e.Tag, errStr, err)
+		rsp.SetError(e.ErrInternalServer)
+		return sendServerMessage(conn, rsp)
+	}
+
+	for _, member := range *members {
+		sendServerMessageToUser(member, rsp)
+	}
+
+	log.Printf("%s %s typing\n", user.Username, func() string {
+		if *message.Message.Typing {
+			return "started"
+		} else {
+			return "stopped"
+		}
+	}())
+
+	return nil
+}

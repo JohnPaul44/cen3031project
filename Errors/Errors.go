@@ -3,6 +3,7 @@ package Errors
 import "errors"
 
 const (
+	NoError                = iota
 	InternalServer         = iota
 	Unauthorized           = iota
 	ExistingAccount        = iota // returns username
@@ -45,7 +46,6 @@ var (
 	ErrInvalidConversationKey = New("invalid conversationKey", InvalidConversationKey)
 	ErrInvalidMessageKey      = New("invalid messageKey", InvalidMessageKey)
 	ErrInvalidStatus          = New("invalid Status", InvalidStatus)
-
 
 	ErrInvalidPassword = errors.New("invalid password")
 )
