@@ -54,10 +54,10 @@ public class ViewCurrentUser_View_controller extends ViewController{
         String first_letter = "" + firstName.getText().charAt(0) + lastName.getText().charAt(0);
         icon_letter.setText(first_letter);
 
-        if(connection.getCurrentUser().getProfile().getColor() == null){
-            String color_green = String.valueOf(Color.GREEN);
-            connection.getCurrentUser().getProfile().setColor(color_green);
-        }
+//        if(connection.getCurrentUser().getProfile().getColor() == null){
+//            String color_green = String.valueOf(Color.GREEN);
+//            connection.getCurrentUser().getProfile().setColor(color_green);
+//        }
 
         System.out.println("color saved in profile " + connection.getCurrentUser().getProfile().getColor());
         Paint icon_color = Paint.valueOf(connection.getCurrentUser().getProfile().getColor());

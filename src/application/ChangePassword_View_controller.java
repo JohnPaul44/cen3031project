@@ -1,5 +1,6 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
 import javafx.animation.PauseTransition;
@@ -142,34 +143,30 @@ public class ChangePassword_View_controller extends ViewController {
 	}
 
 	@Override
-	public void notification(ServerMessage message) {
-		switch (message.getStatus()) {
-			case NOTIFICATIONERROR:
-				//prints to the ui that the login failed
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						status.setText("Incorrect Credentials");
-					}
-				});
-				break;
-			case NOTIFICATIONPASSWORDCHANGED:
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						status.setText("Password Changed");
-						PauseTransition pause = new PauseTransition(
-								javafx.util.Duration.seconds(3)
-						);
-						pause.setOnFinished(event -> {
-							confPassChanged();
-						});
-						pause.play();
-					}
-				});
-				break;
-			default:
-				break;
+	public void passwordChangedNotification(ErrorInformation errorInformation){
+    	if(errorInformation.getErrorNumber() == 0){
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					status.setText("Password Changed");
+					PauseTransition pause = new PauseTransition(
+							javafx.util.Duration.seconds(3)
+					);
+					pause.setOnFinished(event -> {
+						confPassChanged();
+					});
+					pause.play();
+				}
+			});
+		}
+		else{
+    		System.out.println(errorInformation.getErrorString());
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					status.setText("Incorrect Credentials");
+				}
+			});
 		}
 	}
 }
