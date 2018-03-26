@@ -9,31 +9,42 @@ import model.UserUpdater;
 public class HandlerFactory {
 
     public MessageHandler produce(ServerMessage serverMessage, UserUpdater userUpdater) throws Exception {
+        System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
         switch (serverMessage.getStatus()) {
             case UNINITILIALIZED: // Uninitialized
-                System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
                 return new UninitializedMessageHandler();
             case NOTIFICATIONERROR: // Error Message
-                System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
                 return new ErrorMessageHandler(serverMessage);
             case NOTIFICATIONLOGGEDIN: // Logged In Notification
-                System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
                 return new LoggedInMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONSECURITYQUESTION: // Security Question Notification
+                return new SecurityQuestionMessageHandler(serverMessage);
             case NOTIFICATIONPASSWORDCHANGED: // Password Changed Notification
+                return new PasswordChangedMessageHandler(serverMessage);
             case NOTIFICATIONUSERONLINESTATUS: // User Online Status Notification
+                return new UserOnlineStatusMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONLOGGEDOUT: // Logged Out Message Notification
+                return new LoggedOutMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONCONTACTADDED: // Contact Added Notification
+                return new ContactAddedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONCONTACTREMOVED: // Contact Removed Notification
+                return new ContactRemovedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONPROFILEUPDATED: // Profile Updated Notification
+                return new ProfileUpdatedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONMESSAGERECEIVED: // Message Received Notification
+                return new MessageReceivedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONMESSAGEUPDATED: // Message Updated Notification
+                return new MessageUpdatedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONMESSAGEREACTION: // Message Reaction Notification
+                return new MessageReactionMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONUSERADDEDTOCONVERSATION: // User Added to Conversation Notification
+                return new UserAddedToConversationMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONUSERREMOVEDFROMCONVERSATION: // User Removed from Conversation Notification
+                return new UserRemovedFromConversationMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONMESSAGEREAD: // Message Read Notification
+                return new MessageReadMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONTYPING: // Typing Notification
-                System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
+                return new TypingMessageHandler(serverMessage, userUpdater);
             case ACTIONREGISTER: // Register Action
             case ACTIONLOGIN: // Log In Action
             case ACTIONREQUESTSECURITYQUESTION: // Request Security Question Action

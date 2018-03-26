@@ -26,33 +26,6 @@ public class Tests {
     // TODO create test for sorting conversations
 //
 //    @Test
-//    public void receiveMessageReceivedForExistingConversationMessage() throws InterruptedException {
-//        startTestServerEcho();
-//
-//        ServerConnection conn = new ServerConnection();
-//        conn.listenToServer();
-//
-//        NotificationLoggedInMessage message = createLoggedInMessage();
-//        conn.getOut().println(message.toJsonString());
-//        Reactions u1 = new Reactions(new int[] {1, 6}, "thead9");
-//        Reactions u2 = new Reactions(new int[] {5, 4}, "suzy");
-//        Map<String, Reactions> reactions = new HashMap<>();
-//        reactions.put("thead9", u1);
-//        reactions.put("suzy", u2);
-//
-//
-//        // without user reactions
-//        //NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv3", "8cj4", "2018-03-9 03:00:22.012",
-//        //       "thead9", "Hello");
-//        NotificationMessageReceivedMessage m = new NotificationMessageReceivedMessage("conv1", "8cj4", "2018-03-9 03:00:22.012",
-//                "thead9", "Hello", reactions);
-//
-//        conn.getOut().println(m.toJsonString());
-//        TimeUnit.SECONDS.sleep(4);
-//        assertTrue(conn.getCurrentUser().getConversationList().get("conv1").getTime().equals("2018-03-9 03:00:22.012"));
-//    }
-//
-//    @Test
 //    public void receiveMessageReceivedForNewConversationMessage() throws InterruptedException {
 //        startTestServerEcho();
 //
