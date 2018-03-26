@@ -63,9 +63,6 @@ public abstract class ServerMessage {
     }
 
     public boolean error() {
-        if (errorNumber > 0) {
-            return true;
-        }
-        return false;
+        return errorNumber == 0;
     }
 }
