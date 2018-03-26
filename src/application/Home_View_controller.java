@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -16,12 +17,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.Contact;
 import model.Profile;
+import sun.plugin.javascript.navig.Anchor;
 
-import java.awt.event.KeyEvent;
 import java.time.LocalDate;
 import java.util.HashMap;
 
@@ -31,18 +37,9 @@ public class Home_View_controller extends ViewController{
 
     public void passConnection(ServerConnection con){
         connection = con;
-        setValues();
         setConversationsList();
-    }
-
-    public void setValues(){
         setUsername(connection.getCurrentUser().getUserName());
-        setFirstName(connection.getCurrentUser().getProfile().getFirstName());
-        setLastName(connection.getCurrentUser().getProfile().getLastName());
-        setEmail(connection.getCurrentUser().getProfile().getEmail());
-        setPhone(connection.getCurrentUser().getProfile().getPhone());
-        setGender(connection.getCurrentUser().getProfile().getGender());
-        setBirthday(connection.getCurrentUser().getProfile().getBirthday());
+        loadCurrentProfile();
     }
 
     public void setConversationsList(){
@@ -50,25 +47,33 @@ public class Home_View_controller extends ViewController{
 
 //        if(!contactList.isEmpty()){
 //            for(Contact value: contactList.values()){
-//                createNewContact(value.getUsername());
+//                createNewContact(value);
 //            }
 //        }
 
-        createNewContact("testing");
-        createNewContact("another");
-        createNewContact("one more");
+
         //TODO: import current conversations
     }
 
-    //Create a new conversation using conversation/message API
-//    public String createNewConversation(String[] users, String text) {
-//     return Conversation.createConversation(Message.createFirstMessage(users, text));
-//    }
-
-    public void createNewContact(String user){
+    public void createNewContact(Contact user){
         TitledPane newContact = new TitledPane();
-        newContact.setText(user);
+        newContact.setText(user.getUsername());
         newContact.setStyle("-fx-background-color: #E7DECD");
+
+        StackPane user_icon = new StackPane();
+        user_icon.setPrefHeight(20);
+        user_icon.setPrefWidth(20);
+        user_icon.setMaxWidth(20);
+
+//        Circle icon = new Circle(12);
+//        Paint color =Paint.valueOf(user.getColor());
+//        icon.setFill(color);
+//
+//        Label initial = new Label();
+//        initial.setText("" + user.getUsername().charAt(0));
+//        initial.setStyle("-fx-font: 10 system");
+//
+//        user_icon.getChildren().addAll(icon, initial);
 
         VBox content = new VBox();
         Label dm = new Label("Direct Message");
@@ -78,7 +83,7 @@ public class Home_View_controller extends ViewController{
             @Override
             public void handle(MouseEvent event) {
                 try{
-                    OpenDirectMessage(event, user);
+                    OpenDirectMessage(event, user.getUsername());
                 } catch(Exception e){}
             }
         });
@@ -90,7 +95,7 @@ public class Home_View_controller extends ViewController{
             @Override
             public void handle(MouseEvent event) {
                 try{
-                    ViewOtherProfile(event, user);
+                    ViewOtherProfile(event, user.getUsername());
                 } catch(Exception e){}
             }
         });
@@ -100,32 +105,12 @@ public class Home_View_controller extends ViewController{
         content.getChildren().add(dm);
         content.getChildren().add(vp);
 
+
         newContact.setContent(content);
+        newContact.setGraphic(user_icon);
         conversations.getPanes().add(newContact);
     }
 
-    @FXML
-    private Label username;
-    @FXML
-    private TextField firstName;
-    @FXML
-    private TextField lastName;
-    @FXML
-    private TextField email;
-    @FXML
-    private TextField phone;
-    @FXML
-    private ChoiceBox gender;
-    @FXML
-    private DatePicker birthday;
-    @FXML
-    private TextArea bio;
-    @FXML
-    private TextField mind;
-    @FXML
-    private TextArea interests;
-    @FXML
-    private TextArea hobbies;
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -138,87 +123,59 @@ public class Home_View_controller extends ViewController{
     private Label directMessage;
     @FXML
     private Label viewProfile;
+    @FXML
+    private SplitPane split;
+    @FXML
+    private AnchorPane view;
+
 
     private void setUsername(String user){
-        username.setText(user);
         usernameAcc.setText(user);
     }
 
-    private void setFirstName(String first){
-        firstName.setText(first);
-    }
-
-    private void setLastName(String last){
-        lastName.setText(last);
-    }
-
-    private void setEmail(String e){
-        email.setText(e);
-    }
-
-    private void setPhone(String phoneNum){
-        phone.setText(phoneNum);
-    }
-
-    private void setGender(String gen){
-        if(gen.equalsIgnoreCase("female")){
-            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.FEMALE);
-            gender.setItems(genderList);
-            gender.setValue(Profile.Gender.FEMALE);
-        }
-        else if(gen.equalsIgnoreCase("male")){
-            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.MALE);
-            gender.setItems(genderList);
-            gender.setValue(Profile.Gender.MALE);
-        }
-        else if(gen.equalsIgnoreCase("other")){
-            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.OTHER);
-            gender.setItems(genderList);
-            gender.setValue(Profile.Gender.OTHER);
-        }
-        else{
-            ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.NA);
-            gender.setItems(genderList);
-            gender.setValue(Profile.Gender.NA);
-        }
-    }
-
-    private void setBirthday(String birth){
-        if(birth.equals("null")){
-            return;
-        }
-        LocalDate birthdate = LocalDate.parse(birth);
-        birthday.setValue(birthdate);
-    }
-
-
-    @FXML
-    public void EditProfile(ActionEvent event){
+    public void loadCurrentProfile(){
         try {
+            AnchorPane temp = new AnchorPane();
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/application/viewCurrentUser.fxml"));
+            temp = loader.load();
+            view.getChildren().add(temp);
+
+            ViewCurrentUser_View_controller profile = loader.getController();
+            profile.passConnection(connection);
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void loadEditProfile(){
+        try {
+            AnchorPane temp = new AnchorPane();
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/createProfile.fxml"));
-            loader.load();
+            temp = loader.load();
+            setView(temp);
 
             EditProfile_View_Controller edit = loader.getController();
             edit.passConnection(connection);
-            connection.setDelegate(edit);
 
-            Parent root = loader.getRoot();
-            Stage registerStage = (Stage) firstName.getScene().getWindow();
-            Scene scene = new Scene(root, 700, 500);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            registerStage.setScene(scene);
-            registerStage.show();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
-            //closes the old screen when the new screen pops up
-            //((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
-        } catch (Exception e) {
+    public void setView(AnchorPane anchor){
+        System.out.println("setting the view");
+        try{
+            view.getChildren().add(anchor);
+        } catch(Exception e){
             e.printStackTrace();
         }
     }
 
     @FXML
-    public void Logout(ActionEvent event){
+    public void Logout(){
         connection.logout();
 
         try {
@@ -231,7 +188,7 @@ public class Home_View_controller extends ViewController{
             connection.setDelegate(login);
 
             Parent root = loader.getRoot();
-            Stage registerStage = (Stage) firstName.getScene().getWindow();
+            Stage registerStage = (Stage) scrollPane.getScene().getWindow();
             Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
@@ -248,19 +205,15 @@ public class Home_View_controller extends ViewController{
             try {
                 FXMLLoader loader = new FXMLLoader();
                 loader.setLocation(getClass().getResource("/application/search.fxml"));
-                loader.load();
+                AnchorPane anchor = new AnchorPane();
+                anchor = loader.load();
+
+                setView(anchor);
 
                 Search_View_Controller searchScreen = loader.getController();
                 searchScreen.passConnection(connection);
                 searchScreen.setSearchField(search.getText());
                 connection.setDelegate(searchScreen);
-
-                Parent root = loader.getRoot();
-                Stage searchStage = new Stage();
-                Scene scene = new Scene(root, 600, 400);
-                scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-                searchStage.setScene(scene);
-                searchStage.show();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -273,19 +226,16 @@ public class Home_View_controller extends ViewController{
         try{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/directMessage.fxml"));
-            loader.load();
+            AnchorPane anchor = new AnchorPane();
+            anchor = loader.load();
+            setView(anchor);
 
             Conversation_View_controller dmScreen = loader.getController();
             dmScreen.passConnection(connection);
             connection.setDelegate(dmScreen);
+            dmScreen.setUsername(user);
             //TODO: pass the user to initialize the message screen
 
-            Parent root = loader.getRoot();
-            Stage dmStage = new Stage();
-            Scene scene = new Scene(root, 600, 400);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            dmStage.setScene(scene);
-            dmStage.show();
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -296,20 +246,16 @@ public class Home_View_controller extends ViewController{
         try{
             FXMLLoader loader = new FXMLLoader();
             //TODO: change out the place holder fxml for view profile
-            loader.setLocation(getClass().getResource("/application/viewProfile.fxml"));
-            loader.load();
+            loader.setLocation(getClass().getResource("/application/home.fxml"));
+            AnchorPane anchor = new AnchorPane();
+            anchor = loader.load();
+            setView(anchor);
 
             Home_View_controller vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
             connection.setDelegate(vpScreen);
 
-            Parent root = loader.getRoot();
-            Stage vpStage = new Stage();
-            Scene scene = new Scene(root, 600, 400);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            vpStage.setScene(scene);
-            vpStage.show();
         } catch(Exception e){
             e.printStackTrace();
         }
