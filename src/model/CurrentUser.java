@@ -66,6 +66,10 @@ public class CurrentUser {
         contactList.remove(message.getUsername());
     }
 
+    public void updateContact(NotificationContactUpdatedMessage message) {
+        contactList = message.getContacts();
+    }
+
     public void updateProfile(NotificationProfileUpdatedMessage message) {
         profile = message.getProfile();
     }
@@ -84,6 +88,11 @@ public class CurrentUser {
     public void updateMessage(NotificationMessageUpdatedMessage message) {
         Conversation conversation = conversationList.get(message.getConversationKey());
         conversation.updateMessage(message);
+    }
+
+    public void messageReactions(NotificationMessageReaction message) {
+        Conversation conversation = conversationList.get(message.getConversationKey());
+        conversation.messageReactions(message);
     }
 
     public void addUserToConversation(NotificationUserAddedToConversationMessage message) {

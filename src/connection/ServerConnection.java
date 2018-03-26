@@ -110,12 +110,12 @@ public class ServerConnection implements IServerConnection {
     }
 
     public void changePassword(String username, String securityAnswer, String phone, String password) {
-        ServerMessage message = new ActionChangePassword(username, securityAnswer, phone, password);
+        ServerMessage message = new ActionChangePasswordMessage(username, securityAnswer, phone, password);
         sendMessageToServer(message);
     }
 
     public void queryUsers(String queryString) {
-     ServerMessage message = new ActionQueryUsers(queryString);
+     ServerMessage message = new ActionQueryUsersMessage(queryString);
      sendMessageToServer(message);
     }
 

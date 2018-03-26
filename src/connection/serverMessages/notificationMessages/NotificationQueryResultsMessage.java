@@ -5,11 +5,11 @@ import model.Profile;
 
 import java.util.HashMap;
 
-public class NotificationQueryResults extends ServerMessage {
+public class NotificationQueryResultsMessage extends ServerMessage {
     private HashMap<String, Profile> results;
 
 
-    public NotificationQueryResults(HashMap results) {
+    public NotificationQueryResultsMessage(HashMap results) {
         this.status = Status.NOTIFICATIONQUERYRESULTS.ordinal();
         this.results = results;
     }

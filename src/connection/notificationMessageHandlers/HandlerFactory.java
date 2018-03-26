@@ -44,7 +44,7 @@ public class HandlerFactory {
             case NOTIFICATIONMESSAGEREAD: // Message Read Notification
                 return new MessageReadMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONQUERYRESULTS: //Query Results Notification
-                // TODO
+                return new QueryResultsMessageHandler(serverMessage);
             case NOTIFICATIONTYPING: // Typing Notification
                 return new TypingMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONCONTACTUPDATED: // Contact Updated

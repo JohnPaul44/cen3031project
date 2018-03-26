@@ -1,5 +1,6 @@
 package model;
 
+import connection.serverMessages.notificationMessages.NotificationMessageReaction;
 import connection.serverMessages.notificationMessages.NotificationMessageReceivedMessage;
 import connection.serverMessages.notificationMessages.NotificationMessageUpdatedMessage;
 
@@ -82,6 +83,10 @@ public class Message implements Comparable<Message> {
 
     public void updateMessage(NotificationMessageUpdatedMessage message) {
         text = message.getText();
+    }
+
+    public void messageReactions(NotificationMessageReaction message) {
+        reactions = message.getReactions();
     }
 
     // Sorts messages by time.
