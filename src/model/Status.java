@@ -1,8 +1,7 @@
 package model;
 
-import connection.serverMessages.NotificationMessageReadMessage;
-import connection.serverMessages.NotificationTypingMessage;
-import connection.serverMessages.NotificationUserAddedToConversationMessage;
+import connection.serverMessages.notificationMessages.NotificationMessageReadMessage;
+import connection.serverMessages.notificationMessages.NotificationTypingMessage;
 
 public class Status {
     /*Read   bool `json:"read"`

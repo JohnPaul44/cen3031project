@@ -2,6 +2,7 @@ package connection.serverMessages;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import connection.serverMessages.notificationMessages.*;
 
 public class MessageFactory {
     private Gson gson = new Gson();

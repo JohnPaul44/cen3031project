@@ -3,13 +3,9 @@ package ServerMessages;
 import connection.ServerConnectionTestDouble;
 import connection.ServerTestDouble;
 import connection.serverMessages.*;
-import model.Profile;
-import model.Reactions;
+import connection.serverMessages.actionMessages.*;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static junit.framework.TestCase.assertTrue;
 

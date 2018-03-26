@@ -1,5 +1,7 @@
 package connection.serverMessages;
 
+import connection.serverMessages.actionMessages.ActionServerMessage;
+
 public class ActionQueryUsers extends ActionServerMessage {
     private String query;
 

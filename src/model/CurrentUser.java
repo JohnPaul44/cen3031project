@@ -1,6 +1,6 @@
 package model;
 
-import connection.serverMessages.*;
+import connection.serverMessages.notificationMessages.*;
 
 import java.text.ParseException;
 import java.util.HashMap;

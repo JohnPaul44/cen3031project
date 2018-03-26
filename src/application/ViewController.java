@@ -8,6 +8,7 @@ import model.Profile;
 import model.Reactions;
 
 import java.util.HashMap;
+import java.util.Map;
 
 abstract public class ViewController {
     public abstract void notification(ServerMessage message);
@@ -53,7 +54,7 @@ abstract public class ViewController {
     }
 
     public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                            String time, String from, String text, Reactions reactions) {
+                                            String time, String from, String text, Map<String, Reactions> reactions) {
 
     }
 
@@ -63,7 +64,7 @@ abstract public class ViewController {
     }
 
     public void messageReactionNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                            Reactions reactions) {
+                                            Map<String, Reactions> reactions) {
 
     }
 

@@ -5,19 +5,18 @@ import java.net.*;
 import java.util.ArrayList;
 
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.security.ntlm.Server;
 import connection.notificationMessageHandlers.*;
 import connection.serverMessages.*;
+import connection.serverMessages.actionMessages.*;
 import model.CurrentUser;
 import model.Profile;
 import model.Reactions;
 import model.UserUpdater;
 import  application.ViewController;
 
-public class ServerConnection implements IServerConnection{
+public class ServerConnection implements IServerConnection {
 
     private PrintWriter out;
     private BufferedReader in;
@@ -69,18 +68,24 @@ public class ServerConnection implements IServerConnection{
     public void listenToServer() {
         Thread thread = new Thread(() -> {
             String messageFromServer;
-            UserUpdater userUpdater = new UserUpdater(currentUser);
+
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject;
+
+            MessageFactory messageFactory = new MessageFactory();
+
             HandlerFactory handlerFactory = new HandlerFactory();
+            UserUpdater userUpdater = new UserUpdater(currentUser);
+
             try {
                 while ((messageFromServer = in.readLine()) != null) {
-                    MessageHandler handler = handlerFactory.produce(messageFromServer, userUpdater);
-                    // TODO pass delegate to handle
-                    handler.handle();
-
-                    JsonParser parser = new JsonParser();
-                    JsonObject jsonObject = parser.parse(messageFromServer).getAsJsonObject();
-                    MessageFactory messageFactory = new MessageFactory();
+                    jsonObject = parser.parse(messageFromServer).getAsJsonObject();
                     ServerMessage serverMessage = messageFactory.produce(jsonObject);
+
+                    MessageHandler handler = handlerFactory.produce(serverMessage, userUpdater);
+                    handler.handle(delegate);
+
+                    // TODO get rid of below line. notification to be called in handler
                     delegate.notification(serverMessage);
                 }
             } catch (IOException e) {

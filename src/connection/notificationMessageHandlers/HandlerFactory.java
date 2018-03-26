@@ -8,34 +8,44 @@ import model.UserUpdater;
 
 public class HandlerFactory {
 
-    public MessageHandler produce(String serverMessage, UserUpdater userUpdater) throws Exception {
-        JsonParser parser = new JsonParser();
-        JsonObject messageFromServer = parser.parse(serverMessage).getAsJsonObject();
-        int status = messageFromServer.get("status").getAsInt();
-
-        switch (ServerMessage.Status.values()[status]) {
+    public MessageHandler produce(ServerMessage serverMessage, UserUpdater userUpdater) throws Exception {
+        System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
+        switch (serverMessage.getStatus()) {
             case UNINITILIALIZED: // Uninitialized
                 return new UninitializedMessageHandler();
             case NOTIFICATIONERROR: // Error Message
-                return new ErrorMessageHandler(messageFromServer);
+                return new ErrorMessageHandler(serverMessage);
             case NOTIFICATIONLOGGEDIN: // Logged In Notification
+                return new LoggedInMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONSECURITYQUESTION: // Security Question Notification
+                return new SecurityQuestionMessageHandler(serverMessage);
             case NOTIFICATIONPASSWORDCHANGED: // Password Changed Notification
+                return new PasswordChangedMessageHandler(serverMessage);
             case NOTIFICATIONUSERONLINESTATUS: // User Online Status Notification
+                return new UserOnlineStatusMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONLOGGEDOUT: // Logged Out Message Notification
+                return new LoggedOutMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONCONTACTADDED: // Contact Added Notification
+                return new ContactAddedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONCONTACTREMOVED: // Contact Removed Notification
+                return new ContactRemovedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONPROFILEUPDATED: // Profile Updated Notification
+                return new ProfileUpdatedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONMESSAGERECEIVED: // Message Received Notification
+                return new MessageReceivedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONMESSAGEUPDATED: // Message Updated Notification
+                return new MessageUpdatedMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONMESSAGEREACTION: // Message Reaction Notification
+                return new MessageReactionMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONUSERADDEDTOCONVERSATION: // User Added to Conversation Notification
+                return new UserAddedToConversationMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONUSERREMOVEDFROMCONVERSATION: // User Removed from Conversation Notification
+                return new UserRemovedFromConversationMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONMESSAGEREAD: // Message Read Notification
+                return new MessageReadMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONQUERYRESULTS: //Query Results Notification
             case NOTIFICATIONTYPING: // Typing Notification
-                System.out.println("Message received from server with status: " + status);
-                return new ModelUpdateMessageHandler(messageFromServer, userUpdater);
+                return new TypingMessageHandler(serverMessage, userUpdater);
             case ACTIONREGISTER: // Register Action
             case ACTIONLOGIN: // Log In Action
             case ACTIONREQUESTSECURITYQUESTION: // Request Security Question Action
@@ -51,10 +61,9 @@ public class HandlerFactory {
             case ACTIONREMOVEDUSERFROMCONVERSATION: // Remove User From Conversation Action
             case ACTIONREADMESSAGE: // Read Message Action
             case ACTIONSETTYPING: // Set Typing Action
-            case ACTIONQUERYUSERS: //Query Users Action
-                throw new Exception("Action message received. Status of message received: " + status);
+                throw new Exception("Action message received. Status of message received: " + serverMessage.getStatus().ordinal());
             default:
-                throw new Exception("Invalid message received. Status of message received: " + status);
+                throw new Exception("Invalid message received. Status of message received: " + serverMessage.getStatus().ordinal());
         }
     }
 }

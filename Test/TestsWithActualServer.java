@@ -1,8 +1,6 @@
 import connection.ServerConnection;
-import connection.serverMessages.ActionLogInMessage;
+import connection.serverMessages.actionMessages.ActionLogInMessage;
 import org.junit.Test;
-
-import java.util.concurrent.TimeUnit;
 
 
 public class TestsWithActualServer {
