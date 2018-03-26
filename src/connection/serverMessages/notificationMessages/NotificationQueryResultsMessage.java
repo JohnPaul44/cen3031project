@@ -9,7 +9,7 @@ public class NotificationQueryResultsMessage extends ServerMessage {
     private HashMap<String, Profile> results;
 
 
-    public NotificationQueryResultsMessage(HashMap results) {
+    public NotificationQueryResultsMessage(HashMap<String, Profile> results) {
         this.status = Status.NOTIFICATIONQUERYRESULTS.ordinal();
         this.results = results;
     }
