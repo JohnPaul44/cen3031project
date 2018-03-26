@@ -1,6 +1,8 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
+import connection.serverMessages.NotificationQueryResults;
 import connection.serverMessages.ServerMessage;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -55,9 +57,9 @@ public class Home_View_controller extends ViewController{
         //TODO: import current conversations
     }
 
-    public void createNewContact(Contact user){
+    public void createNewContact(String user){
         TitledPane newContact = new TitledPane();
-        newContact.setText(user.getUsername());
+        newContact.setText(user);
         newContact.setStyle("-fx-background-color: #E7DECD");
 
         StackPane user_icon = new StackPane();
@@ -83,7 +85,7 @@ public class Home_View_controller extends ViewController{
             @Override
             public void handle(MouseEvent event) {
                 try{
-                    OpenDirectMessage(event, user.getUsername());
+                    OpenDirectMessage(event, user);
                 } catch(Exception e){}
             }
         });
@@ -95,7 +97,7 @@ public class Home_View_controller extends ViewController{
             @Override
             public void handle(MouseEvent event) {
                 try{
-                    ViewOtherProfile(event, user.getUsername());
+                    ViewOtherProfile(event, user);
                 } catch(Exception e){}
             }
         });
@@ -111,6 +113,8 @@ public class Home_View_controller extends ViewController{
         conversations.getPanes().add(newContact);
     }
 
+
+    private String currentOtherProfile;
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -199,6 +203,8 @@ public class Home_View_controller extends ViewController{
         }
     }
 
+    private Search_View_Controller searchScreen;
+
     @FXML
     public void Search(javafx.scene.input.KeyEvent keyEvent) throws Exception{
         if(keyEvent.getCode() == KeyCode.ENTER) {
@@ -210,11 +216,10 @@ public class Home_View_controller extends ViewController{
 
                 setView(anchor);
 
-                Search_View_Controller searchScreen = loader.getController();
+                searchScreen = loader.getController();
+                connection.queryUsers(search.getText());
                 searchScreen.passConnection(connection);
                 searchScreen.setSearchField(search.getText());
-                connection.setDelegate(searchScreen);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -241,26 +246,49 @@ public class Home_View_controller extends ViewController{
         }
     }
 
+    private ViewProfile_View_Controller vpScreen;
+
     @FXML
     public void ViewOtherProfile(MouseEvent actionEvent, String user) throws Exception{
         try{
             FXMLLoader loader = new FXMLLoader();
-            //TODO: change out the place holder fxml for view profile
-            loader.setLocation(getClass().getResource("/application/home.fxml"));
+            loader.setLocation(getClass().getResource("/application/viewProfile.fxml"));
             AnchorPane anchor = new AnchorPane();
             anchor = loader.load();
             setView(anchor);
 
-            Home_View_controller vpScreen = loader.getController();
+            ViewProfile_View_Controller vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
-            connection.setDelegate(vpScreen);
-
+            currentOtherProfile = user;
         } catch(Exception e){
             e.printStackTrace();
         }
     }
 
+    //These are callback functions to relay information from a server message to this view.
+    @Override
+    public void queryResultsNotification(ErrorInformation errorInformation, HashMap<String, Profile> results) {
+        int numResults = 1;
+        System.out.println(results);
+        results.forEach((user,profile) -> searchScreen.setSearchResults(numResults,user, profile.getFirstName() + profile.getLastName(), profile.getEmail(), profile.getBirthday()));
+    }
+
+
+    @Override
+    public void contactUpdatedNotification(ErrorInformation errorInformation, Contact contact) {
+        if (currentOtherProfile.equals(contact.getUsername())) {
+           vpScreen.passConnection(connection);
+        }
+    }
+
+    @Override
+    public void contactAddedNotification(ErrorInformation errorInformation, String username) {
+        createNewContact(username);
+    }
+
+
+    //This is the old callback
     @Override
     public void notification(ServerMessage message) {
         switch (message.getStatus()){
@@ -272,6 +300,13 @@ public class Home_View_controller extends ViewController{
                     }
                 });
                 break;
+            case NOTIFICATIONQUERYRESULTS:
+                Platform.runLater(new Runnable(){
+                    @Override
+                    public void run(){
+                        System.out.println(message.toJsonString());
+                    }
+                });//(NotificationQueryResults)message.getResults();
             default:
                 break;
         }
