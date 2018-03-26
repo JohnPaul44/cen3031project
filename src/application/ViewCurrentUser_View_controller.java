@@ -47,21 +47,16 @@ public class ViewCurrentUser_View_controller extends ViewController{
         setPhone(connection.getCurrentUser().getProfile().getPhone());
         setGender(connection.getCurrentUser().getProfile().getGender());
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
+        setBio(connection.getCurrentUser().getProfile().getBio());
+        setMind(connection.getCurrentUser().getProfile().getStatus());
         setIcon();
     }
 
     public void setIcon(){
-        String first_letter = "" + firstName.getText().charAt(0) + lastName.getText().charAt(0);
+        String first_letter = "" + username.getText().charAt(0);
         icon_letter.setText(first_letter);
 
-//        if(connection.getCurrentUser().getProfile().getColor() == null){
-//            String color_green = String.valueOf(Color.GREEN);
-//            connection.getCurrentUser().getProfile().setColor(color_green);
-//        }
-
-        System.out.println("color saved in profile " + connection.getCurrentUser().getProfile().getColor());
         Paint icon_color = Paint.valueOf(connection.getCurrentUser().getProfile().getColor());
-        System.out.println("color saved in icon_color " + icon_color);
         icon.setFill(icon_color);
         icon_design.setFill(icon_color);
         icon_design.setOpacity(0.4);
@@ -151,6 +146,13 @@ public class ViewCurrentUser_View_controller extends ViewController{
         birthday.setValue(birthdate);
     }
 
+    private void setBio(String bioText){
+        bio.setText(bioText);
+    }
+
+    private void setMind(String status){
+        mind.setText(status);
+    }
 
     @FXML
     public void EditProfile(){

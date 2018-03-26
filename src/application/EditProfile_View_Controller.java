@@ -36,6 +36,7 @@ public class EditProfile_View_Controller extends ViewController {
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
         setBio(connection.getCurrentUser().getProfile().getBio());
         setMind(connection.getCurrentUser().getProfile().getStatus());
+        setIconLetter();
         setColorPicker();
     }
 
@@ -192,6 +193,7 @@ public class EditProfile_View_Controller extends ViewController {
         connection.getCurrentUser().getProfile().setColor(color());
 
         connection.getCurrentUser().getProfile().setBio(bio.getText());
+        connection.getCurrentUser().getProfile().setStatus(mind.getText());
 
         connection.updateProfile();
 
