@@ -59,12 +59,14 @@ func handleQueryUsers(_ *ds.User, conn net.Conn, message *msg.ServerMessage) err
 
 	if message.Query == nil {
 		err := e.New("missing query", e.MissingParameter)
+		log.Println("missing query")
 		rsp.SetError(err)
 		return sendServerMessage(conn, rsp)
 	}
 
 	if len(*message.Query) == 0 {
 		err := e.New("empty query", e.EmptyParameter)
+		log.Println("empty query")
 		rsp.SetError(err)
 		return sendServerMessage(conn, rsp)
 	}
@@ -78,6 +80,7 @@ func handleQueryUsers(_ *ds.User, conn net.Conn, message *msg.ServerMessage) err
 	}
 
 	rsp.QueryResults = &results
+	log.Println("query results:", results)
 
 	return sendServerMessage(conn, rsp)
 }
