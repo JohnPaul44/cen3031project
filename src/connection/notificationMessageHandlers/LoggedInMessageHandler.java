@@ -1,19 +1,25 @@
 package connection.notificationMessageHandlers;
 
 import application.ViewController;
+import connection.ErrorInformation;
 import connection.serverMessages.ServerMessage;
 import model.UserUpdater;
 
 public class LoggedInMessageHandler extends ModelUpdateMessageHandler implements MessageHandler {
-    private ServerMessage messageFromServer;
+    private ServerMessage serverMessage;
 
-    public LoggedInMessageHandler(ServerMessage serverMessage, UserUpdater userUpdater) {
+    public LoggedInMessageHandler(ServerMessage messageFromServer, UserUpdater userUpdater) {
         super(userUpdater);
-        this.messageFromServer = serverMessage;
+        this.serverMessage = messageFromServer;
     }
 
     @Override
     public void handle(ViewController delegate) {
-        updateUser(messageFromServer);
+        ErrorInformation errorInformation = new ErrorInformation();
+        if (serverMessage.error()) {
+            errorInformation.setErrorInformation(serverMessage);
+        }
+        delegate.loggedInNotification(errorInformation);
+        updateUser(serverMessage);
     }
 }

@@ -1,6 +1,7 @@
 package connection.notificationMessageHandlers;
 
 import application.ViewController;
+import connection.ErrorInformation;
 import connection.serverMessages.ServerMessage;
 import model.UserUpdater;
 
@@ -14,6 +15,11 @@ public class LoggedOutMessageHandler extends ModelUpdateMessageHandler implement
 
     @Override
     public void handle(ViewController delegate) {
+        ErrorInformation errorInformation = new ErrorInformation();
+        if (serverMessage.error()) {
+            errorInformation.setErrorInformation(serverMessage);
+        }
+        delegate.loggedOutNotification(errorInformation);
         updateUser(serverMessage);
     }
 }

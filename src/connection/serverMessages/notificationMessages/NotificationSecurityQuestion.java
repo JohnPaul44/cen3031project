@@ -9,4 +9,8 @@ public class NotificationSecurityQuestion extends ServerMessage {
         this.status = Status.NOTIFICATIONSECURITYQUESTION.ordinal();
         this.securityQuestion = securityQuestion;
     }
+
+    public String getSecurityQuestion() {
+        return securityQuestion;
+    }
 }

@@ -42,13 +42,30 @@ public abstract class ServerMessage {
         ACTIONSETTYPING,
     }
     public int status;
+    public int errorNumber = 1;
+    public String errorString;
 
     public Status getStatus() {
         return Status.values()[status];
     }
 
+    public int getErrorNumber() {
+        return errorNumber;
+    }
+
+    public String getErrorString() {
+        return errorString;
+    }
+
     public String toJsonString() {
         Gson gson = new Gson();
         return gson.toJson(this);
+    }
+
+    public boolean error() {
+        if (errorNumber > 0) {
+            return true;
+        }
+        return false;
     }
 }

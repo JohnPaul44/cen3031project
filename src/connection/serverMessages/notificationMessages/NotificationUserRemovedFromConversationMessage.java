@@ -1,10 +1,12 @@
 package connection.serverMessages.notificationMessages;
 
 import connection.serverMessages.ServerMessage;
+import model.Conversation;
 
 public class NotificationUserRemovedFromConversationMessage extends ServerMessage {
     private String username;
     private String conversationKey;
+    private Conversation conversation;
 
     public NotificationUserRemovedFromConversationMessage(String username, String conversationKey) {
         this.status = Status.NOTIFICATIONUSERREMOVEDFROMCONVERSATION.ordinal();
@@ -17,5 +19,9 @@ public class NotificationUserRemovedFromConversationMessage extends ServerMessag
     }
     public String getConversationKey() {
         return conversationKey;
+    }
+
+    public Conversation getConversation() {
+        return conversation;
     }
 }

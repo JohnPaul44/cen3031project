@@ -1,6 +1,7 @@
 package connection.notificationMessageHandlers;
 
 import application.ViewController;
+import connection.ErrorInformation;
 import connection.serverMessages.ServerMessage;
 
 public class PasswordChangedMessageHandler implements MessageHandler {
@@ -12,6 +13,10 @@ public class PasswordChangedMessageHandler implements MessageHandler {
 
     @Override
     public void handle(ViewController delegate) {
-
+        ErrorInformation errorInformation = new ErrorInformation();
+        if (serverMessage.error()) {
+            errorInformation.setErrorInformation(serverMessage);
+        }
+        delegate.passwordChangedNotificatoin(errorInformation);
     }
 }
