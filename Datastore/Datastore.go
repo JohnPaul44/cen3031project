@@ -219,8 +219,9 @@ func QueryUserAcconts(query string) (map[string]msg.Profile, error) {
 
 	for {
 		user := new(User)
-		key, err := it.Next(user)
-		if err != nil {
+		key, lerr := it.Next(user)
+		if lerr != nil {
+			err = lerr
 			break
 		}
 

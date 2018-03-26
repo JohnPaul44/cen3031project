@@ -407,7 +407,21 @@ func handleUpdateMessage(user *ds.User, conn net.Conn, message *msg.ServerMessag
 }
 
 func handleReactToMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
-	// TODO
+	//if message.Message == nil || message.Message.Reactions == nil {
+	//
+	//}
+	//
+	//userReactions, contains := (*message.Message.Reactions)[user.Username]
+	//if !contains {
+	//
+	//}
+	//
+	//// update datastore
+	//msg, err := ds.GetMessage()
+	//
+	//// send notifications to online users
+	//
+
 	return nil
 }
 
