@@ -5,12 +5,11 @@ import java.net.*;
 import java.util.ArrayList;
 
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.security.ntlm.Server;
 import connection.notificationMessageHandlers.*;
 import connection.serverMessages.*;
+import connection.serverMessages.actionMessages.*;
 import model.CurrentUser;
 import model.Profile;
 import model.Reactions;

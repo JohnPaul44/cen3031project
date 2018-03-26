@@ -41,7 +41,7 @@ public abstract class ServerMessage {
         ACTIONREADMESSAGE,
         ACTIONSETTYPING,
     }
-    int status;
+    public int status;
 
     public Status getStatus() {
         return Status.values()[status];

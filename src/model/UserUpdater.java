@@ -1,6 +1,7 @@
 package model;
 
 import connection.serverMessages.*;
+import connection.serverMessages.notificationMessages.*;
 
 import java.text.ParseException;
 

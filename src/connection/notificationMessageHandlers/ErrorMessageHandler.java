@@ -1,7 +1,7 @@
 package connection.notificationMessageHandlers;
 
 import application.ViewController;
-import connection.serverMessages.NotificationErrorMessage;
+import connection.serverMessages.notificationMessages.NotificationErrorMessage;
 import connection.serverMessages.ServerMessage;
 
 public class ErrorMessageHandler implements MessageHandler {

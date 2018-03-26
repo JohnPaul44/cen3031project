@@ -1,7 +1,7 @@
 package model;
 
-import connection.serverMessages.NotificationMessageReceivedMessage;
-import connection.serverMessages.NotificationMessageUpdatedMessage;
+import connection.serverMessages.notificationMessages.NotificationMessageReceivedMessage;
+import connection.serverMessages.notificationMessages.NotificationMessageUpdatedMessage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

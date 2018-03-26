@@ -3,6 +3,7 @@ package ServerMessages;
 import connection.ServerConnectionTestDouble;
 import connection.ServerTestDouble;
 import connection.serverMessages.*;
+import connection.serverMessages.notificationMessages.*;
 import model.Contact;
 import model.Conversation;
 import model.Message;

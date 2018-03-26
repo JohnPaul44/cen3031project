@@ -1,7 +1,7 @@
 package model;
 
-import connection.serverMessages.NotificationContactAddedMessage;
-import connection.serverMessages.NotificationUserOnlineStatusMessage;
+import connection.serverMessages.notificationMessages.NotificationContactAddedMessage;
+import connection.serverMessages.notificationMessages.NotificationUserOnlineStatusMessage;
 
 import java.util.HashMap;
 
