@@ -34,6 +34,8 @@ public class EditProfile_View_Controller extends ViewController {
         genderField.setItems(genderFieldList);
         setGender(connection.getCurrentUser().getProfile().getGender());
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
+        setBio(connection.getCurrentUser().getProfile().getBio());
+        setMind(connection.getCurrentUser().getProfile().getStatus());
         setColorPicker();
     }
 
@@ -187,12 +189,11 @@ public class EditProfile_View_Controller extends ViewController {
         }
         connection.getCurrentUser().getProfile().setGender(gender());
 
-        System.out.println(color());
         connection.getCurrentUser().getProfile().setColor(color());
 
-        connection.updateProfile();
+        connection.getCurrentUser().getProfile().setBio(bio.getText());
 
-        System.out.println("what is saved in the profile " + connection.getCurrentUser().getProfile().getColor());
+        connection.updateProfile();
 
         //TODO: setting the bio, whats on your mind, interest and hobbies
 
