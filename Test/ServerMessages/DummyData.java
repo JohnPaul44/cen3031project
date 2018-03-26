@@ -60,18 +60,18 @@ class DummyData {
     }
 
     private void setUpMessages() {
-        message1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
-                new String[] {username1}, messageKey1, conversationKey1, username2, messageText,
-                reactions1, true);
-        message2 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
-                new String[] {username1}, messageKey2, conversationKey1, username2, messageText,
-                reactions1, true);
-        message3 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
-                new String[] {username1}, messageKey3, conversationKey2, username3, messageText,
-                reactions1, true);
-        message4 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
-                new String[] {username1}, messageKey4, conversationKey2, username3, messageText,
-                reactions1, true);
+//        message1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
+//                new String[] {username1}, messageKey1, conversationKey1, username2, messageText,
+//                reactions1, true);
+//        message2 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
+//                new String[] {username1}, messageKey2, conversationKey1, username2, messageText,
+//                reactions1, true);
+//        message3 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
+//                new String[] {username1}, messageKey3, conversationKey2, username3, messageText,
+//                reactions1, true);
+//        message4 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
+//                new String[] {username1}, messageKey4, conversationKey2, username3, messageText,
+//                reactions1, true);
     }
 
     private void setUpContacts() {
