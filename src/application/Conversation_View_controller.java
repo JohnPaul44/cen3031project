@@ -1,5 +1,6 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.*;
 import javafx.application.Platform;
@@ -20,8 +21,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Profile;
+import model.Reactions;
 
 import javax.swing.*;
+import java.util.Map;
 
 public class Conversation_View_controller extends ViewController {
     ServerConnection connection;
@@ -100,9 +103,8 @@ public class Conversation_View_controller extends ViewController {
     }
 
     @Override
-    public void notification(ServerMessage message) {
-        switch (message.getStatus()){
+    public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
+                                            String time, String from, String text, Map<String, Reactions> reactions) {
 
-        }
     }
 }
