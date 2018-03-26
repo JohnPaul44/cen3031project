@@ -18,6 +18,7 @@ public class MessageFactory {
             case NOTIFICATIONSECURITYQUESTION: // Security Question
                 return gson.fromJson(jsonObject, NotificationSecurityQuestion.class);
             case NOTIFICATIONPASSWORDCHANGED: // Password Changed
+                return gson.fromJson(jsonObject, NotificationPasswordChanged.class);
             case NOTIFICATIONUSERONLINESTATUS: // User Online Status
                 return gson.fromJson(jsonObject, NotificationUserOnlineStatusMessage.class);
             case NOTIFICATIONLOGGEDOUT: // Logged Out Message
@@ -42,8 +43,10 @@ public class MessageFactory {
                 return gson.fromJson(jsonObject, NotificationMessageReadMessage.class);
             case NOTIFICATIONTYPING: // Typing
                 return gson.fromJson(jsonObject, NotificationTypingMessage.class);
-            case NOTIFICATIONQUERYRESULTS:
+            case NOTIFICATIONQUERYRESULTS: // Query Results
                 return gson.fromJson(jsonObject, NotificationQueryResults.class);
+            case NOTIFICATIONCONTACTUPDATED: // Contact Updated
+                return gson.fromJson(jsonObject, NotificationContactUpdatedMessage.class);
             default:
                 throw new Exception("Invalid message trying to be produced. Status of message: " + jsonObject.get("status").getAsInt());
         }

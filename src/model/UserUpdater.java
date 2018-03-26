@@ -49,6 +49,7 @@ public class UserUpdater {
                 break;
             case NOTIFICATIONTYPING: // Typing
                 currentUser.updateMessageTyping((NotificationTypingMessage) serverMessage);
+            case NOTIFICATIONCONTACTUPDATED: // Contact updated
         }
     }
 }
