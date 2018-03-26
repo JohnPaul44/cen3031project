@@ -20,7 +20,7 @@ public class ContactRemovedMessageHandler extends ModelUpdateMessageHandler impl
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
-        delegate.contactRemovedNotification(errorInformation, serverMessage.getUsername());
         updateUser(serverMessage);
+        delegate.contactRemovedNotification(errorInformation, serverMessage.getUsername());
     }
 }

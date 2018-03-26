@@ -1,10 +1,11 @@
-package connection.serverMessages;
+package connection.serverMessages.notificationMessages;
 
+import connection.serverMessages.ServerMessage;
 import model.Profile;
 
 import java.util.HashMap;
 
-public class NotificationQueryResults extends ServerMessage{
+public class NotificationQueryResults extends ServerMessage {
     private HashMap<String, Profile> results;
 
 
@@ -13,5 +14,5 @@ public class NotificationQueryResults extends ServerMessage{
         this.results = results;
     }
 
-    public HashMap getResults() {return results;}
+    public HashMap<String, Profile> getResults() {return results;}
 }

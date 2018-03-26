@@ -20,8 +20,8 @@ public class MessageUpdatedMessageHandler extends ModelUpdateMessageHandler impl
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
+        updateUser(serverMessage);
         delegate.messageUpdatedNotification(errorInformation, serverMessage.getConversationKey(), serverMessage.getMessageKey(),
                 serverMessage.getText());
-        updateUser(serverMessage);
     }
 }

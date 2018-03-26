@@ -85,7 +85,7 @@ abstract public class ViewController {
 
     }
 
-    public void contactUpdatedNotification(ErrorInformation errorInformation, Contact contact) {
+    public void contactUpdatedNotification(ErrorInformation errorInformation, HashMap<String, Contact> contacts) {
 
     }
 }

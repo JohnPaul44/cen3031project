@@ -1,4 +1,4 @@
-package connection.serverMessages;
+package connection.serverMessages.actionMessages;
 
 import connection.serverMessages.actionMessages.ActionServerMessage;
 

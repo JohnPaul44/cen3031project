@@ -20,7 +20,7 @@ public class UserOnlineStatusMessageHandler extends ModelUpdateMessageHandler im
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
-        delegate.userOnlineStatusNotification(errorInformation, serverMessage.getUsername(), serverMessage.getOnline());
         updateUser(serverMessage);
+        delegate.userOnlineStatusNotification(errorInformation, serverMessage.getUsername(), serverMessage.getOnline());
     }
 }

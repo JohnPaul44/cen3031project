@@ -20,7 +20,7 @@ public class TypingMessageHandler extends ModelUpdateMessageHandler implements M
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
-        delegate.typingNotification(errorInformation, serverMessage.getConversationKey(), serverMessage.getFrom(), serverMessage.getTyping());
         updateUser(serverMessage);
+        delegate.typingNotification(errorInformation, serverMessage.getConversationKey(), serverMessage.getFrom(), serverMessage.getTyping());
     }
 }
