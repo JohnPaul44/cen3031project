@@ -1,5 +1,6 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.*;
 import javafx.application.Platform;
@@ -259,9 +260,8 @@ public class Register_View_controller extends ViewController {
     }
 
     @Override
-    public void notification(ServerMessage message) {
-        switch(message.getStatus()){
-            case NOTIFICATIONLOGGEDIN:
+    public void loggedInNotification(ErrorInformation errorInformation) {
+            if (errorInformation.getErrorNumber() == 0) {
                 status.setText("Register Successful");
                 Platform.runLater(new Runnable() {
                     @Override
@@ -269,18 +269,16 @@ public class Register_View_controller extends ViewController {
                         loggedIn();
                     }
                 });
-
-                break;
-            case NOTIFICATIONERROR:
-                Platform.runLater(new Runnable(){
-                    @Override
-                    public void run(){
-                        status.setText("Username Unavailable");
-                    }
-                });
-                break;
-            default:
-                break;
+            }
+            else {
+                System.out.println(errorInformation.getErrorString());
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            status.setText("Username Unavailable");
+                        }
+                    });
+            }
         }
     }
     	
@@ -310,4 +308,4 @@ public class Register_View_controller extends ViewController {
             return age;
     }
     */
-}
+
