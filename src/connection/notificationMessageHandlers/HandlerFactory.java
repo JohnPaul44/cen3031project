@@ -32,6 +32,7 @@ public class HandlerFactory {
             case NOTIFICATIONUSERADDEDTOCONVERSATION: // User Added to Conversation Notification
             case NOTIFICATIONUSERREMOVEDFROMCONVERSATION: // User Removed from Conversation Notification
             case NOTIFICATIONMESSAGEREAD: // Message Read Notification
+            case NOTIFICATIONQUERYRESULTS: //Query Results Notification
             case NOTIFICATIONTYPING: // Typing Notification
                 System.out.println("Message received from server with status: " + status);
                 return new ModelUpdateMessageHandler(messageFromServer, userUpdater);
@@ -50,6 +51,7 @@ public class HandlerFactory {
             case ACTIONREMOVEDUSERFROMCONVERSATION: // Remove User From Conversation Action
             case ACTIONREADMESSAGE: // Read Message Action
             case ACTIONSETTYPING: // Set Typing Action
+            case ACTIONQUERYUSERS: //Query Users Action
                 throw new Exception("Action message received. Status of message received: " + status);
             default:
                 throw new Exception("Invalid message received. Status of message received: " + status);

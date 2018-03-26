@@ -28,7 +28,7 @@ abstract public class ViewController {
 
     }
 
-    public void passwordChangedNotificatoin(ErrorInformation errorInformation) {
+    public void passwordChangedNotification(ErrorInformation errorInformation) {
 
     }
 
