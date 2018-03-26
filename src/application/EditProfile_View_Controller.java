@@ -195,6 +195,7 @@ public class EditProfile_View_Controller extends ViewController {
         connection.getCurrentUser().getProfile().setBio(bio.getText());
         connection.getCurrentUser().getProfile().setStatus(mind.getText());
 
+
         connection.updateProfile();
 
         //TODO: setting the bio, whats on your mind, interest and hobbies
