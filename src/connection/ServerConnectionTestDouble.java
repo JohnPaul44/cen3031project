@@ -1,5 +1,6 @@
 package connection;
 
+import application.ViewController;
 import connection.notificationMessageHandlers.HandlerFactory;
 import connection.notificationMessageHandlers.MessageHandler;
 import connection.serverMessages.ServerMessage;
@@ -10,6 +11,12 @@ public class ServerConnectionTestDouble implements IServerConnection{
     private ServerTestDouble serverTestDouble;
     private CurrentUser currentUser;
     private ServerMessage.Status statusOfLastMessageReceived;
+    private ViewController delegate = new ViewController() {
+        @Override
+        public void notification(ServerMessage message) {
+
+        }
+    };
 
     public ServerConnectionTestDouble(ServerConnectionTestDouble serverConnectionTestDouble) {
         this.serverTestDouble = new ServerTestDouble();
@@ -40,8 +47,8 @@ public class ServerConnectionTestDouble implements IServerConnection{
         for (ServerMessage serverMessage : serverTestDouble.getServerMessages()) {
             try {
                 statusOfLastMessageReceived = serverMessage.getStatus();
-                MessageHandler handler = handlerFactory.produce(serverMessage.toJsonString(), userUpdater);
-                handler.handle();
+                MessageHandler handler = handlerFactory.produce(serverMessage, userUpdater);
+                handler.handle(delegate);
             } catch (Exception e) {
                 e.printStackTrace();
             }

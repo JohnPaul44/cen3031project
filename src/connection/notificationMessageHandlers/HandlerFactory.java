@@ -8,17 +8,17 @@ import model.UserUpdater;
 
 public class HandlerFactory {
 
-    public MessageHandler produce(String serverMessage, UserUpdater userUpdater) throws Exception {
-        JsonParser parser = new JsonParser();
-        JsonObject messageFromServer = parser.parse(serverMessage).getAsJsonObject();
-        int status = messageFromServer.get("status").getAsInt();
-
-        switch (ServerMessage.Status.values()[status]) {
+    public MessageHandler produce(ServerMessage serverMessage, UserUpdater userUpdater) throws Exception {
+        switch (serverMessage.getStatus()) {
             case UNINITILIALIZED: // Uninitialized
+                System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
                 return new UninitializedMessageHandler();
             case NOTIFICATIONERROR: // Error Message
-                return new ErrorMessageHandler(messageFromServer);
+                System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
+                return new ErrorMessageHandler(serverMessage);
             case NOTIFICATIONLOGGEDIN: // Logged In Notification
+                System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
+                return new LoggedInMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONSECURITYQUESTION: // Security Question Notification
             case NOTIFICATIONPASSWORDCHANGED: // Password Changed Notification
             case NOTIFICATIONUSERONLINESTATUS: // User Online Status Notification
@@ -33,8 +33,7 @@ public class HandlerFactory {
             case NOTIFICATIONUSERREMOVEDFROMCONVERSATION: // User Removed from Conversation Notification
             case NOTIFICATIONMESSAGEREAD: // Message Read Notification
             case NOTIFICATIONTYPING: // Typing Notification
-                System.out.println("Message received from server with status: " + status);
-                return new ModelUpdateMessageHandler(messageFromServer, userUpdater);
+                System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
             case ACTIONREGISTER: // Register Action
             case ACTIONLOGIN: // Log In Action
             case ACTIONREQUESTSECURITYQUESTION: // Request Security Question Action
@@ -50,9 +49,9 @@ public class HandlerFactory {
             case ACTIONREMOVEDUSERFROMCONVERSATION: // Remove User From Conversation Action
             case ACTIONREADMESSAGE: // Read Message Action
             case ACTIONSETTYPING: // Set Typing Action
-                throw new Exception("Action message received. Status of message received: " + status);
+                throw new Exception("Action message received. Status of message received: " + serverMessage.getStatus().ordinal());
             default:
-                throw new Exception("Invalid message received. Status of message received: " + status);
+                throw new Exception("Invalid message received. Status of message received: " + serverMessage.getStatus().ordinal());
         }
     }
 }
