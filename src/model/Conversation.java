@@ -68,9 +68,14 @@ public class Conversation implements Comparable<Conversation> {
         }
     }
 
-    public void updateMessage(NotificationMessageUpdatedMessage notificationMessageUpdatedMessagemessage) {
-        Message message = messages.get(notificationMessageUpdatedMessagemessage.getMessageKey());
-        message.updateMessage(notificationMessageUpdatedMessagemessage);
+    public void updateMessage(NotificationMessageUpdatedMessage notificationMessageUpdatedMessageMessage) {
+        Message message = messages.get(notificationMessageUpdatedMessageMessage.getMessageKey());
+        message.updateMessage(notificationMessageUpdatedMessageMessage);
+    }
+
+    public void messageReactions(NotificationMessageReaction notificationMessageReactionMessage) {
+        Message message = messages.get(notificationMessageReactionMessage.getMessageKey());
+        message.messageReactions(notificationMessageReactionMessage);
     }
 
     public void addUser(NotificationUserAddedToConversationMessage message) {

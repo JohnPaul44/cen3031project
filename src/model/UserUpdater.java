@@ -38,6 +38,9 @@ public class UserUpdater {
             case NOTIFICATIONMESSAGEUPDATED: // Message Updated
                 currentUser.updateMessage((NotificationMessageUpdatedMessage) serverMessage);
                 break;
+            case NOTIFICATIONMESSAGEREACTION: // Message Reactions
+                currentUser.messageReactions((NotificationMessageReaction) serverMessage);
+                break;
             case NOTIFICATIONUSERADDEDTOCONVERSATION: // User Added to Conversation
                 currentUser.addUserToConversation((NotificationUserAddedToConversationMessage) serverMessage);
                 break;
@@ -49,7 +52,10 @@ public class UserUpdater {
                 break;
             case NOTIFICATIONTYPING: // Typing
                 currentUser.updateMessageTyping((NotificationTypingMessage) serverMessage);
+                break;
             case NOTIFICATIONCONTACTUPDATED: // Contact updated
+                currentUser.updateContact((NotificationContactUpdatedMessage) serverMessage);
+                break;
         }
     }
 }

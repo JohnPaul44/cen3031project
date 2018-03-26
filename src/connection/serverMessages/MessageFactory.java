@@ -44,7 +44,7 @@ public class MessageFactory {
             case NOTIFICATIONTYPING: // Typing
                 return gson.fromJson(jsonObject, NotificationTypingMessage.class);
             case NOTIFICATIONQUERYRESULTS: // Query Results
-                return gson.fromJson(jsonObject, NotificationQueryResults.class);
+                return gson.fromJson(jsonObject, NotificationQueryResultsMessage.class);
             case NOTIFICATIONCONTACTUPDATED: // Contact Updated
                 return gson.fromJson(jsonObject, NotificationContactUpdatedMessage.class);
             default:

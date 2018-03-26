@@ -2,10 +2,10 @@ package connection.serverMessages.actionMessages;
 
 import connection.serverMessages.actionMessages.ActionServerMessage;
 
-public class ActionQueryUsers extends ActionServerMessage {
+public class ActionQueryUsersMessage extends ActionServerMessage {
     private String query;
 
-    public ActionQueryUsers(String query) {
+    public ActionQueryUsersMessage(String query) {
         this.status = Status.ACTIONQUERYUSERS.ordinal();
         this.query = query;
     }
