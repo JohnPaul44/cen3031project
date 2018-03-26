@@ -1,5 +1,6 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
 import javafx.collections.FXCollections;
@@ -272,7 +273,9 @@ public class EditProfile_View_Controller extends ViewController {
     }
 
     @Override
-    public void notification(ServerMessage message) {
-
+    public void profileUpdatedNotification(ErrorInformation errorInformation, Profile profile) {
+    if (errorInformation.getErrorNumber() != 0){
+        System.out.println(errorInformation.getErrorString());
+     }
     }
 }

@@ -5,10 +5,12 @@ import model.Message;
 import model.Profile;
 import model.Reactions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 class DummyData {
+
     public String username1 = "thead9";
     public String password1 = "bogus";
     public String firstName1 = "Thomas";
@@ -56,10 +58,10 @@ class DummyData {
         profile = new Profile(firstName1, lastName1, email1, phone1, gender1, birthday1, color);
         setUpReactions();
         setUpContacts();
-        setUpMessages();
+       // setUpMessages();
     }
 
-    private void setUpMessages() {
+ /*   private void setUpMessages() {
         message1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
                 new String[] {username1}, messageKey1, conversationKey1, username2, messageText,
                 reactions1, true);
@@ -72,7 +74,7 @@ class DummyData {
         message4 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
                 new String[] {username1}, messageKey4, conversationKey2, username3, messageText,
                 reactions1, true);
-    }
+    } */
 
     private void setUpContacts() {
         contact1 = new Contact(username1, true);
