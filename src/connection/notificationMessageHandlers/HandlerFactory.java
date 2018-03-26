@@ -43,6 +43,7 @@ public class HandlerFactory {
                 return new UserRemovedFromConversationMessageHandler(serverMessage, userUpdater);
             case NOTIFICATIONMESSAGEREAD: // Message Read Notification
                 return new MessageReadMessageHandler(serverMessage, userUpdater);
+            case NOTIFICATIONQUERYRESULTS: //Query Results Notification
             case NOTIFICATIONTYPING: // Typing Notification
                 return new TypingMessageHandler(serverMessage, userUpdater);
             case ACTIONREGISTER: // Register Action

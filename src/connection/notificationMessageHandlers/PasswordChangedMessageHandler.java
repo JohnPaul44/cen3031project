@@ -17,6 +17,6 @@ public class PasswordChangedMessageHandler implements MessageHandler {
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
         }
-        delegate.passwordChangedNotificatoin(errorInformation);
+        delegate.passwordChangedNotification(errorInformation);
     }
 }

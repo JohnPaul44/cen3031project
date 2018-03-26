@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewProfile_View_Controller">
+<AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewProfile_View_Controller">
     <children>
         <Button fx:id="backButton" layoutX="20.0" layoutY="18.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #698F3F;" text="&lt;" textFill="#fbfaf9">
             <cursor>
@@ -116,7 +117,7 @@
                   <Font size="13.0" />
                </font>
             </Label>
-            <Label layoutX="14.0" layoutY="165.0" prefHeight="19.0" prefWidth="45.0" text="Game1:" textFill="#401b1b">
+            <Label layoutX="14.0" layoutY="165.0" prefHeight="19.0" prefWidth="55.0" text="Game1:" textFill="#401b1b">
                <font>
                   <Font size="13.0" />
                </font>

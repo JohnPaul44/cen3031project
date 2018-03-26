@@ -18,27 +18,14 @@ public class ViewProfile_View_Controller extends ViewController {
 
     public void passConnection(ServerConnection con) {
         connection = con;
+        setLevel(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipLevel());
+        setName(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getFirstName(), connection.getCurrentUser().getContactList().get(thisUser).getProfile().getLastName());
+        setEmail(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getEmail());
+        setBirthday(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getBirthday());
+        setGender(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getGender());
+        setMind(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getStatus());
+        setBio(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getBio());
     }
-//        setLevel(connection.getCurrentUser().getContactList().get(thisUser).getLevel());
-//        setName(connection.getCurrentUser().getContactList().get(thisUser).getFirstName(), connection.getCurrentUser().getContactList().get(thisUser).getLastName());
-//        setEmail(connection.getCurrentUser().getContactList().get(thisUser).getEmail());
-//        setBirthday(connection.getCurrentUser().getContactList().get(thisUser).getBirthday());
-//        setGender(connection.getCurrentUser().getContactList().get(thisUser).getGender());
-//        setMind(connection.getCurrentUser().getContactList().get(thisUser).getMind());
-//        setBio(connection.getCurrentUser().getContactList().get(thisUser).getBio());
-//
-//    }
-//
-//    private void contactUpdatedNotificationHandler(String thisUser) {
-//        setLevel(connection.getCurrentUser().getContactList().get(thisUser).getLevel());
-//        setName(connection.getCurrentUser().getContactList().get(thisUser).getFirstName(), connection.getCurrentUser().getContactList().get(thisUser).getLastName());
-//        setEmail(connection.getCurrentUser().getContactList().get(thisUser).getEmail());
-//        setBirthday(connection.getCurrentUser().getContactList().get(thisUser).getBirthday());
-//        setGender(connection.getCurrentUser().getContactList().get(thisUser).getGender());
-//        setMind(connection.getCurrentUser().getContactList().get(thisUser).getMind());
-//        setBio(connection.getCurrentUser().getContactList().get(thisUser).getBio());
-//
-//    }
 
     private String thisUser;
     @FXML
@@ -64,7 +51,7 @@ public class ViewProfile_View_Controller extends ViewController {
     @FXML
     private Label username;
     @FXML
-    private Label mind;
+    private Label status;
     @FXML
     private TextArea bio;
     @FXML
@@ -78,6 +65,8 @@ public class ViewProfile_View_Controller extends ViewController {
         username.setText(user);
         thisUser = user;
     }
+
+    public String getThisUser() {return thisUser;}
 
     private void setLevel(int lvl){
         level.setText(Integer.toString(lvl/100));

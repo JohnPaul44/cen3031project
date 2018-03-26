@@ -53,6 +53,8 @@ public class Home_View_controller extends ViewController{
 
 
         //TODO: import current conversations
+        Contact test = new Contact("username", true);
+        createNewContact(test);
     }
 
     public void createNewContact(Contact user){
@@ -60,11 +62,11 @@ public class Home_View_controller extends ViewController{
         newContact.setText(user.getUsername());
         newContact.setStyle("-fx-background-color: #E7DECD");
 
-        StackPane user_icon = new StackPane();
-        user_icon.setPrefHeight(20);
-        user_icon.setPrefWidth(20);
-        user_icon.setMaxWidth(20);
-
+//        StackPane user_icon = new StackPane();
+//        user_icon.setPrefHeight(20);
+//        user_icon.setPrefWidth(20);
+//        user_icon.setMaxWidth(20);
+//
 //        Circle icon = new Circle(12);
 //        Paint color =Paint.valueOf(user.getColor());
 //        icon.setFill(color);
@@ -107,7 +109,7 @@ public class Home_View_controller extends ViewController{
 
 
         newContact.setContent(content);
-        newContact.setGraphic(user_icon);
+       // newContact.setGraphic(user_icon);
         conversations.getPanes().add(newContact);
     }
 
@@ -246,12 +248,12 @@ public class Home_View_controller extends ViewController{
         try{
             FXMLLoader loader = new FXMLLoader();
             //TODO: change out the place holder fxml for view profile
-            loader.setLocation(getClass().getResource("/application/home.fxml"));
+            loader.setLocation(getClass().getResource("/application/viewProfile.fxml"));
             AnchorPane anchor = new AnchorPane();
             anchor = loader.load();
             setView(anchor);
 
-            Home_View_controller vpScreen = loader.getController();
+            ViewProfile_View_Controller vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
             connection.setDelegate(vpScreen);

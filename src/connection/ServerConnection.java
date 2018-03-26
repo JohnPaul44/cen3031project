@@ -115,6 +115,8 @@ public class ServerConnection implements IServerConnection {
     }
 
     public void queryUsers(String queryString) {
+     ServerMessage message = new ActionQueryUsers(queryString);
+     sendMessageToServer(message);
     }
 
     public void addContact(String username) {

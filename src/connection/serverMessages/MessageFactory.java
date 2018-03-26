@@ -42,6 +42,8 @@ public class MessageFactory {
                 return gson.fromJson(jsonObject, NotificationMessageReadMessage.class);
             case NOTIFICATIONTYPING: // Typing
                 return gson.fromJson(jsonObject, NotificationTypingMessage.class);
+            case NOTIFICATIONQUERYRESULTS:
+                return gson.fromJson(jsonObject, NotificationQueryResults.class);
             default:
                 throw new Exception("Invalid message trying to be produced. Status of message: " + jsonObject.get("status").getAsInt());
         }

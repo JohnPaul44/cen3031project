@@ -44,6 +44,8 @@ public class Conversation_View_controller extends ViewController {
     private ScrollPane scroll;
     @FXML
     private Label username;
+    @FXML
+    private AnchorPane anchor;
 
     public void setUsername(String user){
         username.setText(user);
