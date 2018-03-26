@@ -105,6 +105,6 @@ public class Conversation_View_controller extends ViewController {
     @Override
     public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
                                             String time, String from, String text, Map<String, Reactions> reactions) {
-
+        
     }
 }
