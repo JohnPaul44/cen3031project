@@ -602,10 +602,10 @@ func GetConversationMemberStatuses(conversationKey *datastore.Key) (map[string]m
 	return memberStatuses, nil
 }
 
-func GetConversations(user *User) (*[]msg.Conversation, error) {
+func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 	errStr := "cannot get conversations:"
 
-	conversations := new([]msg.Conversation)
+	conversations := new(map[string]msg.Conversation)
 
 	q := datastore.NewQuery(KindConversationMember).Filter("Member =", user.Username)
 	it := client.Run(c, q)
@@ -697,7 +697,7 @@ func GetConversations(user *User) (*[]msg.Conversation, error) {
 			return nil, err
 		}
 
-		*conversations = append(*conversations, conversation)
+		(*conversations)[conv.Key.Name] = conversation
 	}
 
 	if err != iterator.Done {
@@ -942,7 +942,7 @@ func GetMessage(messageKey *datastore.Key) (*Message, error) {
 	return message, nil
 }
 
-func GetMessages(conversationKey *datastore.Key) (*[]msg.Message, error) {
+func GetMessages(conversationKey *datastore.Key) ([]msg.Message, error) {
 	errStr := "cannot get messages:"
 
 	q := datastore.NewQuery(KindConversationMessage).Ancestor(conversationKey).Order("ServerTime")
@@ -972,7 +972,7 @@ func GetMessages(conversationKey *datastore.Key) (*[]msg.Message, error) {
 		return nil, err
 	}
 
-	return &messages, nil
+	return messages, nil
 }
 
 func getMessageReactions(messageKey *datastore.Key) (*map[string]msg.Reactions, error) {

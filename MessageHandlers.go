@@ -296,8 +296,8 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		conv.ConversationKey = *memberMsg.ConversationKey
 		conv.MemberStatus = memberStatuses
 		conv.Messages = []msg.Message{*memberMsg}
-		rsp.Conversations = new([]msg.Conversation)
-		*rsp.Conversations = []msg.Conversation{*conv}
+		rsp.Conversations = new(map[string]msg.Conversation)
+		(*rsp.Conversations)[conv.ConversationKey] = *conv
 	} else {
 		rsp.Message = memberMsg
 	}
@@ -491,11 +491,6 @@ func handleAddUserToConversation(user *ds.User, conn net.Conn, message *msg.Serv
 		sendServerMessageToUser(member, rsp)
 	}
 
-	// send message to new member (message.Username) with all conversation data
-	rsp.Conversations = new([]msg.Conversation)
-	conversation := msg.Conversation{MemberStatus: memberStatuses, LastMessage: conv.LastMessage, ConversationKey: convKey.Name}
-	(*rsp.Conversations)[0] = conversation
-
 	messages, err := ds.GetMessages(convKey)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot get conversation messages:", err)
@@ -503,7 +498,11 @@ func handleAddUserToConversation(user *ds.User, conn net.Conn, message *msg.Serv
 		return sendServerMessage(conn, rsp)
 	}
 
-	(*rsp.Conversations)[0].Messages = *messages
+	// send message to new member (message.Username) with all conversation data
+	rsp.Conversations = new(map[string]msg.Conversation)
+	conversation := msg.Conversation{MemberStatus: memberStatuses, LastMessage: conv.LastMessage, ConversationKey: convKey.Name, Messages: messages}
+	(*rsp.Conversations)[convKey.Name] = conversation
+
 
 	sendServerMessageToUser(*message.Username, rsp)
 	log.Printf("%s added %s to conversation with: %s\n", user.Username, *message.Username, func() []string {
