@@ -14,12 +14,27 @@ import javafx.scene.control.TextArea;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import model.Profile;
 
 public class ViewProfile_View_Controller extends ViewController {
     ServerConnection connection;
 
     public void passConnection(ServerConnection con) {
         connection = con;
+    }
+
+    public void setValuesProfile(Profile prof){
+       // setLevel(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipLevel());
+        setName(prof.getFirstName(), prof.getLastName());
+        setEmail(prof.getEmail());
+        setBirthday(prof.getBirthday());
+        setGender(prof.getGender());
+        setMind(prof.getStatus());
+        setBio(prof.getBio());
+        setIcon(prof.getColor());
+    }
+
+    public void setValuesContact(){
         setLevel(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipLevel());
         setName(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getFirstName(), connection.getCurrentUser().getContactList().get(thisUser).getProfile().getLastName());
         setEmail(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getEmail());
@@ -27,7 +42,7 @@ public class ViewProfile_View_Controller extends ViewController {
         setGender(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getGender());
         setMind(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getStatus());
         setBio(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getBio());
-        setIcon();
+        setIcon(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getColor());
     }
 
     private String thisUser;
@@ -54,7 +69,7 @@ public class ViewProfile_View_Controller extends ViewController {
     @FXML
     private Label username;
     @FXML
-    private Label status;
+    private Label mind;
     @FXML
     private TextArea bio;
     @FXML
@@ -94,19 +109,19 @@ public class ViewProfile_View_Controller extends ViewController {
 
     private void setGender(String sex){ gender.setText(sex); }
 
-    private void setMind(String status){
-        username.setText(status);
+    private void setMind(String statusMind){
+        mind.setText(statusMind);
     }
 
     private void setBio(String biography){
         bio.setText(biography);
     }
 
-    public void setIcon(){
+    public void setIcon(String col){
         String first_letter = "" + username.getText().charAt(0);
         icon_letter.setText(first_letter);
 
-        Paint icon_color = Paint.valueOf(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getColor());
+        Paint icon_color = Paint.valueOf(col);
         icon.setFill(icon_color);
         icon_design.setFill(icon_color);
         icon_design.setOpacity(0.4);

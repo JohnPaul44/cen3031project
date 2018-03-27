@@ -46,7 +46,6 @@ public class Search_View_Controller extends ViewController{
     private Button view;
     @FXML
     private AnchorPane anchor;
-    boolean error;
 
     public void setSearchField(String s){
         searchField.setText(s);
@@ -60,11 +59,11 @@ public class Search_View_Controller extends ViewController{
     public void setSearchResults(HashMap<String, Profile> userResults) {
 
         if(userResults == null){
-            status.setText("NULLNo Results");
+            status.setText("No Results");
             return;
         }
         if(userResults.isEmpty()){
-            status.setText("EMPTYNo Results");
+            status.setText("No Results");
             return;
         }
 
@@ -106,7 +105,7 @@ public class Search_View_Controller extends ViewController{
             view.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    viewProfile(username);
+                    viewProfile(username, prof);
                 }
             });
         }
@@ -118,7 +117,7 @@ public class Search_View_Controller extends ViewController{
         connection.addContact(username);
     }
 
-    public void viewProfile(String username){
+    public void viewProfile(String username, Profile prof){
         FXMLLoader loadEdit = new FXMLLoader();
         loadEdit.setLocation(getClass().getResource("/application/viewProfile.fxml"));
         AnchorPane temp = new AnchorPane();
@@ -132,6 +131,7 @@ public class Search_View_Controller extends ViewController{
         ViewProfile_View_Controller view = loadEdit.getController();
         view.passConnection(connection);
         view.setUsername(username);
+        view.setValuesProfile(prof);
     }
 
     private int calcAge(String DOB) {

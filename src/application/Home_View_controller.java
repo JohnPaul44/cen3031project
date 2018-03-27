@@ -251,6 +251,7 @@ public class Home_View_controller extends ViewController{
             ViewProfile_View_Controller vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
+            vpScreen.setValuesContact();
             connection.setDelegate(vpScreen);
 
         } catch(Exception e){
@@ -258,19 +259,19 @@ public class Home_View_controller extends ViewController{
         }
     }
 
-    @Override
-    public void notification(ServerMessage message) {
-        switch (message.getStatus()){
-            case NOTIFICATIONPROFILEUPDATED:
-                Platform.runLater(new Runnable(){
-                    @Override
-                    public void run(){
-                        //setValues();
-                    }
-                });
-                break;
-            default:
-                break;
-        }
-    }
+//    @Override
+//    public void notification(ServerMessage message) {
+//        switch (message.getStatus()){
+//            case NOTIFICATIONPROFILEUPDATED:
+//                Platform.runLater(new Runnable(){
+//                    @Override
+//                    public void run(){
+//                        //setValues();
+//                    }
+//                });
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 }
