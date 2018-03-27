@@ -19,6 +19,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import model.Contact;
 import model.Profile;
 
 import java.time.LocalDate;
@@ -36,7 +37,7 @@ public class Search_View_Controller extends ViewController{
     @FXML
     private TextField searchField;
     @FXML
-    private GridPane searchResults;
+    private GridPane grid;
     @FXML
     private Label status;
     @FXML
@@ -45,21 +46,23 @@ public class Search_View_Controller extends ViewController{
     private Button view;
     @FXML
     private AnchorPane anchor;
-    HashMap<String, Profile> userResults;
     boolean error;
 
     public void setSearchField(String s){
         searchField.setText(s);
-        setSearchResults();
+        search();
     }
 
-    public void setSearchResults() {
+    public void search(){
         error = false;
         connection.queryUsers(searchField.getText());
 
         if(error){
             return;
         }
+    }
+
+    public void setSearchResults(HashMap<String, Profile> userResults) {
 
         if(userResults == null){
             status.setText("NULLNo Results");
@@ -88,7 +91,15 @@ public class Search_View_Controller extends ViewController{
             view.setStyle("-fx-background-color: #698F3F");
             view.setTextFill(Color.WHITE);
 
-            searchResults.addRow(0, new Label(username), new Label(prof.getFirstName() + prof.getLastName()), new Label(prof.getEmail()), new Label(""+ calcAge(prof.getBirthday())), add, view);
+            Label age = new Label();
+            if(calcAge(prof.getBirthday()) == -1){
+                age.setText("N/A");
+            }
+            else{
+                age.setText("" + calcAge(prof.getBirthday()));
+            }
+
+            grid.addRow(1, new Label(username), new Label(prof.getFirstName() + " " + prof.getLastName()), new Label(prof.getEmail()), age, add, view);
 
             add.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -127,6 +138,9 @@ public class Search_View_Controller extends ViewController{
     }
 
     private int calcAge(String DOB) {
+        if(DOB == null){
+            return -1;
+        }
         LocalDate birthdate = LocalDate.parse(DOB);
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);
@@ -157,7 +171,7 @@ public class Search_View_Controller extends ViewController{
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    userResults = results;
+                    setSearchResults(results);
                 }
             });
         }
