@@ -54,12 +54,7 @@ public class Search_View_Controller extends ViewController{
     }
 
     public void search(){
-        error = false;
         connection.queryUsers(searchField.getText());
-
-        if(error){
-            return;
-        }
     }
 
     public void setSearchResults(HashMap<String, Profile> userResults) {
@@ -73,6 +68,7 @@ public class Search_View_Controller extends ViewController{
             return;
         }
 
+        int count = 1;
         for(Map.Entry<String, Profile> entry : userResults.entrySet()){
             //TODO: make it add additional rows
             String username = entry.getKey();
@@ -99,7 +95,7 @@ public class Search_View_Controller extends ViewController{
                 age.setText("" + calcAge(prof.getBirthday()));
             }
 
-            grid.addRow(1, new Label(username), new Label(prof.getFirstName() + " " + prof.getLastName()), new Label(prof.getEmail()), age, add, view);
+            grid.addRow(count++, new Label(username), new Label(prof.getFirstName() + " " + prof.getLastName()), new Label(prof.getEmail()), age, add, view);
 
             add.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -118,6 +114,7 @@ public class Search_View_Controller extends ViewController{
 
     public void addContact(String username){
         //TODO:add function
+        System.out.println("adding contact");
         connection.addContact(username);
     }
 
@@ -176,9 +173,28 @@ public class Search_View_Controller extends ViewController{
             });
         }
         else{
-            System.out.println("error catch " + errorInformation.getErrorNumber());
             System.out.println(errorInformation.getErrorString());
-            error = true;
+        }
+    }
+
+    @Override
+    public void contactAddedNotification(ErrorInformation errorInformation, String username) {
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    //load the home view and add the contact to the home screen
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("/application/home.fxml"));
+
+                    Home_View_controller home = loader.getController();
+                    System.out.println("returned username: " + username);
+                   // home.createNewContact(username);
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
         }
     }
 }

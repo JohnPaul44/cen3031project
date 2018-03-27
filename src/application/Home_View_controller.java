@@ -55,29 +55,13 @@ public class Home_View_controller extends ViewController{
 
 
         //TODO: import current conversations
-        Contact test = new Contact("JPaul", true);
-        createNewContact(test);
+        createNewContact("test");
     }
 
-    public void createNewContact(Contact user){
+    public void createNewContact(String user){
         TitledPane newContact = new TitledPane();
-        newContact.setText(user.getUsername());
+        newContact.setText(user);
         newContact.setStyle("-fx-background-color: #E7DECD");
-
-//        StackPane user_icon = new StackPane();
-//        user_icon.setPrefHeight(20);
-//        user_icon.setPrefWidth(20);
-//        user_icon.setMaxWidth(20);
-//
-//        Circle icon = new Circle(12);
-//        Paint color =Paint.valueOf(user.getColor());
-//        icon.setFill(color);
-//
-//        Label initial = new Label();
-//        initial.setText("" + user.getUsername().charAt(0));
-//        initial.setStyle("-fx-font: 10 system");
-//
-//        user_icon.getChildren().addAll(icon, initial);
 
         VBox content = new VBox();
         Label dm = new Label("Direct Message");
@@ -87,7 +71,7 @@ public class Home_View_controller extends ViewController{
             @Override
             public void handle(MouseEvent event) {
                 try{
-                    OpenDirectMessage(event, user.getUsername());
+                    OpenDirectMessage(event, user);
                 } catch(Exception e){}
             }
         });
@@ -99,7 +83,7 @@ public class Home_View_controller extends ViewController{
             @Override
             public void handle(MouseEvent event) {
                 try{
-                    ViewOtherProfile(event, user.getUsername());
+                    ViewOtherProfile(event, user);
                 } catch(Exception e){}
             }
         });
@@ -111,7 +95,6 @@ public class Home_View_controller extends ViewController{
 
 
         newContact.setContent(content);
-       // newContact.setGraphic(user_icon);
         conversations.getPanes().add(newContact);
     }
 
@@ -260,7 +243,6 @@ public class Home_View_controller extends ViewController{
     public void ViewOtherProfile(MouseEvent actionEvent, String user) throws Exception{
         try{
             FXMLLoader loader = new FXMLLoader();
-            //TODO: change out the place holder fxml for view profile
             loader.setLocation(getClass().getResource("/application/viewProfile.fxml"));
             AnchorPane anchor = new AnchorPane();
             anchor = loader.load();
