@@ -21,7 +21,7 @@ abstract public class ViewController {
         StringBuilder sb = new StringBuilder();
         for (String s : list) {
             sb.append(s);
-            sb.append(", ");
+            sb.append(",");
         }
         return sb.toString();
     }
