@@ -275,8 +275,8 @@ public class EditProfile_View_Controller extends ViewController {
 
     @Override
     public void profileUpdatedNotification(ErrorInformation errorInformation, Profile profile) {
-    if (errorInformation.getErrorNumber() != 0){
-        System.out.println(errorInformation.getErrorString());
-     }
+        if (errorInformation.getErrorNumber() != 0){
+            System.out.println(errorInformation.getErrorString());
+        }
     }
 }

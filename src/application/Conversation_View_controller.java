@@ -23,15 +23,18 @@ import javafx.stage.Stage;
 import model.*;
 
 import javax.swing.*;
+import javax.xml.soap.Text;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 public class Conversation_View_controller extends ViewController {
     ServerConnection connection;
 
     public void passConnection(ServerConnection con){
         connection = con;
+        setTopic();
     }
 
     @FXML
@@ -52,6 +55,18 @@ public class Conversation_View_controller extends ViewController {
     private AnchorPane anchor;
     @FXML
     private TextField status;
+    @FXML
+    private TextField topic;
+
+    String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
+    "What was your favorite book as a child?", "Who are the three greatest athletes of all time?", "Where would you like to travel next?",
+    "What was the best invention of the last 50 years?", "What are your goals for the next 2 years?", "If you could call anyone in the world, who would you call?",};
+
+    public void setTopic(){
+        Random rand = new Random();
+        int n = rand.nextInt(9);
+        topic.setText(convoTopics[n]);
+    }
 
     public String convKey = "";
 
