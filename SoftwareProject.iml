@@ -23,6 +23,7 @@
       <library>
         <CLASSES>
           <root url="jar://$USER_HOME$/.IntelliJIdea2017.3/gson-2.8.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../gson-2.6.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
