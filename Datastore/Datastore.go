@@ -913,7 +913,7 @@ func AddMessage(message msg.Message) (*Message, error) {
 
 	// put new message in datastore
 	messageKey := datastore.IncompleteKey(KindConversationMessage, convKey)
-	messageKey, err = client.Put(c, messageKey, &dsMessage)
+	messageKey, err = client.Put(c, messageKey, dsMessage)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot add message to datastore:", err)
 		return nil, err

@@ -269,6 +269,10 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 			rsp.SetError(e.ErrInvalidConversationKey)
 			return sendServerMessage(conn, rsp)
 		}
+
+		log.Println(e.Tag, errStr, err)
+		rsp.SetError(e.ErrInternalServer)
+		return sendServerMessage(conn, rsp)
 	}
 
 	// notify members that a message was received
