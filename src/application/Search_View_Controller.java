@@ -4,6 +4,7 @@ import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -113,7 +114,30 @@ public class Search_View_Controller extends ViewController{
 
     public void addContact(String username){
         //TODO:add function
-        System.out.println("adding contact");
+//        //load the home view and add the contact to the home screen
+//        FXMLLoader loader = new FXMLLoader();
+//        loader.setLocation(getClass().getResource("/application/home.fxml"));
+//        try {
+//            loader.load();
+//        } catch(Exception e){
+//            e.printStackTrace();
+//        }
+//        Home_View_controller home = loader.getController();
+//        Task<Void> updateGUI = new Task<Void>() {
+//            @Override
+//            protected Void call() throws Exception {
+//                home.createNewContact("plz work", false);
+//                return null;
+//            }
+//        };
+//
+//        Thread t = new Thread(updateGUI);
+//        t.setDaemon(true);
+//        t.start();
+//
+//        updateGUI.setOnSucceeded(event -> {
+//            System.out.println("yay");
+//        });
         connection.addContact(username);
     }
 
@@ -135,7 +159,7 @@ public class Search_View_Controller extends ViewController{
     }
 
     private int calcAge(String DOB) {
-        if(DOB == null){
+        if(DOB == null || DOB.equals("") || DOB.equals("null")){
             return -1;
         }
         LocalDate birthdate = LocalDate.parse(DOB);

@@ -79,14 +79,18 @@ public class Conversation_View_controller extends ViewController {
     }
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
-        sentMessage(yourMessageField.getText());
+        String message = yourMessageField.getText();
+        sentMessage(message);
         if(convKey.isEmpty()){
+
             ArrayList<String> mess = new ArrayList<String>();
             mess.add(username.getText());
-            connection.sendFirstMessage(mess, yourMessageField.getText());
+            System.out.println("sending message: " + message);
+            connection.sendFirstMessage(mess, message);
         }
         else{
-            connection.sendMessage(convKey, yourMessageField.getText());
+            System.out.println("sending message: " + message);
+            connection.sendMessage(convKey, message);
         }
     }
 
