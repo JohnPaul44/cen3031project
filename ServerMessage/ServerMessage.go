@@ -115,7 +115,7 @@ type ServerMessage struct {
 	Online           *bool                    `json:"online,omitempty"`
 	Conversations    *map[string]Conversation `json:"conversations,omitempty"`
 	Message          *Message                 `json:"message,omitempty"`
-	ClientTime       *string                  `json:"clientTime"`
+	ClientTime       string                   `json:"clientTime"`
 }
 
 func (msg *ServerMessage) Clear() {
@@ -186,4 +186,4 @@ const (
 	ActionSetTyping                  = iota // requires Message.ConversationKey, Message.Typing
 )
 
-// TODO: send ClientTime back with every Action
+// TODO: send ClientTime back with every Action (forward it from the received message to the response)
