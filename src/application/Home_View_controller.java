@@ -240,15 +240,16 @@ public class Home_View_controller extends ViewController{
             dmScreen.setUsername(user);
 
             HashMap<String, Conversation> convos = connection.getCurrentUser().getConversationList();
-            for(Map.Entry<String, Conversation> entry : convos.entrySet()){
-                String key = entry.getKey();
-                Conversation value = entry.getValue();
-                if(value.getMemberStatus().containsKey(user)){
-                    dmScreen.setConversationKey(key);
+            if(convos != null) {
+                for (Map.Entry<String, Conversation> entry : convos.entrySet()) {
+                    String key = entry.getKey();
+                    Conversation value = entry.getValue();
+                    if (value.getMemberStatus().containsKey(user)) {
+                        dmScreen.setConversationKey(key);
+                    }
                 }
             }
             dmScreen.setMessages();
-            //TODO: pass the user to initialize the message screen
 
         } catch(Exception e){
             e.printStackTrace();
