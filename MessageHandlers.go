@@ -295,9 +295,9 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		conv := new(msg.Conversation)
 		conv.ConversationKey = *memberMsg.ConversationKey
 		conv.MemberStatus = memberStatuses
-		conv.Messages[0] = *memberMsg
+		conv.Messages = []msg.Message{*memberMsg}
 		rsp.Conversations = new([]msg.Conversation)
-		(*rsp.Conversations)[0] = *conv
+		*rsp.Conversations = []msg.Conversation{*conv}
 	} else {
 		rsp.Message = memberMsg
 	}
