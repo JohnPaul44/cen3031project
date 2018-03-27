@@ -36,8 +36,8 @@ type Message struct {
 }
 
 type Status struct {
-	Read   bool `json:"read",datastore:"Read"`
-	Typing bool `json:"typing",datastore:"Typing"`
+	Read   bool `json:"read"`
+	Typing bool `json:"typing"`
 }
 
 // TODO: implement Created time in handlers
@@ -59,7 +59,7 @@ type FriendshipStatistics struct {
 	// TODO: push updates to client
 	SentMessages     int                    `json:"sentMessages"`
 	ReceivedMessages int                    `json:"receivedMessages"`
-	Games            map[string]ContactGame `json:"games"`
+	//Games            map[string]ContactGame `json:"games"`
 	FriendshipLevel  int                    `json:"friendshipLevel"`
 
 	/*

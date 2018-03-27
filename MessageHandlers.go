@@ -113,6 +113,13 @@ func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) 
 			return sendServerMessage(conn, rsp)
 		}
 
+		if err == e.ErrUnauthorized {
+			serr := e.ErrUnauthorized
+			log.Println(errStr, serr)
+			rsp.SetError(serr)
+			return sendServerMessage(conn, rsp)
+		}
+
 		log.Printf("%s %s cannot get user %s from datastore: %s\n", e.Tag, errStr, user.Username, err)
 		rsp.SetError(e.ErrInternalServer)
 		return sendServerMessage(conn, rsp)
