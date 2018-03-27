@@ -309,7 +309,7 @@ func AddContact(username string, contact string) (UserContact, error) {
 		Statistics: msg.FriendshipStatistics{
 			SentMessages: 0,
 			ReceivedMessages: 0,
-			Games: make(map[string]msg.ContactGame),
+			//Games: make(map[string]msg.ContactGame),
 			FriendshipLevel: 0,
 		},
 		Contact: contact,
