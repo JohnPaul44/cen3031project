@@ -297,6 +297,7 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		conv.MemberStatus = memberStatuses
 		conv.Messages = []msg.Message{*memberMsg}
 		rsp.Conversations = new(map[string]msg.Conversation)
+		*rsp.Conversations = make(map[string]msg.Conversation)
 		(*rsp.Conversations)[conv.ConversationKey] = *conv
 	} else {
 		rsp.Message = memberMsg
@@ -500,6 +501,7 @@ func handleAddUserToConversation(user *ds.User, conn net.Conn, message *msg.Serv
 
 	// send message to new member (message.Username) with all conversation data
 	rsp.Conversations = new(map[string]msg.Conversation)
+	*rsp.Conversations = make(map[string]msg.Conversation)
 	conversation := msg.Conversation{MemberStatus: memberStatuses, LastMessage: conv.LastMessage, ConversationKey: convKey.Name, Messages: messages}
 	(*rsp.Conversations)[convKey.Name] = conversation
 
