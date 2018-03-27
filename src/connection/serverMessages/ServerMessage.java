@@ -42,7 +42,7 @@ public abstract class ServerMessage {
         ACTIONSETTYPING,
     }
     public int status;
-    public int errorNumber = 1;
+    public int errorNumber = 0;
     public String errorString;
 
     public Status getStatus() {
