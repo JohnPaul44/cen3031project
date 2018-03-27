@@ -19,6 +19,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import model.Contact;
 import model.Profile;
 
 import java.time.LocalDate;
@@ -36,7 +37,7 @@ public class Search_View_Controller extends ViewController{
     @FXML
     private TextField searchField;
     @FXML
-    private GridPane searchResults;
+    private GridPane grid;
     @FXML
     private Label status;
     @FXML
@@ -45,31 +46,28 @@ public class Search_View_Controller extends ViewController{
     private Button view;
     @FXML
     private AnchorPane anchor;
-    HashMap<String, Profile> userResults;
-    boolean error;
 
     public void setSearchField(String s){
         searchField.setText(s);
-        setSearchResults();
+        search();
     }
 
-    public void setSearchResults() {
-        error = false;
+    public void search(){
         connection.queryUsers(searchField.getText());
+    }
 
-        if(error){
-            return;
-        }
+    public void setSearchResults(HashMap<String, Profile> userResults) {
 
         if(userResults == null){
-            status.setText("NULLNo Results");
+            status.setText("No Results");
             return;
         }
         if(userResults.isEmpty()){
-            status.setText("EMPTYNo Results");
+            status.setText("No Results");
             return;
         }
 
+        int count = 1;
         for(Map.Entry<String, Profile> entry : userResults.entrySet()){
             //TODO: make it add additional rows
             String username = entry.getKey();
@@ -88,7 +86,15 @@ public class Search_View_Controller extends ViewController{
             view.setStyle("-fx-background-color: #698F3F");
             view.setTextFill(Color.WHITE);
 
-            searchResults.addRow(0, new Label(username), new Label(prof.getFirstName() + prof.getLastName()), new Label(prof.getEmail()), new Label(""+ calcAge(prof.getBirthday())), add, view);
+            Label age = new Label();
+            if(calcAge(prof.getBirthday()) == -1){
+                age.setText("N/A");
+            }
+            else{
+                age.setText("" + calcAge(prof.getBirthday()));
+            }
+
+            grid.addRow(count++, new Label(username), new Label(prof.getFirstName() + " " + prof.getLastName()), new Label(prof.getEmail()), age, add, view);
 
             add.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -99,7 +105,7 @@ public class Search_View_Controller extends ViewController{
             view.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    viewProfile(username);
+                    viewProfile(username, prof);
                 }
             });
         }
@@ -107,10 +113,11 @@ public class Search_View_Controller extends ViewController{
 
     public void addContact(String username){
         //TODO:add function
+        System.out.println("adding contact");
         connection.addContact(username);
     }
 
-    public void viewProfile(String username){
+    public void viewProfile(String username, Profile prof){
         FXMLLoader loadEdit = new FXMLLoader();
         loadEdit.setLocation(getClass().getResource("/application/viewProfile.fxml"));
         AnchorPane temp = new AnchorPane();
@@ -124,9 +131,13 @@ public class Search_View_Controller extends ViewController{
         ViewProfile_View_Controller view = loadEdit.getController();
         view.passConnection(connection);
         view.setUsername(username);
+        view.setValuesProfile(prof);
     }
 
     private int calcAge(String DOB) {
+        if(DOB == null){
+            return -1;
+        }
         LocalDate birthdate = LocalDate.parse(DOB);
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);
@@ -157,14 +168,33 @@ public class Search_View_Controller extends ViewController{
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    userResults = results;
+                    setSearchResults(results);
                 }
             });
         }
         else{
-            System.out.println("error catch " + errorInformation.getErrorNumber());
             System.out.println(errorInformation.getErrorString());
-            error = true;
+        }
+    }
+
+    @Override
+    public void contactAddedNotification(ErrorInformation errorInformation, String username) {
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    //load the home view and add the contact to the home screen
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("/application/home.fxml"));
+
+                    Home_View_controller home = loader.getController();
+                    System.out.println("returned username: " + username);
+                    home.createNewContact(username);
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
         }
     }
 }
