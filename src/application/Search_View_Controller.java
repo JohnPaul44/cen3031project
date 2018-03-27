@@ -189,7 +189,7 @@ public class Search_View_Controller extends ViewController{
 
                     Home_View_controller home = loader.getController();
                     System.out.println("returned username: " + username);
-                   // home.createNewContact(username);
+                    home.createNewContact(username);
                 }
             });
         }

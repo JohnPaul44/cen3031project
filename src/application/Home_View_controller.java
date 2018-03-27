@@ -47,12 +47,11 @@ public class Home_View_controller extends ViewController{
     public void setConversationsList(){
         HashMap<String, Contact> contactList = connection.getCurrentUser().getContactList();
 
-//        if(!contactList.isEmpty()){
-//            for(Contact value: contactList.values()){
-//                createNewContact(value);
-//            }
-//        }
-
+        if(!contactList.isEmpty()){
+            for(String key: contactList.keySet()){
+                createNewContact(key);
+            }
+        }
 
         //TODO: import current conversations
         createNewContact("test");
