@@ -606,6 +606,7 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 	errStr := "cannot get conversations:"
 
 	conversations := new(map[string]msg.Conversation)
+	*conversations = make(map[string]msg.Conversation)
 
 	q := datastore.NewQuery(KindConversationMember).Filter("Member =", user.Username)
 	it := client.Run(c, q)
