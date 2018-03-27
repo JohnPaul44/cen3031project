@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import model.Profile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class EditProfile_View_Controller extends ViewController {
     ServerConnection connection;
@@ -37,6 +38,8 @@ public class EditProfile_View_Controller extends ViewController {
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
         setBio(connection.getCurrentUser().getProfile().getBio());
         setMind(connection.getCurrentUser().getProfile().getStatus());
+        setInterests(connection.getCurrentUser().getProfile().getInterests());
+        setHobbies(connection.getCurrentUser().getProfile().getHobbies());
         setIconLetter();
         setColorPicker();
     }
@@ -141,12 +144,12 @@ public class EditProfile_View_Controller extends ViewController {
         bio.setText(bioStatement);
     }
 
-    private void setInterests(String interestList){
-        interest.setText(interestList);
+    private void setInterests(ArrayList<String> interestList){
+        interest.setText(ArrayListToString(interestList));
     }
 
-    private void setHobbies(String hob){
-        hobbies.setText(hob);
+    private void setHobbies(ArrayList<String> hob){
+        hobbies.setText(ArrayListToString(hob));
     }
 
     //event handlers for both when the button is pressed or when the enter key is used
@@ -195,12 +198,10 @@ public class EditProfile_View_Controller extends ViewController {
 
         connection.getCurrentUser().getProfile().setBio(bio.getText());
         connection.getCurrentUser().getProfile().setStatus(mind.getText());
-
+        connection.getCurrentUser().getProfile().setHobbies(StringToArrayList(hobbies.getText()));
+        connection.getCurrentUser().getProfile().setInterests(StringToArrayList(interest.getText()));
 
         connection.updateProfile();
-
-        //TODO: setting the bio, whats on your mind, interest and hobbies
-
         //call the function to open the home screen up
         BackButton(event);
     }
