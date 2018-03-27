@@ -63,8 +63,8 @@ public class ServerConnection implements IServerConnection {
 
     @Override
     public void sendMessageToServer(ServerMessage serverMessage) {
-        System.out.println(serverMessage.toJsonString());
         out.println(serverMessage.toJsonString());
+        System.out.println("Sent: " + serverMessage.toJsonString());
     }
 
     @Override
@@ -83,6 +83,7 @@ public class ServerConnection implements IServerConnection {
             try {
                 while ((messageFromServer = in.readLine()) != null) {
                     jsonObject = parser.parse(messageFromServer).getAsJsonObject();
+                    System.out.println("Received: " + messageFromServer);
                     ServerMessage serverMessage = messageFactory.produce(jsonObject);
 
                     MessageHandler handler = handlerFactory.produce(serverMessage, userUpdater);

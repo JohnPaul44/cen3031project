@@ -9,7 +9,10 @@ import model.UserUpdater;
 public class HandlerFactory {
 
     public MessageHandler produce(ServerMessage serverMessage, UserUpdater userUpdater) throws Exception {
-        System.out.println("Message received from server with status: " + serverMessage.getStatus().ordinal());
+        System.out.println("Message received from server with status: " + serverMessage.getStatus());
+        if (serverMessage.error()) {
+            System.out.println("Message received from server has error: " + serverMessage.errorString);
+        }
         switch (serverMessage.getStatus()) {
             case UNINITILIALIZED: // Uninitialized
                 return new UninitializedMessageHandler();
