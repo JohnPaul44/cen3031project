@@ -25,11 +25,13 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.Contact;
+import model.Conversation;
 import model.Profile;
 import sun.plugin.javascript.navig.Anchor;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Home_View_controller extends ViewController{
 
@@ -53,7 +55,7 @@ public class Home_View_controller extends ViewController{
 
 
         //TODO: import current conversations
-        Contact test = new Contact("username", true);
+        Contact test = new Contact("JPaul", true);
         createNewContact(test);
     }
 
@@ -236,6 +238,16 @@ public class Home_View_controller extends ViewController{
             dmScreen.passConnection(connection);
             connection.setDelegate(dmScreen);
             dmScreen.setUsername(user);
+
+            HashMap<String, Conversation> convos = connection.getCurrentUser().getConversationList();
+            for(Map.Entry<String, Conversation> entry : convos.entrySet()){
+                String key = entry.getKey();
+                Conversation value = entry.getValue();
+                if(value.getMemberStatus().containsKey(user)){
+                    dmScreen.setConversationKey(key);
+                }
+            }
+            dmScreen.setMessages();
             //TODO: pass the user to initialize the message screen
 
         } catch(Exception e){

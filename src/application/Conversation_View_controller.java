@@ -20,10 +20,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Profile;
-import model.Reactions;
+import model.*;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Conversation_View_controller extends ViewController {
@@ -49,23 +50,43 @@ public class Conversation_View_controller extends ViewController {
     private Label username;
     @FXML
     private AnchorPane anchor;
+    @FXML
+    private TextField status;
+
+    public String convKey = "";
 
     public void setUsername(String user){
         username.setText(user);
     }
 
-    public void sendMessageClicked (ActionEvent event) throws Exception {
+    public void setConversationKey(String convokey){
+        convKey = convokey;
+    }
 
+    public void sendMessageClicked (ActionEvent event) throws Exception {
+        sentMessage(yourMessageField.getText());
+        if(convKey.isEmpty()){
+            ArrayList<String> mess = new ArrayList<String>();
+            mess.add(username.getText());
+            connection.sendFirstMessage(mess, yourMessageField.getText());
+        }
+        else{
+            connection.sendMessage(convKey, yourMessageField.getText());
+        }
+    }
+
+    public void sentMessage(String text){
         AnchorPane pane = new AnchorPane();
         TextArea new_message = new TextArea();
-        new_message.setText(yourMessageField.getText());
+        new_message.setText(text);
         new_message.setWrapText(true);
         new_message.setEditable(false);
-        new_message.setStyle("-fx-padding: 0 10 0 300");
+        new_message.setMinWidth(644);
+        new_message.setStyle("-fx-padding: 5 10 0 375");
 
         JEditorPane dummyEP = new JEditorPane();
         dummyEP.setSize(100, Short.MAX_VALUE);
-        dummyEP.setText(yourMessageField.getText());
+        dummyEP.setText(text);
         new_message.setPrefHeight(dummyEP.getPreferredSize().height);
         new_message.setMinHeight(30);
 
@@ -77,17 +98,19 @@ public class Conversation_View_controller extends ViewController {
         yourMessageField.setText("");
         scroll.vvalueProperty().bind(box.heightProperty());
     }
-    public void receivedMessage(){
+
+    public void receivedMessage(String text){
         AnchorPane receivedPane = new AnchorPane();
         TextArea received_message = new TextArea();
-        received_message.setText(yourMessageField.getText());
+        received_message.setText(text);
         received_message.setWrapText(true);
         received_message.setEditable(false);
-        received_message.setStyle("-fx-padding: 0 300 0 10");
+        received_message.setMinWidth(644);
+        received_message.setStyle("-fx-padding: 5 375 0 10");
 
         JEditorPane dummyEP = new JEditorPane();
         dummyEP.setSize(100, Short.MAX_VALUE);
-        dummyEP.setText(yourMessageField.getText());
+        dummyEP.setText(text);
         received_message.setPrefHeight(dummyEP.getPreferredSize().height);
         received_message.setMinHeight(30);
 
@@ -99,14 +122,51 @@ public class Conversation_View_controller extends ViewController {
     }
 
     @FXML
-    private void initialize(){
+    public void setMessages(){
+        if(convKey.isEmpty()){
+            return;
+        }
+
+        Conversation convo = connection.getCurrentUser().getConversationList().get(convKey);
+        HashMap<String, Message> messages = convo.getMessages();
+        for(Message values : messages.values()){
+            if(values.getFrom() == connection.getCurrentUser().getUserName()){
+                sentMessage(values.getText());
+            }
+            else{
+                receivedMessage(values.getText());
+            }
+        }
     }
 
     @Override
     public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
                                             String time, String from, String text, Map<String, Reactions> reactions) {
-        
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
+                    if(mem.keySet().contains(username.getText())){
+                        if(convKey.isEmpty()){
+                            setConversationKey(conversationKey);
+                        }
+                        if(from.equals(username.getText())){
+                            receivedMessage(text);
+                            //TODO: set status
+                        }
+                        else{
+                            sentMessage(text);
+                        }
+                    }
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
     }
+
     @Override
     public void messageUpdatedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
                                            String text) {

@@ -62,11 +62,11 @@ public class Search_View_Controller extends ViewController{
         }
 
         if(userResults == null){
-            status.setText("No Results");
+            status.setText("NULLNo Results");
             return;
         }
         if(userResults.isEmpty()){
-            status.setText("No Results");
+            status.setText("EMPTYNo Results");
             return;
         }
 
@@ -107,7 +107,7 @@ public class Search_View_Controller extends ViewController{
 
     public void addContact(String username){
         //TODO:add function
-
+        connection.addContact(username);
     }
 
     public void viewProfile(String username){
@@ -151,8 +151,6 @@ public class Search_View_Controller extends ViewController{
         return age;
     }
 
-    //TODO: function that searches and returns the information from users
-
     @Override
     public void queryResultsNotification(ErrorInformation errorInformation, HashMap<String, Profile> results) {
         if(errorInformation.getErrorNumber() == 0){
@@ -164,6 +162,7 @@ public class Search_View_Controller extends ViewController{
             });
         }
         else{
+            System.out.println("error catch " + errorInformation.getErrorNumber());
             System.out.println(errorInformation.getErrorString());
             error = true;
         }

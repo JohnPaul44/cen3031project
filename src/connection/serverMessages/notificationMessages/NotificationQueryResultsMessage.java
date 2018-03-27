@@ -6,13 +6,13 @@ import model.Profile;
 import java.util.HashMap;
 
 public class NotificationQueryResultsMessage extends ServerMessage {
-    private HashMap<String, Profile> results;
+    private HashMap<String, Profile> queryResults;
 
 
     public NotificationQueryResultsMessage(HashMap results) {
         this.status = Status.NOTIFICATIONQUERYRESULTS.ordinal();
-        this.results = results;
+        this.queryResults = results;
     }
 
-    public HashMap<String, Profile> getResults() {return results;}
+    public HashMap<String, Profile> getResults() {return queryResults;}
 }
