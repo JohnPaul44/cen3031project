@@ -11,6 +11,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 public class ViewProfile_View_Controller extends ViewController {
@@ -25,6 +27,7 @@ public class ViewProfile_View_Controller extends ViewController {
         setGender(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getGender());
         setMind(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getStatus());
         setBio(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getBio());
+        setIcon();
     }
 
     private String thisUser;
@@ -58,6 +61,12 @@ public class ViewProfile_View_Controller extends ViewController {
     private TextArea hobbies;
     @FXML
     private TextArea interests;
+    @FXML
+    private Circle icon;
+    @FXML
+    private  Circle icon_design;
+    @FXML
+    private Label icon_letter;
 
 
 
@@ -93,6 +102,15 @@ public class ViewProfile_View_Controller extends ViewController {
         bio.setText(biography);
     }
 
+    public void setIcon(){
+        String first_letter = "" + username.getText().charAt(0);
+        icon_letter.setText(first_letter);
+
+        Paint icon_color = Paint.valueOf(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getColor());
+        icon.setFill(icon_color);
+        icon_design.setFill(icon_color);
+        icon_design.setOpacity(0.4);
+    }
 
 
     @FXML
