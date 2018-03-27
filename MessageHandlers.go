@@ -8,7 +8,6 @@ import (
 	e "./Errors"
 	ds "./Datastore"
 	msg "./ServerMessage"
-	"encoding/json"
 )
 
 type ServerMessageHandler func(*ds.User, net.Conn, *msg.ServerMessage) error

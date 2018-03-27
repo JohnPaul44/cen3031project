@@ -881,7 +881,7 @@ func AddMessage(message msg.Message) (*Message, error) {
 			return nil, err
 		}
 
-		log.Printf("%s created a new conversation with: %s\n", message.From, members)
+		log.Printf("%s created a new conversation with: %s\n", *message.From, *members)
 	} else {
 		convKey = GetConversationKey(*message.ConversationKey)
 		conv, err := GetConversation(convKey)
@@ -913,7 +913,7 @@ func AddMessage(message msg.Message) (*Message, error) {
 
 	// put new message in datastore
 	messageKey := datastore.IncompleteKey(KindConversationMessage, convKey)
-	messageKey, err = client.Put(c, messageKey, &message)
+	messageKey, err = client.Put(c, messageKey, &dsMessage)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot add message to datastore:", err)
 		return nil, err
