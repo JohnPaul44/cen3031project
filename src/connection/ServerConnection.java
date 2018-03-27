@@ -87,9 +87,6 @@ public class ServerConnection implements IServerConnection {
 
                     MessageHandler handler = handlerFactory.produce(serverMessage, userUpdater);
                     handler.handle(delegate);
-
-                    // TODO get rid of below line. notification to be called in handler
-                    delegate.notification(serverMessage);
                 }
             } catch (IOException e) {
                 System.out.println("Error while receiving a message from server: " + e);
