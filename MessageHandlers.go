@@ -255,12 +255,6 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 
 	if ((len(*message.Message.To) == 0 || len((*message.Message.To)[0]) == 0) && len(*message.Message.ConversationKey) == 0) || len(*message.Message.Text) == 0 || len(*message.Message.ClientTime) == 0 {
 		err := e.New("empty message.to, message.conversationKey, message.text and/or message.clientTime", e.EmptyParameter)
-		bytes, terr := json.Marshal(message)
-		if terr != nil {
-			log.Println("json.Marshal:", terr)
-		} else {
-			log.Printf("message: %s\n", string(bytes))
-		}
 		log.Println(errStr, err)
 		rsp.SetError(err)
 		return sendServerMessage(conn, rsp)
