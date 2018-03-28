@@ -18,16 +18,19 @@ abstract public class ViewController {
 
     //Utility Functions for using ArrayLists in Views
     public String ArrayListToString(ArrayList<String> list) {
-        StringBuilder sb = new StringBuilder();
-        for (String s : list) {
-            sb.append(s);
-            sb.append(",");
+        if(!(list==null)) {
+            StringBuilder sb = new StringBuilder();
+            for (String s : list) {
+                sb.append(s);
+                sb.append(",");
+            }
+            return sb.toString();
         }
-        return sb.toString();
+        return "";
     }
 
     public ArrayList<String> StringToArrayList(String s) {
-        return new ArrayList<String>(Arrays.asList(s.split(",")));
+        return new ArrayList<>(Arrays.asList(s.split(",")));
     }
     /********************************************
      * All notifications will receive an integer error number and error string details. Not fully implemented yet
