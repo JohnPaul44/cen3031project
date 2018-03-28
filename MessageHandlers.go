@@ -253,11 +253,29 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		return sendServerMessage(conn, rsp)
 	}
 
-	if ((len(*message.Message.To) == 0 || len((*message.Message.To)[0]) == 0) && len(*message.Message.ConversationKey) == 0) || len(*message.Message.Text) == 0 || len(*message.Message.ClientTime) == 0 {
-		err := e.New("empty message.to, message.conversationKey, message.text and/or message.clientTime", e.EmptyParameter)
+	reqFields := len(*message.Message.Text) == 0 || len(*message.Message.ClientTime) == 0
+
+	if !reqFields {
+		err := e.New("empty message.text and/or message.clientTime", e.EmptyParameter)
 		log.Println(errStr, err)
 		rsp.SetError(err)
 		return sendServerMessage(conn, rsp)
+	}
+
+	if message.Message.To != nil {
+		if len(*message.Message.To) == 0 || len((*message.Message.To)[0]) == 0 {
+			err := e.New("empty message.to", e.EmptyParameter)
+			log.Println(errStr, err)
+			rsp.SetError(err)
+			return sendServerMessage(conn, rsp)
+		}
+	} else {
+		if len(*message.Message.ConversationKey) == 0 {
+			err := e.New("empty message.conversationKey", e.EmptyParameter)
+			log.Println(errStr, err)
+			rsp.SetError(err)
+			return sendServerMessage(conn, rsp)
+		}
 	}
 
 	log.Printf("handling sendMessage: text: %s\n", *message.Message.Text)
