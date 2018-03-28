@@ -6,7 +6,9 @@ import model.Contact;
 import model.Conversation;
 import model.Profile;
 import model.Reactions;
+import java.util.ArrayList;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +16,19 @@ abstract public class ViewController {
     public void notification(ServerMessage message) {}
 
 
+    //Utility Functions for using ArrayLists in Views
+    public String ArrayListToString(ArrayList<String> list) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : list) {
+            sb.append(s);
+            sb.append(",");
+        }
+        return sb.toString();
+    }
+
+    public ArrayList<String> StringToArrayList(String s) {
+        return new ArrayList<String>(Arrays.asList(s.split(",")));
+    }
     /********************************************
      * All notifications will receive an integer error number and error string details. Not fully implemented yet
      */
@@ -54,7 +69,7 @@ abstract public class ViewController {
     }
 
     public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                            String time, String from, String text, Map<String, Reactions> reactions) {
+                                            String time, String from, String text) {
 
     }
 

@@ -1,5 +1,6 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
 import javafx.event.ActionEvent;
@@ -14,7 +15,11 @@ import javafx.scene.control.TextArea;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import model.Contact;
 import model.Profile;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ViewProfile_View_Controller extends ViewController {
     ServerConnection connection;
@@ -32,6 +37,8 @@ public class ViewProfile_View_Controller extends ViewController {
         setMind(prof.getStatus());
         setBio(prof.getBio());
         setIcon(prof.getColor());
+        setHobbies(prof.getHobbies());
+        setInterests(prof.getInterests());
     }
 
     public void setValuesContact(){
@@ -43,6 +50,9 @@ public class ViewProfile_View_Controller extends ViewController {
         setMind(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getStatus());
         setBio(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getBio());
         setIcon(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getColor());
+        setHobbies(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getHobbies());
+        setInterests(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getInterests());
+
     }
 
     private String thisUser;
@@ -127,6 +137,14 @@ public class ViewProfile_View_Controller extends ViewController {
         icon_design.setOpacity(0.4);
     }
 
+    private void setInterests(ArrayList<String> interestList) {
+        interests.setText(ArrayListToString(interestList));
+    }
+
+    private void setHobbies(ArrayList<String> hob) {
+        hobbies.setText(ArrayListToString(hob));
+    }
+
 
     @FXML
     public void BackButton(ActionEvent event){
@@ -153,7 +171,14 @@ public class ViewProfile_View_Controller extends ViewController {
 
 
     @Override
-    public void notification(ServerMessage message) {
-
+    public void contactUpdatedNotification(ErrorInformation errorInformation, HashMap<String, Contact> contacts) {
+        if (errorInformation.getErrorNumber() != 0){
+            System.out.println(errorInformation.getErrorString());
+        }
+        else {
+            if (contacts.keySet().contains(thisUser)) {
+                setValuesContact();
+            }
+        }
     }
 }

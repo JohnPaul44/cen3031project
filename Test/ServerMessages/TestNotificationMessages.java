@@ -139,9 +139,7 @@ public class TestNotificationMessages {
     @Test
     public void receiveMessageReceivedForExistingConversationMessage() {
         NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
-        NotificationMessageReceivedMessage messageReceivedMessage = new NotificationMessageReceivedMessage(
-                dummyData.conversationKey1, dummyData.messageKey1, "2018-03-9 03:00:22.012",
-                dummyData.username1, dummyData.messageText, dummyData.reactions1);
+        NotificationMessageReceivedMessage messageReceivedMessage = new NotificationMessageReceivedMessage(dummyData.message1);
         ArrayList<ServerMessage> serverMessages = new ArrayList<>();
         serverMessages.add(loggedInMessage);
         serverMessages.add(messageReceivedMessage);

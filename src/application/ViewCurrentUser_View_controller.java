@@ -1,5 +1,6 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
 import javafx.application.Platform;
@@ -28,18 +29,19 @@ import model.Contact;
 import model.Profile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ViewCurrentUser_View_controller extends ViewController{
+public class ViewCurrentUser_View_controller extends ViewController {
 
     ServerConnection connection;
 
-    public void passConnection(ServerConnection con){
+    public void passConnection(ServerConnection con) {
         connection = con;
         setValues();
     }
 
-    public void setValues(){
+    public void setValues() {
         setUsername(connection.getCurrentUser().getUserName());
         setFirstName(connection.getCurrentUser().getProfile().getFirstName());
         setLastName(connection.getCurrentUser().getProfile().getLastName());
@@ -49,10 +51,12 @@ public class ViewCurrentUser_View_controller extends ViewController{
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
         setBio(connection.getCurrentUser().getProfile().getBio());
         setMind(connection.getCurrentUser().getProfile().getStatus());
+        setInterests(connection.getCurrentUser().getProfile().getInterests());
+        setHobbies(connection.getCurrentUser().getProfile().getHobbies());
         setIcon();
     }
 
-    public void setIcon(){
+    public void setIcon() {
         String first_letter = "" + username.getText().charAt(0);
         icon_letter.setText(first_letter);
 
@@ -95,74 +99,79 @@ public class ViewCurrentUser_View_controller extends ViewController{
     @FXML
     private AnchorPane anchor;
 
-    private void setUsername(String user){
+    private void setUsername(String user) {
         username.setText(user);
     }
 
-    private void setFirstName(String first){
+    private void setFirstName(String first) {
         firstName.setText(first);
     }
 
-    private void setLastName(String last){
+    private void setLastName(String last) {
         lastName.setText(last);
     }
 
-    private void setEmail(String e){
+    private void setEmail(String e) {
         email.setText(e);
     }
 
-    private void setPhone(String phoneNum){
+    private void setPhone(String phoneNum) {
         phone.setText(phoneNum);
     }
 
-    private void setGender(String gen){
-        if(gen.equalsIgnoreCase("female")){
+    private void setGender(String gen) {
+        if (gen.equalsIgnoreCase("female")) {
             ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.FEMALE);
             gender.setItems(genderList);
             gender.setValue(Profile.Gender.FEMALE);
-        }
-        else if(gen.equalsIgnoreCase("male")){
+        } else if (gen.equalsIgnoreCase("male")) {
             ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.MALE);
             gender.setItems(genderList);
             gender.setValue(Profile.Gender.MALE);
-        }
-        else if(gen.equalsIgnoreCase("other")){
+        } else if (gen.equalsIgnoreCase("other")) {
             ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.OTHER);
             gender.setItems(genderList);
             gender.setValue(Profile.Gender.OTHER);
-        }
-        else{
+        } else {
             ObservableList<Profile.Gender> genderList = FXCollections.observableArrayList(Profile.Gender.NA);
             gender.setItems(genderList);
             gender.setValue(Profile.Gender.NA);
         }
     }
 
-    private void setBirthday(String birth){
-        if(birth == null || birth.equals("null") || birth.equals("")){
+    private void setBirthday(String birth) {
+        if (birth == null || birth.equals("null") || birth.equals("")) {
             return;
         }
         LocalDate birthdate = LocalDate.parse(birth);
         birthday.setValue(birthdate);
     }
 
-    private void setBio(String bioText){
+    private void setBio(String bioText) {
         bio.setText(bioText);
     }
 
-    private void setMind(String status){
+    private void setMind(String status) {
         mind.setText(status);
     }
 
+    private void setInterests(ArrayList<String> interestList) {
+        interests.setText(ArrayListToString(interestList));
+    }
+
+    private void setHobbies(ArrayList<String> hob) {
+        hobbies.setText(ArrayListToString(hob));
+    }
+
     @FXML
-    public void EditProfile(){
+    public void EditProfile() {
 
         FXMLLoader loadEdit = new FXMLLoader();
         loadEdit.setLocation(getClass().getResource("/application/createProfile.fxml"));
         AnchorPane temp = new AnchorPane();
         try {
             temp = loadEdit.load();
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         anchor.getChildren().add(temp);
@@ -172,7 +181,7 @@ public class ViewCurrentUser_View_controller extends ViewController{
     }
 
     @FXML
-    public void Logout(ActionEvent event){
+    public void Logout(ActionEvent event) {
         connection.logout();
 
         try {
@@ -197,18 +206,10 @@ public class ViewCurrentUser_View_controller extends ViewController{
     }
 
     @Override
-    public void notification(ServerMessage message) {
-        switch (message.getStatus()){
-            case NOTIFICATIONPROFILEUPDATED:
-                Platform.runLater(new Runnable(){
-                    @Override
-                    public void run(){
-                        //setValues();
-                    }
-                });
-                break;
-            default:
-                break;
+    public void profileUpdatedNotification(ErrorInformation errorInformation, Profile profile) {
+        if (errorInformation.getErrorNumber() != 0) {
+            System.out.println(errorInformation.getErrorString());
+        } else {
         }
     }
 }

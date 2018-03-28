@@ -18,22 +18,14 @@ public class Conversation implements Comparable<Conversation> {
     private Map<String, Status> memberStatus;
     private HashMap<String, Message> messages;
 
+    public Conversation() {}
+
     // Test Constructor
     public Conversation(String conversationKey, String time, Map<String, Status> memberStatus, HashMap<String, Message> messages) {
         this.conversationKey = conversationKey;
         this.time = time;
         this.memberStatus = memberStatus;
         this.messages = messages;
-    }
-
-    public Conversation(NotificationMessageReceivedMessage messageFromServer) { // used when message received from server is first in a conversation
-        this.conversationKey = messageFromServer.getConversationKey();
-        this.time = messageFromServer.getServerTime();
-        this.memberStatus = new HashMap<>();
-        memberStatus.put(messageFromServer.getFrom(), new Status(true, false));
-        // TODO group message for first message status
-        this.messages = new HashMap<>();
-        messages.put(messageFromServer.getConversationKey(), new Message(messageFromServer));
     }
 
     public Conversation(Message firstMessage) {
