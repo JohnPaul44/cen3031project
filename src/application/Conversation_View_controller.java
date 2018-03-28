@@ -78,6 +78,16 @@ public class Conversation_View_controller extends ViewController {
         convKey = convokey;
     }
 
+    @FXML
+    public void SendEventKey(KeyEvent keyEvent) throws Exception{
+        if(keyEvent.getCode() == KeyCode.ENTER) {
+            //calls the same action that occurs when the button is pressed
+            ActionEvent aevent = new ActionEvent(keyEvent.getSource(), sendButton);
+            //pass the keyEvent into the button action event
+            sendMessageClicked(aevent);
+        }
+    }
+
     public void sendMessageClicked (ActionEvent event) throws Exception {
         String message = yourMessageField.getText();
         //sentMessage(message);
