@@ -5,6 +5,7 @@ import connection.ServerTestDouble;
 import connection.serverMessages.*;
 import connection.serverMessages.actionMessages.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertTrue;
@@ -88,6 +89,7 @@ public class TestActionMessages {
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONUPDATEPROFILE));
     }
 
+    @Ignore
     @Test
     public void sendSendMessageMessageUsingToUsername() {
         ActionSendMessageMessage message = new ActionSendMessageMessage(dummyData.message1);

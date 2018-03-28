@@ -58,23 +58,25 @@ class DummyData {
         profile = new Profile(firstName1, lastName1, email1, phone1, gender1, birthday1, color);
         setUpReactions();
         setUpContacts();
-       // setUpMessages();
+        setUpMessages();
     }
 
- /*   private void setUpMessages() {
+    private void setUpMessages() {
+        ArrayList<String> to = new ArrayList<>();
+        to.add(username1);
         message1 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
-                new String[] {username1}, messageKey1, conversationKey1, username2, messageText,
+                to, messageKey1, conversationKey1, username2, messageText,
                 reactions1, true);
         message2 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
-                new String[] {username1}, messageKey2, conversationKey1, username2, messageText,
+                to, messageKey2, conversationKey1, username2, messageText,
                 reactions1, true);
         message3 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
-                new String[] {username1}, messageKey3, conversationKey2, username3, messageText,
+                to, messageKey3, conversationKey2, username3, messageText,
                 reactions1, true);
         message4 = new Message("2018-02-9 03:00:21.012", "2018-02-9 03:00:22.012",
-                new String[] {username1}, messageKey4, conversationKey2, username3, messageText,
+                to, messageKey4, conversationKey2, username3, messageText,
                 reactions1, true);
-    } */
+    }
 
     private void setUpContacts() {
         contact1 = new Contact(username1, true);

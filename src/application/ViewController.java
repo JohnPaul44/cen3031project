@@ -69,7 +69,7 @@ abstract public class ViewController {
     }
 
     public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                            String time, String from, String text, Map<String, Reactions> reactions) {
+                                            String time, String from, String text) {
 
     }
 

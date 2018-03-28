@@ -31,6 +31,8 @@ public class Message implements Comparable<Message> {
     private Map<String, Reactions> reactions;
     private boolean typing;
 
+    public Message() {}
+
     // Test Constructor
     public Message(String serverTime, String clientTime, ArrayList<String> to, String messageKey, String conversationKey,
                    String from, String text, Map<String, Reactions> reactions, boolean typing) {
@@ -43,17 +45,6 @@ public class Message implements Comparable<Message> {
         this.text = text;
         this.reactions = reactions;
         this.typing = typing;
-    }
-
-    public Message(NotificationMessageReceivedMessage messageFromServer) {
-        this.conversationKey = messageFromServer.getConversationKey();
-        this.messageKey = messageFromServer.getMessageKey();
-        this.serverTime = messageFromServer.getServerTime();
-        this.from = messageFromServer.getFrom();
-        this.text = messageFromServer.getText();
-        if (messageFromServer.getReactions() != null) {
-            this.reactions = messageFromServer.getReactions();
-        }
     }
 
     // Use this constructor for a new conversation
@@ -75,6 +66,10 @@ public class Message implements Comparable<Message> {
     public String getConversationKey() { return conversationKey; }
     public String getMessageKey() { return messageKey; }
     public String getText() { return text; }
+    public Map<String, Reactions> getReactions() {
+        return reactions;
+    }
+
     public void setText(String text) { this.text = text; }
     public void setClientTime(String clientTime) {
         this.clientTime = clientTime;
