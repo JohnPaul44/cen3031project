@@ -275,7 +275,6 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		return sendServerMessage(conn, rsp)
 	}
 
-	// notify members that a message was received
 	memberMsg := new(msg.Message)
 	memberMsg.MessageKey = &m.Key.Name
 	memberMsg.ConversationKey = &m.Key.Parent.Name
@@ -295,7 +294,8 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		conv := new(msg.Conversation)
 		conv.ConversationKey = *memberMsg.ConversationKey
 		conv.MemberStatus = memberStatuses
-		conv.Messages = []msg.Message{*memberMsg}
+		conv.Messages = make(map[string]msg.Message)
+		conv.Messages[m.Key.Name] = *memberMsg
 		rsp.Conversations = new(map[string]msg.Conversation)
 		*rsp.Conversations = make(map[string]msg.Conversation)
 		(*rsp.Conversations)[conv.ConversationKey] = *conv

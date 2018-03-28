@@ -943,13 +943,13 @@ func GetMessage(messageKey *datastore.Key) (*Message, error) {
 	return message, nil
 }
 
-func GetMessages(conversationKey *datastore.Key) ([]msg.Message, error) {
+func GetMessages(conversationKey *datastore.Key) (map[string]msg.Message, error) {
 	errStr := "cannot get messages:"
 
 	q := datastore.NewQuery(KindConversationMessage).Ancestor(conversationKey).Order("ServerTime")
 	it := client.Run(c, q)
 
-	var messages []msg.Message
+	messages := make(map[string]msg.Message)
 	var err error
 
 	for {
@@ -965,7 +965,7 @@ func GetMessages(conversationKey *datastore.Key) ([]msg.Message, error) {
 		}
 
 		message := msg.Message{ServerTime: &dsMessage.Time, From: &dsMessage.From.Name, MessageKey: &messageKey.Name, Text: &dsMessage.Text, Reactions: reactions}
-		messages = append(messages, message)
+		messages[messageKey.Name] = message
 	}
 
 	if err != iterator.Done {

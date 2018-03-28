@@ -42,11 +42,11 @@ type Status struct {
 
 // TODO: implement Created time in handlers
 type Conversation struct {
-	Created         time.Time         `json:"created"`
-	LastMessage     time.Time         `json:"lastMessage"`
-	MemberStatus    map[string]Status `json:"memberStatus"`
-	ConversationKey string            `json:"conversationKey"`
-	Messages        []Message         `json:"messages"`
+	Created         time.Time          `json:"created"`
+	LastMessage     time.Time          `json:"lastMessage"`
+	MemberStatus    map[string]Status  `json:"memberStatus"`
+	ConversationKey string             `json:"conversationKey"`
+	Messages        map[string]Message `json:"messages"`
 }
 
 type ContactGame struct {
