@@ -20,9 +20,13 @@ abstract public class ViewController {
     public String ArrayListToString(ArrayList<String> list) {
         if(!(list==null)) {
             StringBuilder sb = new StringBuilder();
+            boolean first = true;
             for (String s : list) {
+                if(!first) {
+                    sb.append(",");
+                }
+                first = false;
                 sb.append(s);
-                sb.append(",");
             }
             return sb.toString();
         }
