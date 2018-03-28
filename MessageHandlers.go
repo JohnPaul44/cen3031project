@@ -346,7 +346,6 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 			}
 		}
 	}
-	log.Println(user.Username, "sent message to:", *message.Message.To)
 
 	return sendServerMessage(conn, rsp)
 }
