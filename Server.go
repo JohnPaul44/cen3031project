@@ -137,13 +137,13 @@ func updateOnlineStatus(user *ds.User, online bool) {
 		sendServerMessageToUser(contact.Contact, message)
 	}
 
-	log.Printf("%s is %s\nOnline users: %s\n", user.Username, func() string {
+	log.Printf("%s is %s\n", user.Username, func() string {
 		if online {
 			return "online"
 		} else {
 			return "offline"
 		}
-	}(), )
+	}())
 }
 
 func remove(s []string, r string) ([]string, bool) {
