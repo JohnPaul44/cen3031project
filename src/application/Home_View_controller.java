@@ -54,7 +54,6 @@ public class Home_View_controller extends ViewController{
         }
 
         //TODO: import current conversations
-        createNewContact("test");
     }
 
     public void createNewContact(String user){

@@ -80,16 +80,13 @@ public class Conversation_View_controller extends ViewController {
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
         String message = yourMessageField.getText();
-        sentMessage(message);
+        //sentMessage(message);
         if(convKey.isEmpty()){
-
             ArrayList<String> mess = new ArrayList<String>();
             mess.add(username.getText());
-            System.out.println("sending message: " + message);
             connection.sendFirstMessage(mess, message);
         }
         else{
-            System.out.println("sending message: " + message);
             connection.sendMessage(convKey, message);
         }
     }

@@ -212,7 +212,6 @@ public class Search_View_Controller extends ViewController{
                     loader.setLocation(getClass().getResource("/application/home.fxml"));
 
                     Home_View_controller home = loader.getController();
-                    System.out.println("returned username: " + username);
                     home.createNewContact(username);
                 }
             });
