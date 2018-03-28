@@ -158,10 +158,10 @@ const (
 	NotificationContactAdded                = iota // returns Username
 	NotificationContactRemoved              = iota // returns Username
 	NotificationProfileUpdated              = iota // returns Profile
-	NotificationMessageReceived             = iota // returns Message.[ConversationKey, MessageKey, ServerTime, From, Text (, Reactions)] (Message is embedded in ConversationKeys if it is the first message in a conversation)
+	NotificationMessageReceived             = iota // returns Message.[ConversationKey, MessageKey, ServerTime, From, Text] (Message is embedded in Conversations if it is the first message in a conversation)
 	NotificationMessageUpdated              = iota // returns Message.[ConversationKey, MessageKey, Text]
 	NotificationMessageReaction             = iota // returns Message.[ConversationKey, MessageKey, Reactions]
-	NotificationUserAddedToConversation     = iota // returns Username, Message.ConversationKey (, Message.ConversationKeys (returned only to new user))
+	NotificationUserAddedToConversation     = iota // returns Username, Message.ConversationKey (, Conversations (returned only to new user))
 	NotificationUserRemovedFromConversation = iota // returns Username, Message.ConversationKey
 	NotificationMessageRead                 = iota // returns Message.[ConversationKey, From]
 	NotificationTyping                      = iota // returns Message.[ConversationKey, From, Typing]
