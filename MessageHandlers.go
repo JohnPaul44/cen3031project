@@ -286,13 +286,14 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 	memberMsg.MessageKey = &m.Key.Name
 	memberMsg.ConversationKey = &m.Key.Parent.Name
 	memberMsg.ServerTime = &m.Time
+	memberMsg.ClientTime = &message.ClientTime
 	memberMsg.From = &m.From.Name
 	memberMsg.Text = &m.Text
 
 	if isNewConversation {
 		// move message to Conversation.Messages
 		conv := new(msg.Conversation)
-		conv.ConversationKey = *memberMsg.ConversationKey
+		conv.ConversationKey = m.Key.Parent.Name
 		conv.MemberStatus = memberStatuses
 		conv.Messages = make(map[string]msg.Message)
 		conv.Messages[m.Key.Name] = *memberMsg
@@ -301,7 +302,10 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		(*rsp.Conversations)[m.Key.Parent.Name] = *conv
 	} else {
 		rsp.Message = memberMsg
+		rsp.Message.ClientTime = &message.ClientTime
 	}
+
+	log.Printf("Sending message: to='%s', from='%s', convKey='%s', msgKey='%s', text='%s'\n", memberMsg.To, memberMsg.From, memberMsg.ConversationKey, memberMsg.MessageKey, memberMsg.Text)
 
 	// send message to all users in conversation, excluding sender
 	for member := range memberStatuses {
@@ -319,10 +323,6 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 			}
 		}
 	}
-
-	// set ClientTime to the time sent by the client (for identifying message internally)
-	rsp.Message = new(msg.Message)
-	rsp.Message.ClientTime = message.Message.ClientTime
 	log.Println(user.Username, "sent message to:", *message.Message.To)
 
 	return sendServerMessage(conn, rsp)

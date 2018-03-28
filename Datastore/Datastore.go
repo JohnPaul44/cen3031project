@@ -865,7 +865,6 @@ func AddMessage(message msg.Message) (*Message, error) {
 	errStr := "cannot send message:"
 
 	conversation := new(Conversation)
-	var convKey *datastore.Key
 
 	if message.ConversationKey == nil {
 		// new conversation
@@ -876,23 +875,25 @@ func AddMessage(message msg.Message) (*Message, error) {
 			return nil, err
 		}
 
-		convKey = conv.Key
-		members, err := GetConversationMembers(convKey)
+		log.Println("conv.Key: ", conv.Key.Name)
+
+		members, err := GetConversationMembers(conv.Key)
 		if err != nil {
 			log.Println(e.Tag, errStr, "cannot get conversation members:", err)
 			return nil, err
 		}
 
-		log.Printf("%s created a new conversation with: %s, key: %s\n", *message.From, *members, conversation.Key)
+		log.Printf("%s created a new conversation with: %s, conversation.key: %s\n", *message.From, *members, conv.Key)
 		conversation = conv
 
 	} else {
-		convKey = GetConversationKey(*message.ConversationKey)
+		convKey := GetConversationKey(*message.ConversationKey)
 		conv, err := GetConversation(convKey)
 		if err != nil {
 			if err == datastore.ErrNoSuchEntity {
 				err := e.ErrInvalidConversationKey
 				log.Println(errStr, err)
+				return nil, err
 			} else {
 				log.Println(e.Tag, errStr, "cannot get conversation from datastore:", err)
 				return nil, err
@@ -900,6 +901,8 @@ func AddMessage(message msg.Message) (*Message, error) {
 		}
 		conversation = conv
 	}
+
+	log.Println("conversation key:", conversation.Key.Name)
 
 	// add message to datastore and get key
 	dsMessage := new(Message)
@@ -909,14 +912,14 @@ func AddMessage(message msg.Message) (*Message, error) {
 
 	// update time in conversation to reflect most recent message
 	conversation.LastMessage = dsMessage.Time
-	_, err := client.Put(c, convKey, conversation)
+	_, err := client.Put(c, conversation.Key, conversation)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot update conversation in datastore:", err)
 		return nil, err
 	}
 
 	// put new message in datastore
-	messageKey := datastore.IncompleteKey(KindConversationMessage, convKey)
+	messageKey := datastore.IncompleteKey(KindConversationMessage, conversation.Key)
 	messageKey, err = client.Put(c, messageKey, dsMessage)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot add message to datastore:", err)
@@ -924,6 +927,7 @@ func AddMessage(message msg.Message) (*Message, error) {
 	}
 
 	dsMessage.Key = messageKey
+	log.Println("messageKey:", dsMessage.Key.Name, ", convKey:", dsMessage.Key.Parent.Name)
 
 	return dsMessage, nil
 }
