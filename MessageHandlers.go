@@ -285,9 +285,9 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 	}
 
 	msgKeyString := new(string)
-	*msgKeyString = fmt.Sprintf("%s", m.Key.ID)
+	*msgKeyString = fmt.Sprintf("%d", m.Key.ID)
 	convKeyString := new(string)
-	*convKeyString = fmt.Sprintf("%s", m.Key.Parent.ID)
+	*convKeyString = fmt.Sprintf("%d", m.Key.Parent.ID)
 
 	memberMsg := new(msg.Message)
 	memberMsg.MessageKey = msgKeyString

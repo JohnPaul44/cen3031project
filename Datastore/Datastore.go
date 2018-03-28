@@ -614,6 +614,8 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 	q := datastore.NewQuery(KindConversationMember).Filter("Member =", user.Username)
 	it := client.Run(c, q)
 
+	log.Println("getting conversations for", user.Username)
+
 	var err error
 
 	for {
@@ -656,7 +658,7 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 		}
 
 		// get messages
-		messageQuery := datastore.NewQuery(KindConversationMessage)
+		messageQuery := datastore.NewQuery(KindConversationMessage).Ancestor(conv.Key)
 		messageIt := client.Run(c, messageQuery)
 
 		for {
@@ -668,7 +670,10 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 			}
 
 			var message msg.Message
-			message.MessageKey = &msgKey.Name
+			msgKeyString := new(string)
+			*msgKeyString = fmt.Sprintf("%d", msgKey.ID)
+
+			message.MessageKey = msgKeyString
 			message.ServerTime = &dsMessage.Time
 			message.From = &dsMessage.From.Name
 			message.Text = &dsMessage.Text
@@ -687,7 +692,7 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 					break
 				}
 
-				(*message.Reactions)[reactionKey.Name] = dsReaction.Reactions
+				(*message.Reactions)[fmt.Sprintf("%d", reactionKey.ID)] = dsReaction.Reactions
 			}
 
 			if err != iterator.Done {
@@ -701,7 +706,7 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 			return nil, err
 		}
 
-		(*conversations)[conv.Key.Name] = conversation
+		(*conversations)[fmt.Sprintf("%d", conv.Key.ID)] = conversation
 	}
 
 	if err != iterator.Done {
@@ -904,7 +909,7 @@ func AddMessage(message msg.Message) (*Message, error) {
 		conversation = conv
 	}
 
-	log.Println("conversation key:", conversation.Key.Name)
+	log.Println("conversation key:", conversation.Key.ID)
 
 	// add message to datastore and get key
 	dsMessage := new(Message)
