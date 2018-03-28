@@ -92,7 +92,7 @@ public class Home_View_controller extends ViewController{
         content.getChildren().add(dm);
         content.getChildren().add(vp);
 
-        
+
         newContact.setContent(content);
         conversations.getPanes().add(newContact);
     }
