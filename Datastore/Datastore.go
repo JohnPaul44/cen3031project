@@ -447,6 +447,7 @@ func CreateConversation(username string, members []string) (*Conversation, error
 		return nil, err
 	}
 
+	conversation.Key = new(datastore.Key)
 	*conversation.Key = *conversationKey
 
 	// add members to conversation
