@@ -253,9 +253,7 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		return sendServerMessage(conn, rsp)
 	}
 
-	reqFields := len(*message.Message.Text) == 0 || len(*message.Message.ClientTime) == 0
-
-	if !reqFields {
+	if len(*message.Message.Text) == 0 || len(*message.Message.ClientTime) == 0 {
 		err := e.New("empty message.text and/or message.clientTime", e.EmptyParameter)
 		log.Println(errStr, err)
 		rsp.SetError(err)
