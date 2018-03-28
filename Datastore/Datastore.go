@@ -440,8 +440,8 @@ func CreateConversation(username string, members []string) (*Conversation, error
 	conversation := new(Conversation)
 	conversation.Created = time.Now()
 
-	conversationKey := datastore.IncompleteKey(KindConversation, nil)
-	conversationKey, err = client.Put(c, conversationKey, conversation)
+	blankConversationKey := datastore.IncompleteKey(KindConversation, nil)
+	conversationKey, err := client.Put(c, blankConversationKey, conversation)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot create conversation in datastore:", err)
 		return nil, err
@@ -449,6 +449,8 @@ func CreateConversation(username string, members []string) (*Conversation, error
 
 	conversation.Key = new(datastore.Key)
 	*conversation.Key = *conversationKey
+
+	log.Printf("conversationKey: %s, conversation.Key: %s\n", conversationKey.Name, conversation.Key.Name)
 
 	// add members to conversation
 	for _, member := range members {

@@ -260,7 +260,7 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		return sendServerMessage(conn, rsp)
 	}
 
-	log.Printf("handling sendMessage: received: to: %s, from: %s, text: %s\n", *message.Message.To, *message.Message.From, *message.Message.Text)
+	log.Printf("handling sendMessage: text: %s\n", *message.Message.Text)
 	isNewConversation := message.Message.ConversationKey == nil
 
 	message.Message.From = &user.Username
@@ -307,7 +307,7 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		rsp.Message.ClientTime = &message.ClientTime
 	}
 
-	log.Printf("Sending message: to='%s', from='%s', convKey='%s', msgKey='%s', text='%s'\n", *memberMsg.To, *memberMsg.From, *memberMsg.ConversationKey, *memberMsg.MessageKey, *memberMsg.Text)
+	log.Printf("Sending message: from='%s', convKey='%s', msgKey='%s', text='%s'\n", *memberMsg.From, *memberMsg.ConversationKey, *memberMsg.MessageKey, *memberMsg.Text)
 
 	// send message to all users in conversation, excluding sender
 	for member := range memberStatuses {
