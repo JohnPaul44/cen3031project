@@ -10,6 +10,7 @@ import (
 	"context"
 	e "../Errors"
 	msg "../ServerMessage"
+	"strconv"
 )
 
 const (
@@ -72,11 +73,13 @@ func GetUserKey(username string) *datastore.Key {
 }
 
 func GetConversationKey(conversation string) *datastore.Key {
-	return datastore.NameKey(KindConversation, conversation, nil)
+	convID, _ := strconv.ParseInt(conversation, 10, 64)
+	return datastore.IDKey(KindConversation, convID, nil)
 }
 
 func GetMessageKey(message string, conversationKey *datastore.Key) *datastore.Key {
-	return datastore.NameKey(KindConversationMessage, message, conversationKey)
+	msgID, _ := strconv.ParseInt(message, 10, 64)
+	return datastore.IDKey(KindConversationMessage, msgID, conversationKey)
 }
 
 func GetContactKey(owner string, contact string) *datastore.Key {
