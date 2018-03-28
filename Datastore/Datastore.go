@@ -447,7 +447,7 @@ func CreateConversation(username string, members []string) (*Conversation, error
 		return nil, err
 	}
 
-	conversation.Key = conversationKey
+	*conversation.Key = *conversationKey
 
 	// add members to conversation
 	for _, member := range members {
@@ -869,20 +869,22 @@ func AddMessage(message msg.Message) (*Message, error) {
 	if message.ConversationKey == nil {
 		// new conversation
 		// create conversation entity and get key
-		conversation, err := CreateConversation(*message.From, *message.To)
+		conv, err := CreateConversation(*message.From, *message.To)
 		if err != nil {
 			log.Println(e.Tag, errStr, "cannot create conversation in datastore:", err)
 			return nil, err
 		}
 
-		convKey = conversation.Key
+		convKey = conv.Key
 		members, err := GetConversationMembers(convKey)
 		if err != nil {
 			log.Println(e.Tag, errStr, "cannot get conversation members:", err)
 			return nil, err
 		}
 
-		log.Printf("%s created a new conversation with: %s\n", *message.From, *members)
+		log.Printf("%s created a new conversation with: %s, key: %s\n", *message.From, *members, conversation.Key)
+		conversation = conv
+
 	} else {
 		convKey = GetConversationKey(*message.ConversationKey)
 		conv, err := GetConversation(convKey)

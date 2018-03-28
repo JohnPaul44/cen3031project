@@ -275,13 +275,6 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		return sendServerMessage(conn, rsp)
 	}
 
-	memberMsg := new(msg.Message)
-	memberMsg.MessageKey = &m.Key.Name
-	memberMsg.ConversationKey = &m.Key.Parent.Name
-	memberMsg.ServerTime = &m.Time
-	memberMsg.From = &m.From.Name
-	memberMsg.Text = &m.Text
-
 	memberStatuses, err := ds.GetConversationMemberStatuses(m.Key.Parent)
 	if err != nil {
 		log.Println(e.Tag, errStr, "could not get member statuses:", err)
@@ -289,8 +282,15 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		return sendServerMessage(conn, rsp)
 	}
 
+	memberMsg := new(msg.Message)
+	memberMsg.MessageKey = &m.Key.Name
+	memberMsg.ConversationKey = &m.Key.Parent.Name
+	memberMsg.ServerTime = &m.Time
+	memberMsg.From = &m.From.Name
+	memberMsg.Text = &m.Text
+
 	if isNewConversation {
-		// move message to Conversation.Messages[0]
+		// move message to Conversation.Messages
 		conv := new(msg.Conversation)
 		conv.ConversationKey = *memberMsg.ConversationKey
 		conv.MemberStatus = memberStatuses
@@ -298,7 +298,7 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		conv.Messages[m.Key.Name] = *memberMsg
 		rsp.Conversations = new(map[string]msg.Conversation)
 		*rsp.Conversations = make(map[string]msg.Conversation)
-		(*rsp.Conversations)[conv.ConversationKey] = *conv
+		(*rsp.Conversations)[m.Key.Parent.Name] = *conv
 	} else {
 		rsp.Message = memberMsg
 	}
