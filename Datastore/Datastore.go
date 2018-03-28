@@ -633,10 +633,11 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 		}
 
 		var conversation msg.Conversation
-		conversation.ConversationKey = conv.Key.Name
+		conversation.ConversationKey = fmt.Sprintf("%d", conv.Key.ID)
 		conversation.LastMessage = conv.LastMessage
 		conversation.Created = conv.Created
 		conversation.MemberStatus = make(map[string]msg.Status)
+		conversation.Messages = make(map[string]msg.Message)
 
 		// get members of conversation
 		memberQuery := datastore.NewQuery(KindConversationMember).Ancestor(conv.Key)
@@ -699,6 +700,8 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 				log.Println(e.Tag, errStr, "cannot get message reactions from datastore:", err)
 				return nil, err
 			}
+
+			conversation.Messages[*msgKeyString] = message
 		}
 
 		if err != iterator.Done {
