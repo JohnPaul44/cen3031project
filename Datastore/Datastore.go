@@ -450,7 +450,7 @@ func CreateConversation(username string, members []string) (*Conversation, error
 	conversation.Key = new(datastore.Key)
 	*conversation.Key = *conversationKey
 
-	log.Printf("conversationKey: %s, conversation.Key: %s\n", conversationKey.Name, conversation.Key.Name)
+	log.Printf("conversationKey: %s, conversation.Key: %s\n", conversationKey.ID, conversation.Key.ID)
 
 	// add members to conversation
 	for _, member := range members {
@@ -877,7 +877,7 @@ func AddMessage(message msg.Message) (*Message, error) {
 			return nil, err
 		}
 
-		log.Println("conv.Key: ", conv.Key.Name)
+		log.Println("conv.Key: ", conv.Key.ID)
 
 		members, err := GetConversationMembers(conv.Key)
 		if err != nil {
@@ -929,7 +929,7 @@ func AddMessage(message msg.Message) (*Message, error) {
 	}
 
 	dsMessage.Key = messageKey
-	log.Println("messageKey:", dsMessage.Key.Name, ", convKey:", dsMessage.Key.Parent.Name)
+	log.Println("messageKey:", dsMessage.Key.ID, ", convKey:", dsMessage.Key.Parent.ID)
 
 	return dsMessage, nil
 }
@@ -973,7 +973,9 @@ func GetMessages(conversationKey *datastore.Key) (map[string]msg.Message, error)
 			break
 		}
 
-		message := msg.Message{ServerTime: &dsMessage.Time, From: &dsMessage.From.Name, MessageKey: &messageKey.Name, Text: &dsMessage.Text, Reactions: reactions}
+		msgKeyString := new(string)
+		*msgKeyString = fmt.Sprintf("%s", messageKey.ID)
+		message := msg.Message{ServerTime: &dsMessage.Time, From: &dsMessage.From.Name, MessageKey: msgKeyString, Text: &dsMessage.Text, Reactions: reactions}
 		messages[messageKey.Name] = message
 	}
 

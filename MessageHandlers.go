@@ -284,9 +284,14 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		return sendServerMessage(conn, rsp)
 	}
 
+	msgKeyString := new(string)
+	*msgKeyString = fmt.Sprintf("%s", m.Key.ID)
+	convKeyString := new(string)
+	*convKeyString = fmt.Sprintf("%s", m.Key.Parent.ID)
+
 	memberMsg := new(msg.Message)
-	memberMsg.MessageKey = &m.Key.Name
-	memberMsg.ConversationKey = &m.Key.Parent.Name
+	memberMsg.MessageKey = msgKeyString
+	memberMsg.ConversationKey = convKeyString
 	memberMsg.ServerTime = &m.Time
 	memberMsg.ClientTime = &message.ClientTime
 	memberMsg.From = &m.From.Name
@@ -295,13 +300,13 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 	if isNewConversation {
 		// move message to Conversation.Messages
 		conv := new(msg.Conversation)
-		conv.ConversationKey = m.Key.Parent.Name
+		conv.ConversationKey = *convKeyString
 		conv.MemberStatus = memberStatuses
 		conv.Messages = make(map[string]msg.Message)
 		conv.Messages[m.Key.Name] = *memberMsg
 		rsp.Conversations = new(map[string]msg.Conversation)
 		*rsp.Conversations = make(map[string]msg.Conversation)
-		(*rsp.Conversations)[m.Key.Parent.Name] = *conv
+		(*rsp.Conversations)[*convKeyString] = *conv
 	} else {
 		rsp.Message = memberMsg
 		rsp.Message.ClientTime = &message.ClientTime
