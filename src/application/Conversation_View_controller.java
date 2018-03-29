@@ -156,7 +156,7 @@ public class Conversation_View_controller extends ViewController {
         Conversation convo = connection.getCurrentUser().getConversationList().get(convKey);
         HashMap<String, Message> messages = convo.getMessages();
         for(Message values : messages.values()){
-            if(values.getFrom() == connection.getCurrentUser().getUserName()){
+            if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
                 sentMessage(values.getText());
             }
             else{
