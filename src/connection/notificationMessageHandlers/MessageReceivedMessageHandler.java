@@ -30,7 +30,7 @@ public class MessageReceivedMessageHandler extends ModelUpdateMessageHandler imp
         if (serverMessage.getConversation() == null) {
             Message m = serverMessage.getMessage();
             delegate.messageReceivedNotification(errorInformation, m.getConversationKey(), m.getMessageKey(),
-                    m.getServerTime(), m.getFrom(), m.getText());
+                    m.getClientTime(), m.getFrom(), m.getText());
         } else {
             Map<String, Conversation>  conversationMap = serverMessage.getConversation();
             Conversation conversation = new Conversation();
