@@ -1,5 +1,6 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
 import javafx.application.Platform;
@@ -41,7 +42,6 @@ public class Home_View_controller extends ViewController{
         connection = con;
         setConversationsList();
         setUsername(connection.getCurrentUser().getUserName());
-        loadCurrentProfile();
     }
 
     public void setConversationsList(){
@@ -187,22 +187,27 @@ public class Home_View_controller extends ViewController{
     @FXML
     public void Search(javafx.scene.input.KeyEvent keyEvent) throws Exception{
         if(keyEvent.getCode() == KeyCode.ENTER) {
-            try {
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/application/search.fxml"));
-                AnchorPane anchor = new AnchorPane();
-                anchor = loader.load();
+            SearchHelper(search.getText());
+        }
+    }
 
-                setView(anchor);
+    @FXML
+    public void SearchHelper(String searchUser){
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(getClass().getResource("/application/search.fxml"));
+            AnchorPane anchor = new AnchorPane();
+            anchor = loader.load();
 
-                Search_View_Controller searchScreen = loader.getController();
-                searchScreen.passConnection(connection);
-                searchScreen.setSearchField(search.getText());
-                connection.setDelegate(searchScreen);
+            setView(anchor);
 
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            Search_View_Controller searchScreen = loader.getController();
+            searchScreen.passConnection(connection);
+            searchScreen.setSearchField(searchUser);
+            connection.setDelegate(searchScreen);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -272,4 +277,16 @@ public class Home_View_controller extends ViewController{
 //                break;
 //        }
 //    }
+
+    @Override
+    public void userOnlineStatusNotification(ErrorInformation errorInformation, String username, boolean online){
+        if(errorInformation.getErrorNumber() == 0 && online){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            });
+        }
+    }
 }
