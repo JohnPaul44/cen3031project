@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -92,6 +93,8 @@ public class ViewProfile_View_Controller extends ViewController {
     private  Circle icon_design;
     @FXML
     private Label icon_letter;
+    @FXML
+    private AnchorPane anchor;
 
 
 
@@ -150,19 +153,19 @@ public class ViewProfile_View_Controller extends ViewController {
     public void BackButton(ActionEvent event){
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/application/home.fxml"));
-            loader.load();
+            loader.setLocation(getClass().getResource("/application/search.fxml"));
+            AnchorPane temp = new AnchorPane();
+            try{
+                temp = loader.load();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            anchor.getChildren().add(temp);
 
-            Home_View_controller home = loader.getController();
-            home.passConnection(connection);
-            connection.setDelegate(home);
-
-            Parent root = loader.getRoot();
-            Stage registerStage = (Stage) backButton.getScene().getWindow();
-            Scene scene = new Scene(root, 700, 500);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            registerStage.setScene(scene);
-            registerStage.show();
+            Search_View_Controller search = loader.getController();
+            search.passConnection(connection);
+            search.setSearchField(username.getText());
+            connection.setDelegate(search);
 
         } catch (Exception e) {
             e.printStackTrace();
