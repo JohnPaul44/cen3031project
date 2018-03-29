@@ -10,6 +10,8 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -20,6 +22,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import model.Contact;
 import model.Profile;
 
@@ -119,30 +122,6 @@ public class Search_View_Controller extends ViewController{
 
     public void addContact(String username){
         //TODO:add function
-//        //load the home view and add the contact to the home screen
-//        FXMLLoader loader = new FXMLLoader();
-//        loader.setLocation(getClass().getResource("/application/home.fxml"));
-//        try {
-//            loader.load();
-//        } catch(Exception e){
-//            e.printStackTrace();
-//        }
-//        Home_View_controller home = loader.getController();
-//        Task<Void> updateGUI = new Task<Void>() {
-//            @Override
-//            protected Void call() throws Exception {
-//                home.createNewContact("plz work", false);
-//                return null;
-//            }
-//        };
-//
-//        Thread t = new Thread(updateGUI);
-//        t.setDaemon(true);
-//        t.start();
-//
-//        updateGUI.setOnSucceeded(event -> {
-//            System.out.println("yay");
-//        });
         connection.addContact(username);
     }
 
@@ -215,9 +194,24 @@ public class Search_View_Controller extends ViewController{
                     //load the home view and add the contact to the home screen
                     FXMLLoader loader = new FXMLLoader();
                     loader.setLocation(getClass().getResource("/application/home.fxml"));
+                    try {
+                        loader.load();
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
 
                     Home_View_controller home = loader.getController();
-                    home.createNewContact(username);
+                    home.passConnection(connection);
+                    connection.setDelegate(home);
+                    home.SearchHelper(searchField.getText());
+                    //home.initialize();
+
+                    Parent root = loader.getRoot();
+                    Stage registerStage = (Stage) status.getScene().getWindow();
+                    Scene scene = new Scene(root, 880, 500);
+                    scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+                    registerStage.setScene(scene);
+                    registerStage.show();
                 }
             });
         }
