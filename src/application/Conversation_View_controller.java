@@ -25,10 +25,11 @@ import model.*;
 
 import javax.swing.*;
 import javax.xml.soap.Text;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class Conversation_View_controller extends ViewController {
     ServerConnection connection;
@@ -150,13 +151,27 @@ public class Conversation_View_controller extends ViewController {
 
     @FXML
     public void setMessages(){
-        if(convKey.isEmpty()){
+        if(convKey.isEmpty()) {
             return;
         }
 
         Conversation convo = connection.getCurrentUser().getConversationList().get(convKey);
         HashMap<String, Message> messages = convo.getMessages();
-        for(Message values : messages.values()){
+
+        Set<Map.Entry<String, Message>> messagesSet = messages.entrySet();
+
+        List<Map.Entry<String, Message>> messagesList = new ArrayList<Map.Entry<String, Message>>(messagesSet);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
+        Collections.sort(messagesList, (s1,s2) -> LocalDateTime.parse(s1.getValue().getServerTime(), formatter).compareTo(LocalDateTime.parse(s2.getValue().getServerTime(), formatter)));
+
+        LinkedHashMap<String, Message> sortedMessages = new LinkedHashMap<>(messagesList.size());
+
+        for(Map.Entry<String, Message> messageEntry : messagesList) {
+            sortedMessages.put(messageEntry.getKey(), messageEntry.getValue());
+        }
+
+        for(Message values : sortedMessages.values()){
             if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
                 sentMessage(values.getText());
             }
