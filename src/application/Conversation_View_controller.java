@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -179,10 +180,15 @@ public class Conversation_View_controller extends ViewController {
                         }
                         if(from.equals(username.getText())){
                             receivedMessage(text);
-                            //TODO: set status
+                            status.setAlignment(Pos.CENTER_LEFT);
+                            status.setEditable(false);
+                            status.setText("Message Received " + time);
                         }
                         else{
                             sentMessage(text);
+                            status.setAlignment(Pos.CENTER_RIGHT);
+                            status.setEditable(false);
+                            status.setText("Message Delivered " + time);
                         }
                     }
                 }
@@ -205,10 +211,24 @@ public class Conversation_View_controller extends ViewController {
     }
     @Override
     public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
+        if(errorInformation.getErrorNumber() == 0){
 
+        }
     }
     @Override
     public void typingNotification(ErrorInformation errorInformation, String conversationKey, String from, boolean typing) {
-
+        if(errorInformation.getErrorNumber() == 0 && typing){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    status.setAlignment(Pos.CENTER_LEFT);
+                    status.setEditable(false);
+                    status.setText("..." + from + " is typing...");
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
     }
 }
