@@ -212,6 +212,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 
 			switch message.Status {
 			case msg.ActionLogIn:
+				rsp.Status = msg.NotificationLoggedIn
 				err = logIn(usr, message)
 				if err != nil {
 					log.Println("cannot log user in:", err)
