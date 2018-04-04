@@ -31,6 +31,7 @@ import model.Profile;
 import sun.plugin.javascript.navig.Anchor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,15 +49,19 @@ public class Home_View_controller extends ViewController{
         HashMap<String, Contact> contactList = connection.getCurrentUser().getContactList();
 
         if(!contactList.isEmpty()){
-            for(String key: contactList.keySet()){
-                createNewContact(key);
+            for(Map.Entry<String, Contact> entry: contactList.entrySet()){
+                String key = entry.getKey();
+                Contact value = entry.getValue();
+                createNewContact(key, value.getOnline());
             }
         }
 
         //TODO: import current conversations
     }
 
-    public void createNewContact(String user){
+    ArrayList<TitledPane> contacts = new ArrayList<>();
+
+    public void createNewContact(String user, Boolean online){
         TitledPane newContact = new TitledPane();
         newContact.setText(user);
         newContact.setStyle("-fx-background-color: #E7DECD");
@@ -91,8 +96,15 @@ public class Home_View_controller extends ViewController{
         content.getChildren().add(dm);
         content.getChildren().add(vp);
 
+        Circle notification = new Circle(3);
+        notification.setFill(Color.GREEN);
+        if(!online) {
+            notification.setVisible(false);
+        }
 
         newContact.setContent(content);
+        newContact.setGraphic(notification);
+        contacts.add(newContact);
         conversations.getPanes().add(newContact);
     }
 
@@ -262,6 +274,19 @@ public class Home_View_controller extends ViewController{
         }
     }
 
+    @FXML
+    public void setOnlineStatus(String username, boolean online){
+        for(int i = 0; i < contacts.size(); i++){
+            if(username.equals(contacts.get(i).getText())){
+                if(online) {
+                    contacts.get(i).getGraphic().setVisible(true);
+                }
+                else{
+                    contacts.get(i).getGraphic().setVisible(false);
+                }
+            }
+        }
+    }
 //    @Override
 //    public void notification(ServerMessage message) {
 //        switch (message.getStatus()){
@@ -280,13 +305,16 @@ public class Home_View_controller extends ViewController{
 
     @Override
     public void userOnlineStatusNotification(ErrorInformation errorInformation, String username, boolean online){
-        if(errorInformation.getErrorNumber() == 0 && online){
+        if(errorInformation.getErrorNumber() == 0){
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-
+                    setOnlineStatus(username, online);
                 }
             });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
         }
     }
 }
