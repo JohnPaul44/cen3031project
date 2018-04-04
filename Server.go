@@ -217,7 +217,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				err = logIn(usr, message)
 				if err != nil {
 					log.Println("cannot log user in:", err)
-					if err == e.ErrInvalidUsername || err == e.ErrInvalidPassword {
+					if err == e.ErrInvalidUsername || err == e.ErrInvalidPassword || err == e.ErrInvalidLogin {
 						rsp.SetError(e.ErrInvalidLogin)
 						err = sendServerMessage(conn, rsp)
 						sockClosed = err != nil
@@ -229,6 +229,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				break
 			case msg.ActionRegister:
 				rsp.Status = msg.NotificationLoggedIn
+
 				err = register(usr, message)
 				if err != nil {
 					log.Println("cannot register user:", err)
