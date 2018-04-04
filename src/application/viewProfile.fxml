@@ -24,7 +24,7 @@
                         <Cursor fx:constant="TEXT" />
                     </cursor>
                 </TextArea>
-                <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="169.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME">
+                <Label fx:id="usern" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="169.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME">
                     <font>
                         <Font size="16.0" />
                     </font>
@@ -80,18 +80,18 @@
                         <Font size="13.0" />
                     </font>
                 </Label>
-                <Label layoutX="16.0" layoutY="298.0" text="Hobbies:" textFill="#401b1b">
+                <Label layoutX="22.0" layoutY="239.0" text="Hobbies:" textFill="#401b1b">
                     <font>
                         <Font size="13.0" />
                     </font>
                 </Label>
-                <Label layoutX="16.0" layoutY="390.0" text="Interests:" textFill="#401b1b">
+                <Label layoutX="22.0" layoutY="331.0" text="Interests:" textFill="#401b1b">
                     <font>
                         <Font size="13.0" />
                     </font>
                 </Label>
-                <TextArea fx:id="interests" layoutX="16.0" layoutY="409.0" prefHeight="62.0" prefWidth="348.0" />
-                <TextArea fx:id="hobbies" layoutX="16.0" layoutY="317.0" prefHeight="62.0" prefWidth="348.0" />
+                <TextArea fx:id="interests" layoutX="22.0" layoutY="350.0" prefHeight="62.0" prefWidth="348.0" />
+                <TextArea fx:id="hobbies" layoutX="22.0" layoutY="258.0" prefHeight="62.0" prefWidth="348.0" />
                 <ProgressBar fx:id="levelProgress" layoutX="70.0" layoutY="102.0" prefHeight="18.0" prefWidth="148.0" progress="0.25" style="-fx-border-color: #804E49;">
                <effect>
                   <SepiaTone />
@@ -158,5 +158,10 @@
             </Label>
             </children>
         </Pane>
+      <Button fx:id="remove" layoutX="96.0" layoutY="468.0" mnemonicParsing="false" onAction="#removeContact" style="-fx-background-color: #ff6961;" text="Remove Contact" textFill="WHITE">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
     </children>
 </AnchorPane>

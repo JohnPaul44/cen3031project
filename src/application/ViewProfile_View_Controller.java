@@ -3,6 +3,7 @@ package application;
 import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -78,7 +79,7 @@ public class ViewProfile_View_Controller extends ViewController {
     @FXML
     private Label game1Ties;
     @FXML
-    private Label username;
+    private Label usern;
     @FXML
     private Label mind;
     @FXML
@@ -95,11 +96,12 @@ public class ViewProfile_View_Controller extends ViewController {
     private Label icon_letter;
     @FXML
     private AnchorPane anchor;
+    @FXML
+    private Button remove;
 
-
-
-    void setUsername(String user){
-        username.setText(user);
+    @FXML
+    public void setUsername(String user){
+        usern.setText(user);
         thisUser = user;
     }
 
@@ -131,7 +133,7 @@ public class ViewProfile_View_Controller extends ViewController {
     }
 
     public void setIcon(String col){
-        String first_letter = "" + username.getText().charAt(0);
+        String first_letter = "" + usern.getText().charAt(0);
         icon_letter.setText(first_letter);
 
         Paint icon_color = Paint.valueOf(col);
@@ -164,7 +166,7 @@ public class ViewProfile_View_Controller extends ViewController {
 
             Search_View_Controller search = loader.getController();
             search.passConnection(connection);
-            search.setSearchField(username.getText());
+            search.setSearchField(usern.getText());
             connection.setDelegate(search);
 
         } catch (Exception e) {
@@ -172,6 +174,10 @@ public class ViewProfile_View_Controller extends ViewController {
         }
     }
 
+    @FXML
+    public void removeContact(){
+        connection.removeContact(usern.getText());
+    }
 
     @Override
     public void contactUpdatedNotification(ErrorInformation errorInformation, HashMap<String, Contact> contacts) {
@@ -182,6 +188,40 @@ public class ViewProfile_View_Controller extends ViewController {
             if (contacts.keySet().contains(thisUser)) {
                 setValuesContact();
             }
+        }
+    }
+
+    @Override
+    public void contactRemovedNotification(ErrorInformation errorInformation, String username){
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    //load the home view and remove the contact from the home screen
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("/application/home.fxml"));
+                    try {
+                        loader.load();
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+                    Home_View_controller home = loader.getController();
+                    home.passConnection(connection);
+                    home.ViewOtherProfileHelper(usern.getText());
+                    connection.setDelegate(home);
+
+                    Parent root = loader.getRoot();
+                    Stage registerStage = (Stage) remove.getScene().getWindow();
+                    Scene scene = new Scene(root, 880, 500);
+                    scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+                    registerStage.setScene(scene);
+                    registerStage.show();
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
         }
     }
 }

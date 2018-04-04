@@ -256,6 +256,11 @@ public class Home_View_controller extends ViewController{
 
     @FXML
     public void ViewOtherProfile(MouseEvent actionEvent, String user) throws Exception{
+        ViewOtherProfileHelper(user);
+    }
+
+    @FXML
+    public void ViewOtherProfileHelper(String user){
         try{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/viewProfile.fxml"));
