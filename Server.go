@@ -213,6 +213,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 			switch message.Status {
 			case msg.ActionLogIn:
 				rsp.Status = msg.NotificationLoggedIn
+
 				err = logIn(usr, message)
 				if err != nil {
 					log.Println("cannot log user in:", err)
@@ -227,6 +228,7 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				loggedIn = true
 				break
 			case msg.ActionRegister:
+				rsp.Status = msg.NotificationLoggedIn
 				err = register(usr, message)
 				if err != nil {
 					log.Println("cannot register user:", err)
@@ -239,6 +241,8 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				loggedIn = true
 				break
 			case msg.ActionRequestSecurityQuestion:
+				rsp.Status = msg.NotificationSecurityQuestion
+
 				if message.Username == nil {
 					err := e.New("missing username", e.MissingParameter)
 					rsp.SetError(err)
@@ -268,11 +272,12 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 					break
 				}
 
-				rsp.Status = msg.NotificationSecurityQuestion
 				rsp.SecurityQuestion = &user.SecurityQuestion
 				sockClosed = sendServerMessage(conn, rsp) != nil
 				break
 			case msg.ActionChangePassword:
+				rsp.Status = msg.NotificationPasswordChanged
+
 				if message.Username == nil || message.Password == nil || message.SecurityAnswer == nil || message.Phone == nil {
 					// handle missing parameter
 					err := e.New("missing username, password, securityAnswer and/or phone", e.MissingParameter)
@@ -335,7 +340,6 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 				log.Println("user changed password")
 
 				// send msg.NotificationPasswordChanged
-				rsp.Status = msg.NotificationPasswordChanged
 				sockClosed = sendServerMessage(conn, rsp) != nil
 
 				break
