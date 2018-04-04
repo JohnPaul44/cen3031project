@@ -61,10 +61,10 @@ public class ChangePassword_View_controller extends ViewController {
 	
 	ObservableList<String> securityQuestionList = FXCollections.observableArrayList("<Security Questions>", "What is your mother's maiden name?", "What was the name of your first pet?", "What was your high school mascot?");
     @FXML
-    private void initialize() {
-    		securityQuestion.setValue("<Security Questions>");
-    		securityQuestion.setItems(securityQuestionList);
-    }
+	public void setSecurityQuestion(String ques){
+    	securityQuestion.setValue(ques);
+    	securityQuestion.setItems(securityQuestionList);
+	}
 	
 	@FXML
     public void BackButton(ActionEvent event) throws Exception{

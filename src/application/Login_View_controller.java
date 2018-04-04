@@ -89,7 +89,7 @@ public class Login_View_controller extends ViewController{
 	}
 
 	@FXML
-	public void openChangePassword(){
+	public void openChangePassword(String ques){
 
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -101,6 +101,7 @@ public class Login_View_controller extends ViewController{
 			ChangePassword_View_controller pass = loader.getController();
 			pass.setUsername(username.getText());
 			pass.passConnection(connection);
+			pass.setSecurityQuestion(ques);
 			connection.setDelegate(pass);
 
 
@@ -170,7 +171,7 @@ public class Login_View_controller extends ViewController{
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					openChangePassword();
+					openChangePassword(securityQuestion);
 				}
 			});
 		}
