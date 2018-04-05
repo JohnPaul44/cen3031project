@@ -204,12 +204,4 @@ public class ViewCurrentUser_View_controller extends ViewController {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void profileUpdatedNotification(ErrorInformation errorInformation, Profile profile) {
-        if (errorInformation.getErrorNumber() != 0) {
-            System.out.println(errorInformation.getErrorString());
-        } else {
-        }
-    }
 }

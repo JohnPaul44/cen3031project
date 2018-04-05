@@ -179,49 +179,11 @@ public class ViewProfile_View_Controller extends ViewController {
         connection.removeContact(usern.getText());
     }
 
-    @Override
-    public void contactUpdatedNotification(ErrorInformation errorInformation, HashMap<String, Contact> contacts) {
-        if (errorInformation.getErrorNumber() != 0){
-            System.out.println(errorInformation.getErrorString());
-        }
-        else {
-            if (contacts.keySet().contains(thisUser)) {
-                setValuesContact();
-            }
+    @FXML
+    public void updateContact(HashMap<String, Contact> contacts){
+        if (contacts.keySet().contains(thisUser)) {
+            setValuesContact();
         }
     }
 
-    @Override
-    public void contactRemovedNotification(ErrorInformation errorInformation, String username){
-        if(errorInformation.getErrorNumber() == 0){
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    //load the home view and remove the contact from the home screen
-                    FXMLLoader loader = new FXMLLoader();
-                    loader.setLocation(getClass().getResource("/application/home.fxml"));
-                    try {
-                        loader.load();
-                    }catch(Exception e){
-                        e.printStackTrace();
-                    }
-
-                    Home_View_controller home = loader.getController();
-                    home.passConnection(connection);
-                    home.ViewOtherProfileHelper(usern.getText());
-                    connection.setDelegate(home);
-
-                    Parent root = loader.getRoot();
-                    Stage registerStage = (Stage) remove.getScene().getWindow();
-                    Scene scene = new Scene(root, 880, 500);
-                    scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-                    registerStage.setScene(scene);
-                    registerStage.show();
-                }
-            });
-        }
-        else{
-            System.out.println(errorInformation.getErrorString());
-        }
-    }
 }

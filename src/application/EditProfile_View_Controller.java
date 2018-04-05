@@ -272,11 +272,4 @@ public class EditProfile_View_Controller extends ViewController {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void profileUpdatedNotification(ErrorInformation errorInformation, Profile profile) {
-        if (errorInformation.getErrorNumber() != 0){
-            System.out.println(errorInformation.getErrorString());
-        }
-    }
 }

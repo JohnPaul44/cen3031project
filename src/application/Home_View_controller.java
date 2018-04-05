@@ -59,6 +59,7 @@ public class Home_View_controller extends ViewController{
             }
         }
 
+        setMessageNotificationStart();
         //TODO: import current conversations
     }
 
@@ -121,6 +122,28 @@ public class Home_View_controller extends ViewController{
         conversations.getPanes().add(newContact);
     }
 
+    public void setMessageNotificationStart(){
+        HashMap<String, Conversation> convoList = connection.getCurrentUser().getConversationList();
+        for(String key : convoList.keySet()){
+            Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(key).getMemberStatus();
+            for(Map.Entry<String, Status> entry: mem.entrySet()){
+                String keyStatus = entry.getKey();
+                Status value = entry.getValue();
+
+                if(!value.getRead()){
+                    System.out.println("unread message from " + keyStatus);
+                    int size = contacts.size();
+                    for(int i = 0; i < size; i++){
+                        if(keyStatus.equals(contacts.get(i).getText())){
+                            HBox notif = (HBox) contacts.get(i).getGraphic();
+                            notif.getChildren().get(1).setVisible(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -139,6 +162,8 @@ public class Home_View_controller extends ViewController{
     private AnchorPane view;
 
     private Conversation_View_controller currentConvo;
+    private Search_View_Controller currentSearch;
+    private ViewProfile_View_Controller vpScreen;
 
     private void setUsername(String user){
         usernameAcc.setText(user);
@@ -226,10 +251,10 @@ public class Home_View_controller extends ViewController{
 
             setView(anchor);
 
-            Search_View_Controller searchScreen = loader.getController();
-            searchScreen.passConnection(connection);
-            searchScreen.setSearchField(searchUser);
-            connection.setDelegate(searchScreen);
+            currentSearch = loader.getController();
+            currentSearch.passConnection(connection);
+            currentSearch.setSearchField(searchUser);
+            //connection.setDelegate(currentSearch);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -250,6 +275,13 @@ public class Home_View_controller extends ViewController{
             //connection.setDelegate(dmScreen);
             currentConvo.setUsername(user);
             currentConvo.setTopic();
+
+            for(int i = 0; i < contacts.size(); i++){
+                if(user.equals(contacts.get(i).getText())){
+                    HBox notif = (HBox) contacts.get(i).getGraphic();
+                    notif.getChildren().get(1).setVisible(false);
+                }
+            }
 
             HashMap<String, Conversation> convos = connection.getCurrentUser().getConversationList();
             if(convos != null) {
@@ -282,7 +314,7 @@ public class Home_View_controller extends ViewController{
             anchor = loader.load();
             setView(anchor);
 
-            ViewProfile_View_Controller vpScreen = loader.getController();
+            vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
             vpScreen.setValuesContact();
@@ -318,22 +350,6 @@ public class Home_View_controller extends ViewController{
         }
     }
 
-//    @Override
-//    public void notification(ServerMessage message) {
-//        switch (message.getStatus()){
-//            case NOTIFICATIONPROFILEUPDATED:
-//                Platform.runLater(new Runnable(){
-//                    @Override
-//                    public void run(){
-//                        //setValues();
-//                    }
-//                });
-//                break;
-//            default:
-//                break;
-//        }
-//    }
-
     public void deliverMessage(String conversationKey, String messageKey, String time, String from, String text){
         int children = view.getChildren().size();
         AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
@@ -359,6 +375,8 @@ public class Home_View_controller extends ViewController{
         }
     }
 
+
+    /*Callbacks*/
     @Override
     public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
                                             String time, String from, String text) {
@@ -383,6 +401,96 @@ public class Home_View_controller extends ViewController{
                 @Override
                 public void run() {
                     setOnlineStatus(username, online);
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
+        if(errorInformation.getErrorNumber() == 0){
+
+        }
+    }
+
+    @Override
+    public void profileUpdatedNotification(ErrorInformation errorInformation, Profile profile) {
+        if (errorInformation.getErrorNumber() != 0){
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void queryResultsNotification(ErrorInformation errorInformation, HashMap<String, Profile> results) {
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    currentSearch.setSearchResults(results);
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void contactAddedNotification(ErrorInformation errorInformation, String username) {
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    createNewContact(username, false);
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void contactUpdatedNotification(ErrorInformation errorInformation, HashMap<String, Contact> contacts) {
+        if (errorInformation.getErrorNumber() != 0){
+            System.out.println(errorInformation.getErrorString());
+        }
+        else {
+            if (contacts.keySet().contains(vpScreen.getThisUser())) {
+                vpScreen.setValuesContact();
+            }
+        }
+    }
+
+    @Override
+    public void contactRemovedNotification(ErrorInformation errorInformation, String username){
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    //load the home view and remove the contact from the home screen
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("/application/home.fxml"));
+                    try {
+                        loader.load();
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+                    Home_View_controller home = loader.getController();
+                    home.passConnection(connection);
+                    home.ViewOtherProfileHelper(username);
+                    connection.setDelegate(home);
+
+                    Parent root = loader.getRoot();
+                    Stage registerStage = (Stage) conversations.getScene().getWindow();
+                    Scene scene = new Scene(root, 880, 500);
+                    scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+                    registerStage.setScene(scene);
+                    registerStage.show();
                 }
             });
         }
