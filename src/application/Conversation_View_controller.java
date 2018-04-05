@@ -59,6 +59,8 @@ public class Conversation_View_controller extends ViewController {
     private TextField status;
     @FXML
     private TextField topic;
+    private String thisUser;
+
 
     String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
     "What was your favorite book as a child?", "Who are the three greatest athletes of all time?", "Where would you like to travel next?",
@@ -73,6 +75,7 @@ public class Conversation_View_controller extends ViewController {
     public String convKey = "";
 
     public void setUsername(String user){
+        thisUser = user;
         username.setText(user);
     }
 
@@ -91,15 +94,16 @@ public class Conversation_View_controller extends ViewController {
     }
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
-        String message = yourMessageField.getText();
-        //sentMessage(message);
-        if(convKey.isEmpty()){
-            ArrayList<String> mess = new ArrayList<String>();
-            mess.add(username.getText());
-            connection.sendFirstMessage(mess, message);
-        }
-        else{
-            connection.sendMessage(convKey, message);
+        if (!yourMessageField.getText().isEmpty()) {
+            String message = yourMessageField.getText();
+            //sentMessage(message);
+            if (convKey.isEmpty()) {
+                ArrayList<String> mess = new ArrayList<String>();
+                mess.add(username.getText());
+                connection.sendFirstMessage(mess, message);
+            } else {
+                connection.sendMessage(convKey, message);
+            }
         }
     }
 
@@ -176,36 +180,25 @@ public class Conversation_View_controller extends ViewController {
         }
     }
 
-    @Override
-    public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                            String time, String from, String text) {
-        if(errorInformation.getErrorNumber() == 0){
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
-                    if(mem.keySet().contains(username.getText())){
-                        if(convKey.isEmpty()){
-                            setConversationKey(conversationKey);
-                        }
-                        if(from.equals(username.getText())){
-                            receivedMessage(text);
-                            status.setAlignment(Pos.CENTER_LEFT);
-                            status.setEditable(false);
-                            status.setText("Message Received " + time);
-                        }
-                        else{
-                            sentMessage(text);
-                            status.setAlignment(Pos.CENTER_RIGHT);
-                            status.setEditable(false);
-                            status.setText("Message Delivered " + time);
-                        }
-                    }
-                }
-            });
-        }
-        else{
-            System.out.println(errorInformation.getErrorString());
+    public void newMessage(String conversationKey, String messageKey,
+                           String time, String from, String text, Map<String, Status> mem){
+
+        if(mem.keySet().contains(thisUser)){
+            if(convKey.isEmpty()){
+                setConversationKey(conversationKey);
+            }
+            if(from.equals(username.getText())){
+                receivedMessage(text);
+                status.setAlignment(Pos.CENTER_LEFT);
+                status.setEditable(false);
+                status.setText("Message Received " + time);
+            }
+            else{
+                sentMessage(text);
+                status.setAlignment(Pos.CENTER_RIGHT);
+                status.setEditable(false);
+                status.setText("Message Delivered " + time);
+            }
         }
     }
 
