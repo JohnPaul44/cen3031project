@@ -11,6 +11,7 @@
 
 <AnchorPane fx:id="anchor" prefHeight="425.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Conversation_View_controller">
    <children>
+      <Label fx:id="username" layoutX="14.0" layoutY="6.0" prefHeight="17.0" prefWidth="333.0" text="username" textFill="WHITE" />
       <AnchorPane layoutY="23.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="659.0" style="-fx-background-color: #0A122A;">
          <children>
             <Button fx:id="sendButton" layoutX="584.0" layoutY="408.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#sendMessageClicked" prefHeight="53.0" prefWidth="61.0" style="-fx-background-color: #698F3F;" text="Send" textFill="#fbfaf9">
@@ -39,6 +40,5 @@
                </font></Button>
          </children>
       </AnchorPane>
-      <Label fx:id="username" layoutX="14.0" layoutY="6.0" prefHeight="17.0" prefWidth="333.0" text="username" textFill="WHITE" />
    </children>
 </AnchorPane>

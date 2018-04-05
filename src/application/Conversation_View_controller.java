@@ -36,7 +36,6 @@ public class Conversation_View_controller extends ViewController {
 
     public void passConnection(ServerConnection con){
         connection = con;
-        setTopic();
     }
 
     @FXML
@@ -59,6 +58,7 @@ public class Conversation_View_controller extends ViewController {
     private TextField status;
     @FXML
     private TextField topic;
+    private String thisUser;
 
     String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
     "What was your favorite book as a child?", "Who are the three greatest athletes of all time?", "Where would you like to travel next?",
@@ -74,6 +74,7 @@ public class Conversation_View_controller extends ViewController {
 
     public void setUsername(String user){
         username.setText(user);
+        thisUser = user;
     }
 
     public void setConversationKey(String convokey){
@@ -92,7 +93,6 @@ public class Conversation_View_controller extends ViewController {
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
         String message = yourMessageField.getText();
-        //sentMessage(message);
         if(convKey.isEmpty()){
             ArrayList<String> mess = new ArrayList<String>();
             mess.add(username.getText());
@@ -111,6 +111,7 @@ public class Conversation_View_controller extends ViewController {
         new_message.setEditable(false);
         new_message.setMinWidth(644);
         new_message.setStyle("-fx-padding: 5 10 0 375");
+
 
         JEditorPane dummyEP = new JEditorPane();
         dummyEP.setSize(100, Short.MAX_VALUE);
@@ -174,76 +175,104 @@ public class Conversation_View_controller extends ViewController {
         for(Message values : sortedMessages.values()){
             if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
                 sentMessage(values.getText());
+                status.setAlignment(Pos.CENTER_RIGHT);
+                status.setEditable(false);
+                status.setText("Message Delivered " + values.getServerTime());
             }
             else{
                 receivedMessage(values.getText());
+                status.setAlignment(Pos.CENTER_LEFT);
+                status.setEditable(false);
+                status.setText("Message Received " + values.getServerTime());
             }
         }
     }
 
-    @Override
-    public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                            String time, String from, String text) {
-        if(errorInformation.getErrorNumber() == 0){
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
-                    if(mem.keySet().contains(username.getText())){
-                        if(convKey.isEmpty()){
-                            setConversationKey(conversationKey);
-                        }
-                        if(from.equals(username.getText())){
-                            receivedMessage(text);
-                            status.setAlignment(Pos.CENTER_LEFT);
-                            status.setEditable(false);
-                            status.setText("Message Received " + time);
-                        }
-                        else{
-                            sentMessage(text);
-                            status.setAlignment(Pos.CENTER_RIGHT);
-                            status.setEditable(false);
-                            status.setText("Message Delivered " + time);
-                        }
-                    }
-                }
-            });
-        }
-        else{
-            System.out.println(errorInformation.getErrorString());
+    public void newMessage(String conversationKey, String messageKey,
+                                String time, String from, String text, Map<String, Status> mem){
+
+        if(mem.keySet().contains(thisUser)){
+            if(convKey.isEmpty()){
+                setConversationKey(conversationKey);
+            }
+            if(from.equals(username.getText())){
+                receivedMessage(text);
+                status.setAlignment(Pos.CENTER_LEFT);
+                status.setEditable(false);
+                status.setText("Message Received " + time);
+            }
+            else{
+                sentMessage(text);
+                status.setAlignment(Pos.CENTER_RIGHT);
+                status.setEditable(false);
+                status.setText("Message Delivered " + time);
+            }
         }
     }
 
-    @Override
-    public void messageUpdatedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                           String text) {
-
-    }
-    @Override
-    public void messageReactionNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                            Map<String, Reactions> reactions) {
-
-    }
-    @Override
-    public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
-        if(errorInformation.getErrorNumber() == 0){
-
-        }
-    }
-    @Override
-    public void typingNotification(ErrorInformation errorInformation, String conversationKey, String from, boolean typing) {
-        if(errorInformation.getErrorNumber() == 0 && typing){
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    status.setAlignment(Pos.CENTER_LEFT);
-                    status.setEditable(false);
-                    status.setText("..." + from + " is typing...");
-                }
-            });
-        }
-        else{
-            System.out.println(errorInformation.getErrorString());
-        }
-    }
+//    @Override
+//    public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
+//                                            String time, String from, String text) {
+//        if(errorInformation.getErrorNumber() == 0){
+//            Platform.runLater(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
+//                    if(mem.keySet().contains(username.getText())){
+//                        if(convKey.isEmpty()){
+//                            setConversationKey(conversationKey);
+//                        }
+//                        if(from.equals(username.getText())){
+//                            receivedMessage(text);
+//                            status.setAlignment(Pos.CENTER_LEFT);
+//                            status.setEditable(false);
+//                            status.setText("Message Received " + time);
+//                        }
+//                        else{
+//                            sentMessage(text);
+//                            status.setAlignment(Pos.CENTER_RIGHT);
+//                            status.setEditable(false);
+//                            status.setText("Message Delivered " + time);
+//                        }
+//                    }
+//                }
+//            });
+//        }
+//        else{
+//            System.out.println(errorInformation.getErrorString());
+//        }
+//    }
+//
+//    @Override
+//    public void messageUpdatedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
+//                                           String text) {
+//
+//    }
+//    @Override
+//    public void messageReactionNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
+//                                            Map<String, Reactions> reactions) {
+//
+//    }
+//    @Override
+//    public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
+//        if(errorInformation.getErrorNumber() == 0){
+//
+//        }
+//    }
+//    @Override
+//    public void typingNotification(ErrorInformation errorInformation, String conversationKey, String from, boolean typing) {
+//        if(errorInformation.getErrorNumber() == 0 && typing){
+//            Platform.runLater(new Runnable() {
+//                @Override
+//                public void run() {
+//                    status.setAlignment(Pos.CENTER_LEFT);
+//                    status.setEditable(false);
+//                    status.setText("..." + from + " is typing...");
+//                }
+//            });
+//        }
+//        else{
+//            System.out.println(errorInformation.getErrorString());
+//        }
+//    }
 }
