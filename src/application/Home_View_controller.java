@@ -19,15 +19,18 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.Contact;
 import model.Conversation;
 import model.Profile;
+import model.Status;
 import sun.plugin.javascript.navig.Anchor;
 
 import java.time.LocalDate;
@@ -56,6 +59,7 @@ public class Home_View_controller extends ViewController{
             }
         }
 
+        setMessageNotificationStart();
         //TODO: import current conversations
     }
 
@@ -96,16 +100,48 @@ public class Home_View_controller extends ViewController{
         content.getChildren().add(dm);
         content.getChildren().add(vp);
 
-        Circle notification = new Circle(3);
-        notification.setFill(Color.GREEN);
+        HBox notification = new HBox();
+        notification.setAlignment(Pos.CENTER);
+        notification.setSpacing(3);
+
+        Circle notificationOnline = new Circle(3);
+        notificationOnline.setFill(Color.GREEN);
         if(!online) {
-            notification.setVisible(false);
+            notificationOnline.setVisible(false);
         }
+
+        Label notificationNew = new Label("!");
+        notificationNew.setTextFill(Color.RED);
+        notificationNew.setVisible(false);
+
+        notification.getChildren().addAll(notificationOnline, notificationNew);
 
         newContact.setContent(content);
         newContact.setGraphic(notification);
         contacts.add(newContact);
         conversations.getPanes().add(newContact);
+    }
+
+    public void setMessageNotificationStart(){
+        HashMap<String, Conversation> convoList = connection.getCurrentUser().getConversationList();
+        for(String key : convoList.keySet()){
+            Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(key).getMemberStatus();
+            for(Map.Entry<String, Status> entry: mem.entrySet()){
+                String keyStatus = entry.getKey();
+                Status value = entry.getValue();
+
+                if(!value.getRead()){
+                    System.out.println("unread message from " + keyStatus);
+                    int size = contacts.size();
+                    for(int i = 0; i < size; i++){
+                        if(keyStatus.equals(contacts.get(i).getText())){
+                            HBox notif = (HBox) contacts.get(i).getGraphic();
+                            notif.getChildren().get(1).setVisible(true);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @FXML
@@ -125,6 +161,9 @@ public class Home_View_controller extends ViewController{
     @FXML
     private AnchorPane view;
 
+    private Conversation_View_controller currentConvo;
+    private Search_View_Controller currentSearch;
+    private ViewProfile_View_Controller vpScreen;
 
     private void setUsername(String user){
         usernameAcc.setText(user);
@@ -163,7 +202,6 @@ public class Home_View_controller extends ViewController{
     }
 
     public void setView(AnchorPane anchor){
-        System.out.println("setting the view");
         try{
             view.getChildren().add(anchor);
         } catch(Exception e){
@@ -213,10 +251,10 @@ public class Home_View_controller extends ViewController{
 
             setView(anchor);
 
-            Search_View_Controller searchScreen = loader.getController();
-            searchScreen.passConnection(connection);
-            searchScreen.setSearchField(searchUser);
-            connection.setDelegate(searchScreen);
+            currentSearch = loader.getController();
+            currentSearch.passConnection(connection);
+            currentSearch.setSearchField(searchUser);
+            //connection.setDelegate(currentSearch);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -232,10 +270,18 @@ public class Home_View_controller extends ViewController{
             anchor = loader.load();
             setView(anchor);
 
-            Conversation_View_controller dmScreen = loader.getController();
-            dmScreen.passConnection(connection);
-            connection.setDelegate(dmScreen);
-            dmScreen.setUsername(user);
+            currentConvo = loader.getController();
+            currentConvo.passConnection(connection);
+            //connection.setDelegate(dmScreen);
+            currentConvo.setUsername(user);
+            currentConvo.setTopic();
+
+            for(int i = 0; i < contacts.size(); i++){
+                if(user.equals(contacts.get(i).getText())){
+                    HBox notif = (HBox) contacts.get(i).getGraphic();
+                    notif.getChildren().get(1).setVisible(false);
+                }
+            }
 
             HashMap<String, Conversation> convos = connection.getCurrentUser().getConversationList();
             if(convos != null) {
@@ -243,11 +289,11 @@ public class Home_View_controller extends ViewController{
                     String key = entry.getKey();
                     Conversation value = entry.getValue();
                     if (value.getMemberStatus().containsKey(user)) {
-                        dmScreen.setConversationKey(key);
+                        currentConvo.setConversationKey(key);
                     }
                 }
             }
-            dmScreen.setMessages();
+            currentConvo.setMessages();
 
         } catch(Exception e){
             e.printStackTrace();
@@ -268,7 +314,7 @@ public class Home_View_controller extends ViewController{
             anchor = loader.load();
             setView(anchor);
 
-            ViewProfile_View_Controller vpScreen = loader.getController();
+            vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
             vpScreen.setValuesContact();
@@ -283,30 +329,70 @@ public class Home_View_controller extends ViewController{
     public void setOnlineStatus(String username, boolean online){
         for(int i = 0; i < contacts.size(); i++){
             if(username.equals(contacts.get(i).getText())){
+                HBox notif = (HBox) contacts.get(i).getGraphic();
                 if(online) {
-                    contacts.get(i).getGraphic().setVisible(true);
+                    notif.getChildren().get(0).setVisible(true);
                 }
                 else{
-                    contacts.get(i).getGraphic().setVisible(false);
+                    notif.getChildren().get(0).setVisible(false);
                 }
             }
         }
     }
-//    @Override
-//    public void notification(ServerMessage message) {
-//        switch (message.getStatus()){
-//            case NOTIFICATIONPROFILEUPDATED:
-//                Platform.runLater(new Runnable(){
-//                    @Override
-//                    public void run(){
-//                        //setValues();
-//                    }
-//                });
-//                break;
-//            default:
-//                break;
-//        }
-//    }
+
+    @FXML
+    public void setMessageNotification(String username){
+        for(int i = 0; i < contacts.size(); i++){
+            if(username.equals(contacts.get(i).getText())){
+                HBox notif = (HBox) contacts.get(i).getGraphic();
+                notif.getChildren().get(1).setVisible(true);
+            }
+        }
+    }
+
+    public void deliverMessage(String conversationKey, String messageKey, String time, String from, String text){
+        int children = view.getChildren().size();
+        AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
+        Label openedName = (Label) top.getChildren().get(0);
+
+        //currentConvo.passConnection(connection);
+
+        Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
+        if(from.equals(connection.getCurrentUser().getUserName())){
+            currentConvo.setUsername(openedName.getText());
+            currentConvo.newMessage(conversationKey, messageKey, time, from, text, mem);
+        }
+        //if the message is from the user that is currently open
+        else if(openedName.getText().equals(from)){
+            currentConvo.setUsername(from);
+            currentConvo.newMessage(conversationKey, messageKey, time, from, text, mem);
+        }
+        //if the message is from a user when their conversation is not currently open
+        else{
+            //do nothing, they will automatically load when that conversation is opened
+            //place a notification of a new message
+            setMessageNotification(from);
+        }
+    }
+
+
+    /*Callbacks*/
+    @Override
+    public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
+                                            String time, String from, String text) {
+        if(errorInformation.getErrorNumber() == 0){
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    deliverMessage(conversationKey, messageKey, time, from, text);
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
 
     @Override
     public void userOnlineStatusNotification(ErrorInformation errorInformation, String username, boolean online){
@@ -315,6 +401,96 @@ public class Home_View_controller extends ViewController{
                 @Override
                 public void run() {
                     setOnlineStatus(username, online);
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
+        if(errorInformation.getErrorNumber() == 0){
+
+        }
+    }
+
+    @Override
+    public void profileUpdatedNotification(ErrorInformation errorInformation, Profile profile) {
+        if (errorInformation.getErrorNumber() != 0){
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void queryResultsNotification(ErrorInformation errorInformation, HashMap<String, Profile> results) {
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    currentSearch.setSearchResults(results);
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void contactAddedNotification(ErrorInformation errorInformation, String username) {
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    createNewContact(username, false);
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void contactUpdatedNotification(ErrorInformation errorInformation, HashMap<String, Contact> contacts) {
+        if (errorInformation.getErrorNumber() != 0){
+            System.out.println(errorInformation.getErrorString());
+        }
+        else {
+            if (contacts.keySet().contains(vpScreen.getThisUser())) {
+                vpScreen.setValuesContact();
+            }
+        }
+    }
+
+    @Override
+    public void contactRemovedNotification(ErrorInformation errorInformation, String username){
+        if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    //load the home view and remove the contact from the home screen
+                    FXMLLoader loader = new FXMLLoader();
+                    loader.setLocation(getClass().getResource("/application/home.fxml"));
+                    try {
+                        loader.load();
+                    }catch(Exception e){
+                        e.printStackTrace();
+                    }
+
+                    Home_View_controller home = loader.getController();
+                    home.passConnection(connection);
+                    home.ViewOtherProfileHelper(username);
+                    connection.setDelegate(home);
+
+                    Parent root = loader.getRoot();
+                    Stage registerStage = (Stage) conversations.getScene().getWindow();
+                    Scene scene = new Scene(root, 880, 500);
+                    scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+                    registerStage.setScene(scene);
+                    registerStage.show();
                 }
             });
         }

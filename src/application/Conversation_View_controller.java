@@ -154,17 +154,24 @@ public class Conversation_View_controller extends ViewController {
         if(convKey.isEmpty()) {
             return;
         }
+
         Conversation convo = connection.getCurrentUser().getConversationList().get(convKey);
         Collection<Message> messagesColl = convo.getMessages().values();
         List<Message> messagesList = new ArrayList(messagesColl);
         Collections.sort(messagesList);
 
-        for(Message message : messagesList){
-            if(message.getFrom().equals(connection.getCurrentUser().getUserName())){
-                sentMessage(message.getText());
+        for(Message values : messagesList){
+            if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
+                sentMessage(values.getText());
+                status.setAlignment(Pos.CENTER_RIGHT);
+                status.setEditable(false);
+                status.setText("Message Delivered " + values.getServerTime());
             }
             else{
-                receivedMessage(message.getText());
+                receivedMessage(values.getText());
+                status.setAlignment(Pos.CENTER_LEFT);
+                status.setEditable(false);
+                status.setText("Message Received " + values.getServerTime());
             }
         }
     }
