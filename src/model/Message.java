@@ -89,11 +89,13 @@ public class Message implements Comparable<Message> {
     public int compareTo(Message anotherMessage) {
         Date thisMessageDate = null;
         Date anotherMessageDate = null;
+        String servertime = this.getServerTime().replace('T',' ').substring(0,23);
+        String anotherServertime = anotherMessage.getServerTime().replace('T',' ').substring(0,23);
         SimpleDateFormat sdf = new SimpleDateFormat(Globals.simpldDateFormat);
 
         if (this.serverTime != null) {
             try {
-                thisMessageDate = sdf.parse(this.serverTime);
+                thisMessageDate = sdf.parse(servertime);
             } catch (ParseException e) {
                 System.out.println("Error converting serverTime to Date while comparing messages: " + e);
             }
@@ -107,17 +109,17 @@ public class Message implements Comparable<Message> {
 
         if (anotherMessage.serverTime != null) {
             try {
-                thisMessageDate = sdf.parse(anotherMessage.serverTime);
+                anotherMessageDate = sdf.parse(anotherServertime);
             } catch (ParseException e) {
                 System.out.println("Error converting serverTime to Date while comparing messages: " + e);
             }
         } else {
             try {
-                thisMessageDate = sdf.parse(anotherMessage.clientTime);
+                anotherMessageDate = sdf.parse(anotherMessage.clientTime);
             } catch (ParseException e) {
                 System.out.println("Error converting clientTime to Date while comparing messages: " + e);
             }
         }
-        return anotherMessageDate.compareTo(thisMessageDate);
+        return thisMessageDate.compareTo(anotherMessageDate);
     }
 }

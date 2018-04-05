@@ -154,29 +154,17 @@ public class Conversation_View_controller extends ViewController {
         if(convKey.isEmpty()) {
             return;
         }
-
         Conversation convo = connection.getCurrentUser().getConversationList().get(convKey);
-        HashMap<String, Message> messages = convo.getMessages();
+        Collection<Message> messagesColl = convo.getMessages().values();
+        List<Message> messagesList = new ArrayList(messagesColl);
+        Collections.sort(messagesList);
 
-        Set<Map.Entry<String, Message>> messagesSet = messages.entrySet();
-
-        List<Map.Entry<String, Message>> messagesList = new ArrayList<Map.Entry<String, Message>>(messagesSet);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
-        Collections.sort(messagesList, (s1,s2) -> LocalDateTime.parse(s1.getValue().getServerTime(), formatter).compareTo(LocalDateTime.parse(s2.getValue().getServerTime(), formatter)));
-
-        LinkedHashMap<String, Message> sortedMessages = new LinkedHashMap<>(messagesList.size());
-
-        for(Map.Entry<String, Message> messageEntry : messagesList) {
-            sortedMessages.put(messageEntry.getKey(), messageEntry.getValue());
-        }
-
-        for(Message values : sortedMessages.values()){
-            if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
-                sentMessage(values.getText());
+        for(Message message : messagesList){
+            if(message.getFrom().equals(connection.getCurrentUser().getUserName())){
+                sentMessage(message.getText());
             }
             else{
-                receivedMessage(values.getText());
+                receivedMessage(message.getText());
             }
         }
     }
