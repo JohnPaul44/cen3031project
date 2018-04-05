@@ -62,11 +62,15 @@ public class Conversation_View_controller extends ViewController {
 
     String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
     "What was your favorite book as a child?", "Who are the three greatest athletes of all time?", "Where would you like to travel next?",
-    "What was the best invention of the last 50 years?", "What are your goals for the next 2 years?", "If you could call anyone in the world, who would you call?",};
+    "What was the best invention of the last 50 years?", "What are your goals for the next 2 years?", "If you could call anyone in the world, who would you call?",
+            "What is the oddest job you have had?", "What would you do if you won the lottery?", "What are five things you couldn't live without?",
+    "What was the high-point and low-point of your day so far?", "What is your biggest fear?", "Do you think we should live like we're dying?",
+    "Have you ever meet one of your heroes?", "What do you value most: free time, recognition, or money?",
+    "What’s the best compliment you’ve ever received?" , "Would you rather be a lonely genius, or a sociable idiot?", "What are you most grateful for, right now, in this moment?"};
 
     public void setTopic(){
         Random rand = new Random();
-        int n = rand.nextInt(9);
+        int n = rand.nextInt(20);
         topic.setText(convoTopics[n]);
     }
 
