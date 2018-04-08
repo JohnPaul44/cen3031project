@@ -59,8 +59,18 @@ public class Home_View_controller extends ViewController{
             }
         }
 
-        setMessageNotificationStart();
         //TODO: import current conversations
+        HashMap<String, Conversation> conversationList = connection.getCurrentUser().getConversationList();
+        if(!conversationList.isEmpty()){
+            for(Map.Entry<String, Conversation> entry : conversationList.entrySet()){
+                String key = entry.getKey();
+                Conversation value = entry.getValue();
+                if(value.getMemberStatus().size() > 2){
+                    createNewConversationCard(value);
+                }
+            }
+        }
+        setMessageNotificationStart();
     }
 
     ArrayList<TitledPane> contacts = new ArrayList<>();
@@ -78,7 +88,7 @@ public class Home_View_controller extends ViewController{
             @Override
             public void handle(MouseEvent event) {
                 try{
-                    OpenDirectMessage(event, user);
+                    OpenDirectMessage(event, newContact);
                 } catch(Exception e){}
             }
         });
@@ -122,7 +132,53 @@ public class Home_View_controller extends ViewController{
         conversations.getPanes().add(newContact);
     }
 
+    public void createNewConversationCard(Conversation convo){
+        TitledPane newContact = new TitledPane();
+        Map<String, Status> mem = convo.getMemberStatus();
+        boolean first = true;
+        for(String key : mem.keySet()){
+            if(first){
+                newContact.setText(key);
+                first = false;
+            }
+            else{
+                newContact.setText(newContact.getText() + ", " + key);
+            }
+        }
+        newContact.setStyle("-fx-background-color: #E7DECD");
+
+
+        VBox content = new VBox();
+        Label dm = new Label("Group Message");
+        dm.setCursor(Cursor.HAND);
+        dm.setLabelFor(directMessage);
+        dm.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try{
+                    OpenDirectMessage(event, newContact);
+                } catch(Exception e){}
+            }
+        });
+
+        Label notificationNew = new Label("!");
+        notificationNew.setTextFill(Color.RED);
+        notificationNew.setVisible(false);
+
+        content.setStyle("-fx-background-color: #E7DECD");
+        content.getChildren().add(dm);
+        newContact.setContent(content);
+        newContact.setGraphic(notificationNew);
+
+        contacts.add(newContact);
+        conversations.getPanes().add(newContact);
+
+        //TODO: check whether there are unread messages
+    }
+
     public void setMessageNotificationStart(){
+        //checks whether the user has any unread conversations
+
         HashMap<String, Conversation> convoList = connection.getCurrentUser().getConversationList();
         for(String key : convoList.keySet()){
             Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(key).getMemberStatus();
@@ -262,7 +318,7 @@ public class Home_View_controller extends ViewController{
     }
 
     @FXML
-    public void OpenDirectMessage(MouseEvent actionEvent, String user) throws Exception{
+    public void OpenDirectMessage(MouseEvent actionEvent, TitledPane user) throws Exception{
         try{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/directMessage.fxml"));
@@ -273,7 +329,7 @@ public class Home_View_controller extends ViewController{
             currentConvo = loader.getController();
             currentConvo.passConnection(connection);
             //connection.setDelegate(dmScreen);
-            currentConvo.setUsername(user);
+            currentConvo.setUsername(user.getText());
             currentConvo.setTopic();
 
             for(int i = 0; i < contacts.size(); i++){
@@ -288,7 +344,8 @@ public class Home_View_controller extends ViewController{
                 for (Map.Entry<String, Conversation> entry : convos.entrySet()) {
                     String key = entry.getKey();
                     Conversation value = entry.getValue();
-                    if (value.getMemberStatus().containsKey(user)) {
+                    //TODO: set so it checks for all the members of the conversation
+                    if (value.getMemberStatus().containsKey(user.getText())) {
                         currentConvo.setConversationKey(key);
                     }
                 }
@@ -318,11 +375,33 @@ public class Home_View_controller extends ViewController{
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user);
             vpScreen.setValuesContact();
-            connection.setDelegate(vpScreen);
+            //connection.setDelegate(vpScreen);
 
         } catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void createGroupMessage(){
+        //load the view to add contacts
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/application/createGroupMessage.fxml"));
+        try {
+            loader.load();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        CreateGroupMessage_View_Controller group = loader.getController();
+        group.passConnection(connection);
+
+        Parent root = loader.getRoot();
+        Stage registerStage = new Stage();
+        Scene scene = new Scene(root, 463, 400);
+        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+        registerStage.setScene(scene);
+        registerStage.show();
     }
 
     @FXML
@@ -377,6 +456,13 @@ public class Home_View_controller extends ViewController{
 
 
     /*Callbacks*/
+    @Override
+    public void loggedOutNotification(ErrorInformation errorInformation){
+        if(errorInformation.getErrorNumber() != 0){
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
     @Override
     public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
                                             String time, String from, String text) {
