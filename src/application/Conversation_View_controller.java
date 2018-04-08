@@ -36,6 +36,7 @@ public class Conversation_View_controller extends ViewController {
 
     public void passConnection(ServerConnection con){
         connection = con;
+        setTopic();
     }
 
     @FXML
@@ -60,21 +61,26 @@ public class Conversation_View_controller extends ViewController {
     private TextField topic;
     private String thisUser;
 
+
     String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
-    "What was your favorite book as a child?", "Who are the three greatest athletes of all time?", "Where would you like to travel next?",
-    "What was the best invention of the last 50 years?", "What are your goals for the next 2 years?", "If you could call anyone in the world, who would you call?",};
+            "What was your favorite book as a child?", "Who are the three greatest athletes of all time?", "Where would you like to travel next?", "What was the best invention of the last 50 years?",
+            "What are your goals for the next 2 years?", "If you could call anyone in the world, who would you call?",
+            "What is the oddest job you have had?", "What would you do if you won the lottery?", "What are five things you couldn't live without?",
+            "What was the high-point and low-point of your day so far?", "What is your biggest fear?", "Do you think we should live like we're dying?",
+            "Have you ever meet one of your heroes?", "What do you value most: free time, recognition, or money?",
+            "What’s the best compliment you’ve ever received?" , "Would you rather be a lonely genius, or a sociable idiot?", "What are you most grateful for, right now, in this moment?"};
 
     public void setTopic(){
         Random rand = new Random();
-        int n = rand.nextInt(9);
+        int n = rand.nextInt(20);
         topic.setText(convoTopics[n]);
     }
 
     public String convKey = "";
 
     public void setUsername(String user){
-        username.setText(user);
         thisUser = user;
+        username.setText(user);
     }
 
     public void setConversationKey(String convokey){
@@ -92,14 +98,16 @@ public class Conversation_View_controller extends ViewController {
     }
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
-        String message = yourMessageField.getText();
-        if(convKey.isEmpty()){
-            ArrayList<String> mess = new ArrayList<String>();
-            mess.add(username.getText());
-            connection.sendFirstMessage(mess, message);
-        }
-        else{
-            connection.sendMessage(convKey, message);
+        if (!yourMessageField.getText().isEmpty()) {
+            String message = yourMessageField.getText();
+            //sentMessage(message);
+            if (convKey.isEmpty()) {
+                ArrayList<String> mess = new ArrayList<String>();
+                mess.add(username.getText());
+                connection.sendFirstMessage(mess, message);
+            } else {
+                connection.sendMessage(convKey, message);
+            }
         }
     }
 
@@ -111,7 +119,6 @@ public class Conversation_View_controller extends ViewController {
         new_message.setEditable(false);
         new_message.setMinWidth(644);
         new_message.setStyle("-fx-padding: 5 10 0 375");
-
 
         JEditorPane dummyEP = new JEditorPane();
         dummyEP.setSize(100, Short.MAX_VALUE);
@@ -157,22 +164,11 @@ public class Conversation_View_controller extends ViewController {
         }
 
         Conversation convo = connection.getCurrentUser().getConversationList().get(convKey);
-        HashMap<String, Message> messages = convo.getMessages();
+        Collection<Message> messagesColl = convo.getMessages().values();
+        List<Message> messagesList = new ArrayList(messagesColl);
+        Collections.sort(messagesList);
 
-        Set<Map.Entry<String, Message>> messagesSet = messages.entrySet();
-
-        List<Map.Entry<String, Message>> messagesList = new ArrayList<Map.Entry<String, Message>>(messagesSet);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
-        Collections.sort(messagesList, (s1,s2) -> LocalDateTime.parse(s1.getValue().getServerTime(), formatter).compareTo(LocalDateTime.parse(s2.getValue().getServerTime(), formatter)));
-
-        LinkedHashMap<String, Message> sortedMessages = new LinkedHashMap<>(messagesList.size());
-
-        for(Map.Entry<String, Message> messageEntry : messagesList) {
-            sortedMessages.put(messageEntry.getKey(), messageEntry.getValue());
-        }
-
-        for(Message values : sortedMessages.values()){
+        for(Message values : messagesList){
             if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
                 sentMessage(values.getText());
                 status.setAlignment(Pos.CENTER_RIGHT);
@@ -189,7 +185,7 @@ public class Conversation_View_controller extends ViewController {
     }
 
     public void newMessage(String conversationKey, String messageKey,
-                                String time, String from, String text, Map<String, Status> mem){
+                           String time, String from, String text, Map<String, Status> mem){
 
         if(mem.keySet().contains(thisUser)){
             if(convKey.isEmpty()){
@@ -210,69 +206,36 @@ public class Conversation_View_controller extends ViewController {
         }
     }
 
-//    @Override
-//    public void messageReceivedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-//                                            String time, String from, String text) {
-//        if(errorInformation.getErrorNumber() == 0){
-//            Platform.runLater(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
-//                    if(mem.keySet().contains(username.getText())){
-//                        if(convKey.isEmpty()){
-//                            setConversationKey(conversationKey);
-//                        }
-//                        if(from.equals(username.getText())){
-//                            receivedMessage(text);
-//                            status.setAlignment(Pos.CENTER_LEFT);
-//                            status.setEditable(false);
-//                            status.setText("Message Received " + time);
-//                        }
-//                        else{
-//                            sentMessage(text);
-//                            status.setAlignment(Pos.CENTER_RIGHT);
-//                            status.setEditable(false);
-//                            status.setText("Message Delivered " + time);
-//                        }
-//                    }
-//                }
-//            });
-//        }
-//        else{
-//            System.out.println(errorInformation.getErrorString());
-//        }
-//    }
-//
-//    @Override
-//    public void messageUpdatedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-//                                           String text) {
-//
-//    }
-//    @Override
-//    public void messageReactionNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-//                                            Map<String, Reactions> reactions) {
-//
-//    }
-//    @Override
-//    public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
-//        if(errorInformation.getErrorNumber() == 0){
-//
-//        }
-//    }
-//    @Override
-//    public void typingNotification(ErrorInformation errorInformation, String conversationKey, String from, boolean typing) {
-//        if(errorInformation.getErrorNumber() == 0 && typing){
-//            Platform.runLater(new Runnable() {
-//                @Override
-//                public void run() {
-//                    status.setAlignment(Pos.CENTER_LEFT);
-//                    status.setEditable(false);
-//                    status.setText("..." + from + " is typing...");
-//                }
-//            });
-//        }
-//        else{
-//            System.out.println(errorInformation.getErrorString());
-//        }
-//    }
+    @Override
+    public void messageUpdatedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
+                                           String text) {
+
+    }
+    @Override
+    public void messageReactionNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
+                                            Map<String, Reactions> reactions) {
+
+    }
+    @Override
+    public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
+        if(errorInformation.getErrorNumber() == 0){
+
+        }
+    }
+    @Override
+    public void typingNotification(ErrorInformation errorInformation, String conversationKey, String from, boolean typing) {
+        if(errorInformation.getErrorNumber() == 0 && typing){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    status.setAlignment(Pos.CENTER_LEFT);
+                    status.setEditable(false);
+                    status.setText("..." + from + " is typing...");
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
 }

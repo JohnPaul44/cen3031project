@@ -53,10 +53,12 @@ public class Conversation implements Comparable<Conversation> {
 
     public void addMessage(Message message) throws ParseException {
         messages.put(message.getConversationKey(), message);
-        Date currentConversationTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(time);
-        Date messageToAddTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(message.getServerTime());
-        if (messageToAddTime.after(currentConversationTime)) {
-            time = message.getServerTime();
+        if(time!=null) {
+            Date currentConversationTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(time);
+            Date messageToAddTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(message.getServerTime());
+            if (messageToAddTime.after(currentConversationTime)) {
+                time = message.getServerTime();
+            }
         }
     }
 
