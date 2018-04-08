@@ -178,12 +178,4 @@ public class ViewProfile_View_Controller extends ViewController {
     public void removeContact(){
         connection.removeContact(usern.getText());
     }
-
-    @FXML
-    public void updateContact(HashMap<String, Contact> contacts){
-        if (contacts.keySet().contains(thisUser)) {
-            setValuesContact();
-        }
-    }
-
 }

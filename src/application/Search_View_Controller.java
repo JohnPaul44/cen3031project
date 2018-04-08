@@ -65,7 +65,6 @@ public class Search_View_Controller extends ViewController{
     }
 
     public void setSearchResults(HashMap<String, Profile> userResults) {
-        System.out.println("inside set search results");
 
         if(userResults == null){
             status.setText("No Results");
@@ -76,7 +75,7 @@ public class Search_View_Controller extends ViewController{
             return;
         }
 
-        //int count = 1;
+        int count = 1;
         for(Map.Entry<String, Profile> entry : userResults.entrySet()){
             //TODO: make it add additional rows
             String username = entry.getKey();
@@ -103,7 +102,7 @@ public class Search_View_Controller extends ViewController{
                 age.setText("" + calcAge(prof.getBirthday()));
             }
 
-            grid.addRow(1, new Label(username), new Label(prof.getFirstName() + " " + prof.getLastName()), new Label(prof.getEmail()), age, add, view);
+            grid.addRow(count++, new Label(username), new Label(prof.getFirstName() + " " + prof.getLastName()), new Label(prof.getEmail()), age, add, view);
 
             add.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
