@@ -107,7 +107,11 @@ abstract public class ViewController {
 
     }
 
-    public void contactUpdatedNotification(ErrorInformation errorInformation, HashMap<String, Contact> contacts) {
+    public void friendshipStatisticsNotification(ErrorInformation errorInformation, String username, Contact contact) {
+
+    }
+
+    public void contactUpdatedNotification(ErrorInformation errorInformation, String username, HashMap<String, Contact> contacts) {
 
     }
 }

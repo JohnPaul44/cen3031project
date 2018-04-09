@@ -11,11 +11,8 @@ public class Contact {
 
     private String username;
     private boolean online;
-    private int sentMessages;
-    private int receivedMessages;
-    private HashMap<String, ContactGame> games;
-    private int friendshipLevel;
     private Profile profile;
+    private FriendshipStats friendshipStats;
 
     // Test Constructor
     public Contact(String username, boolean online) {
@@ -26,25 +23,16 @@ public class Contact {
     public Contact(NotificationContactAddedMessage message) {
         username = message.getUsername();
         online = false;
-        sentMessages = 0;
-        receivedMessages = 0;
-        games = new HashMap<>();
-        friendshipLevel = 0;
+        //profile = message.getProfile();
     }
 
     public String getUsername() {return username;}
 
     public boolean getOnline() {return online;}
 
-    public int getSentMessages() {return sentMessages;}
-
-    public int getReceivedMessages() {return receivedMessages;}
-
-    public HashMap<String, ContactGame> getGames() {return games;}
-
     public Profile getProfile() {return profile;}
 
-    public int getFriendshipLevel() {return friendshipLevel;}
+    public FriendshipStats getFriendshipStats() {return friendshipStats;}
 
     public void updateOnline(NotificationUserOnlineStatusMessage message) {
         online = message.getOnline();

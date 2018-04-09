@@ -21,6 +21,6 @@ public class ContactUpdatedMessageHandler extends ModelUpdateMessageHandler impl
             errorInformation.setErrorInformation(serverMessage);
         }
         updateUser(serverMessage);
-        delegate.contactUpdatedNotification(errorInformation, serverMessage.getContacts());
+        delegate.contactUpdatedNotification(errorInformation, serverMessage.getErrorString(), serverMessage.getContacts());
     }
 }

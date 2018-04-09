@@ -44,7 +44,7 @@ public class ViewProfile_View_Controller extends ViewController {
     }
 
     public void setValuesContact(){
-        setLevel(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipLevel());
+        setLevel(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipStats().getFriendshipLevel());
         setName(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getFirstName(), connection.getCurrentUser().getContactList().get(thisUser).getProfile().getLastName());
         setEmail(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getEmail());
         setBirthday(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getBirthday());

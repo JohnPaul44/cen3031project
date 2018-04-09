@@ -549,14 +549,12 @@ public class Home_View_controller extends ViewController{
     }
 
     @Override
-    public void contactUpdatedNotification(ErrorInformation errorInformation, HashMap<String, Contact> contacts) {
+    public void contactUpdatedNotification(ErrorInformation errorInformation, String username,HashMap<String, Contact> contacts) {
         if (errorInformation.getErrorNumber() != 0){
             System.out.println(errorInformation.getErrorString());
         }
         else {
-            if (contacts.keySet().contains(vpScreen.getThisUser())) {
                 vpScreen.setValuesContact();
-            }
         }
     }
 

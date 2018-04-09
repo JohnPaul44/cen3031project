@@ -94,6 +94,8 @@ public class Conversation_View_controller extends ViewController {
             ActionEvent aevent = new ActionEvent(keyEvent.getSource(), sendButton);
             //pass the keyEvent into the button action event
             sendMessageClicked(aevent);
+            keyEvent.consume();
+
         }
     }
 
