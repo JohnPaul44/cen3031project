@@ -37,6 +37,7 @@ public class Conversation_View_controller extends ViewController {
     public void passConnection(ServerConnection con){
         connection = con;
         setTopic();
+        connection.readMessage(convKey);
     }
 
     @FXML
@@ -81,6 +82,11 @@ public class Conversation_View_controller extends ViewController {
     public void setUsername(String user){
         thisUser = user;
         username.setText(user);
+    }
+
+    public void setStatus(String stat){
+        status.setText(stat);
+        status.setEditable(false);
     }
 
     public void setConversationKey(String convokey){

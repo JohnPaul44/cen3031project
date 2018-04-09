@@ -333,8 +333,9 @@ public class Home_View_controller extends ViewController{
             currentConvo.setUsername(user.getText());
             currentConvo.setTopic();
 
-            for(int i = 0; i < contacts.size(); i++){
-                if(user.equals(contacts.get(i).getText())){
+            int contactSize = contacts.size();
+            for(int i = 0; i < contactSize; i++){
+                if((user.getText()).equals(contacts.get(i).getText())){
                     HBox notif = (HBox) contacts.get(i).getGraphic();
                     notif.getChildren().get(1).setVisible(false);
                 }
@@ -352,7 +353,6 @@ public class Home_View_controller extends ViewController{
                 }
             }
             currentConvo.setMessages();
-
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -499,7 +499,18 @@ public class Home_View_controller extends ViewController{
     @Override
     public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
         if(errorInformation.getErrorNumber() == 0){
+            if(!from.equals(connection.getCurrentUser().getUserName())){
+                int children = view.getChildren().size();
+                AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
+                Label openedName = (Label) top.getChildren().get(0);
 
+                if(openedName.equals(from)){
+                    currentConvo.setStatus(from + " read");
+                }
+            }
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
         }
     }
 
