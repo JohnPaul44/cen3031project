@@ -57,7 +57,7 @@ public class ViewCurrentUser_View_controller extends ViewController {
     }
 
     public void setIcon() {
-        String first_letter = "" + username.getText().charAt(0);
+        String first_letter = "" + connection.getCurrentUser().getUserName().charAt(0);
         icon_letter.setText(first_letter);
 
         Paint icon_color = Paint.valueOf(connection.getCurrentUser().getProfile().getColor());

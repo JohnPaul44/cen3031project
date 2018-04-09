@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 public class Login_View_controller extends ViewController{
@@ -35,6 +37,25 @@ public class Login_View_controller extends ViewController{
 	
 	@FXML
 	private Button loginButton;
+
+	@FXML
+	private AnchorPane anchor;
+
+	public TextField getUsername(){
+		return username;
+	}
+
+	public TextField getPassword(){
+		return password;
+	}
+
+	public Label getStatus(){
+		return status;
+	}
+
+	public void setStatus(String stat){
+		status.setText(stat);
+	}
 	
 	//event handlers for both when the login button is pressed or when the enter key is used
 	@FXML
@@ -49,6 +70,7 @@ public class Login_View_controller extends ViewController{
 	
 	@FXML
 	public void LoginEventButton(ActionEvent event){
+		status.setText("Logging in. Please wait.");
 		connection.login(username.getText(), password.getText());
 	}
 	
@@ -94,6 +116,9 @@ public class Login_View_controller extends ViewController{
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("/application/changePass.fxml"));
+
+			//TODO: delete this and reset the path through scenebuilder
+			//loader.setController(new ChangePassword_View_controller());
 			loader.load();
 
 			//creates instance of the change password controller
