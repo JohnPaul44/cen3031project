@@ -21,6 +21,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+import javax.xml.soap.Text;
 import java.time.Duration;
 
 public class ChangePassword_View_controller extends ViewController {
@@ -47,6 +48,30 @@ public class ChangePassword_View_controller extends ViewController {
 	@FXML
 	private ChoiceBox securityQuestion;
 
+	public TextField getAnswer(){
+		return answer;
+	}
+
+	public TextField getPhone(){
+		return phone;
+	}
+
+	public TextField getNewPass(){
+		return newPass;
+	}
+
+	public TextField getConfPass() {
+		return confPass;
+	}
+
+	public Label getStatus(){
+		return status;
+	}
+
+	public void setStatus(String stat){
+		status.setText(stat);
+	}
+
 	public Button getChangeButton(){
 		return changeButton;
 	}
@@ -71,6 +96,9 @@ public class ChangePassword_View_controller extends ViewController {
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/login.fxml"));
+
+            //TODO: delete this and reset the path through scenebuilder
+			//loader.setController(new Login_View_controller());
             loader.load();
 
             Login_View_controller login = loader.getController();
@@ -100,7 +128,7 @@ public class ChangePassword_View_controller extends ViewController {
 	}
 	
 	@FXML
-	public void changePassword(ActionEvent event) throws Exception{
+	public void changePassword(ActionEvent event){
 		//check that the two passwords match
 		if(!confPassword()) {
 			return;

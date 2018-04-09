@@ -21,6 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
@@ -66,6 +67,8 @@ public class Register_View_controller extends ViewController {
     private ChoiceBox securityQuestion;
     @FXML
     private TextField securityQuestionAnswer;
+    @FXML
+    private BorderPane border;
 
     //overrides so the enter key allows the user to register
     public void registerEnterKey(KeyEvent keyEvent) throws Exception{

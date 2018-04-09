@@ -60,16 +60,16 @@ public class Home_View_controller extends ViewController{
         }
 
         //TODO: import current conversations
-        HashMap<String, Conversation> conversationList = connection.getCurrentUser().getConversationList();
-        if(!conversationList.isEmpty()){
-            for(Map.Entry<String, Conversation> entry : conversationList.entrySet()){
-                String key = entry.getKey();
-                Conversation value = entry.getValue();
-                if(value.getMemberStatus().size() > 2){
-                    createNewConversationCard(value);
-                }
-            }
-        }
+//        HashMap<String, Conversation> conversationList = connection.getCurrentUser().getConversationList();
+//        if(!conversationList.isEmpty()){
+//            for(Map.Entry<String, Conversation> entry : conversationList.entrySet()){
+//                String key = entry.getKey();
+//                Conversation value = entry.getValue();
+//                if(value.getMemberStatus().size() > 2){
+//                    createNewConversationCard(value);
+//                }
+//            }
+//        }
         setMessageNotificationStart();
     }
 
@@ -104,6 +104,7 @@ public class Home_View_controller extends ViewController{
                 } catch(Exception e){}
             }
         });
+
 
         content.setStyle("-fx-background-color: #E7DECD");
 
@@ -181,19 +182,18 @@ public class Home_View_controller extends ViewController{
 
         HashMap<String, Conversation> convoList = connection.getCurrentUser().getConversationList();
         for(String key : convoList.keySet()){
-            Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(key).getMemberStatus();
-            for(Map.Entry<String, Status> entry: mem.entrySet()){
-                String keyStatus = entry.getKey();
-                Status value = entry.getValue();
+            Conversation convo = connection.getCurrentUser().getConversationList().get(key);
+            Map<String, Status> mem = convo.getMemberStatus();
+            Status stat = mem.get(connection.getCurrentUser().getUserName());
+            System.out.println(stat.getRead() + " " + key);
 
-                if(!value.getRead()){
-                    System.out.println("unread message from " + keyStatus);
-                    int size = contacts.size();
-                    for(int i = 0; i < size; i++){
-                        if(keyStatus.equals(contacts.get(i).getText())){
-                            HBox notif = (HBox) contacts.get(i).getGraphic();
-                            notif.getChildren().get(1).setVisible(true);
-                        }
+            if(!stat.getRead()){
+                int size = contacts.size();
+                for(int i = 0; i < size; i++){
+                    Status memStat = mem.get(key);
+                    if(key.equals(contacts.get(i).getText())){
+                        HBox notif = (HBox) contacts.get(i).getGraphic();
+                        notif.getChildren().get(1).setVisible(true);
                     }
                 }
             }
