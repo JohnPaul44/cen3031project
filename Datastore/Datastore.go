@@ -834,14 +834,14 @@ func SetTypingStatus(username string, conversationKey *datastore.Key, typing boo
 
 	memberKey := GetMemberKey(username, conversationKey)
 	var member ConversationMember
-	err = client.Get(c, memberKey, member)
+	err = client.Get(c, memberKey, &member)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot get member from datastore:", err)
 		return err
 	}
 
 	member.Typing = typing
-	_, err = client.Put(c, memberKey, member)
+	_, err = client.Put(c, memberKey, &member)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot update member in datastore:", err)
 		return err

@@ -651,6 +651,7 @@ func handleReadMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		return sendServerMessage(conn, rsp)
 	}
 
+	rsp.Message = new(msg.Message)
 	rsp.Message.ConversationKey = message.Message.ConversationKey
 	rsp.Message.From = &user.Username
 
