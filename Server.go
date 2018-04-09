@@ -11,6 +11,7 @@ import (
 	e "./Errors"
 	ds "./Datastore"
 	msg "./ServerMessage"
+	"io"
 )
 
 // TODO: implement a toggle switch for editing messages in the conversation
@@ -204,7 +205,10 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		for !loggedIn {
 			err = getServerMessage(conn, message)
 			if err != nil {
-				log.Println("cannot get message from client:", err)
+				if err != io.EOF {
+					log.Println("cannot get message from client:", err)
+				}
+
 				sockClosed = true
 				break
 			}
@@ -414,7 +418,10 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 		for loggedIn && !sockClosed {
 			err = getServerMessage(conn, message)
 			if err != nil {
-				log.Println("cannot get message from client:", err)
+				if err != io.EOF {
+					log.Println("cannot get message from client:", err)
+				}
+
 				sockClosed = true
 				break
 			}

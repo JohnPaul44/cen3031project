@@ -70,7 +70,7 @@ func handleQueryUsers(_ *ds.User, conn net.Conn, message *msg.ServerMessage) err
 	}
 
 	// query datastore
-	results, err := ds.QueryUserAcconts(*message.Query)
+	results, err := ds.QueryUserAccounts(*message.Query)
 	if err != nil {
 		log.Println("cannot query user accounts:", err)
 		rsp.SetError(e.ErrInternalServer)

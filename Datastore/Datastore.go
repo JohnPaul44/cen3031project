@@ -212,7 +212,7 @@ func GetUserProfile(username string) (msg.Profile, error) {
 	return user.Profile, nil
 }
 
-func QueryUserAcconts(query string) (map[string]msg.Profile, error) {
+func QueryUserAccounts(query string) (map[string]msg.Profile, error) {
 	usernameQuery := datastore.NewQuery(KindUser).Filter("__key__ =", GetUserKey(query))
 	it := client.Run(c, usernameQuery)
 
@@ -324,6 +324,13 @@ func AddContact(username string, contact string) (UserContact, error) {
 
 func calculateFriendshipStatistics(username1 string, username2 string) (msg.FriendshipStatistics) {
 	// TODO: calculate friendship statistics
+	// verify contact pair (both users must have the other as a contact)
+
+	// calculate number of direct messages sent and received (find conversation between contacts and count messages)
+
+	// calculate friendship level using formula: ln(sent + received)
+
+
 	return msg.FriendshipStatistics{}
 }
 
@@ -550,7 +557,7 @@ func IsUserInConversation(username string, conversationKey *datastore.Key) (bool
 
 	memberKey := GetMemberKey(username, conversationKey)
 	var member ConversationMember
-	err := client.Get(c, memberKey, member)
+	err := client.Get(c, memberKey, &member)
 	if err != nil {
 		if err == datastore.ErrNoSuchEntity {
 			return false, nil

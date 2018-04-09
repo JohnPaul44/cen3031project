@@ -165,7 +165,7 @@ const (
 	NotificationUserRemovedFromConversation = iota // returns Username, Message.ConversationKey
 	NotificationMessageRead                 = iota // returns Message.[ConversationKey, From]
 	NotificationTyping                      = iota // returns Message.[ConversationKey, From, Typing]
-	NotifiactionContactUpdated              = iota // returns Contacts[Username]
+	NotificationFriendshipStatistics        = iota // returns Contacts[Username]
 
 	// Actions are received from client devices
 	ActionRegister                   = iota // requires Username, Password, First Name, Last Name, Email, Security Question & Answer, phone; optionally DOB, gender
@@ -184,6 +184,7 @@ const (
 	ActionRemoveUserFromConversation = iota // requires Username, Message.ConversationKey
 	ActionReadMessage                = iota // requires ConversationKey
 	ActionSetTyping                  = iota // requires Message.ConversationKey, Message.Typing
+	ActionGetFriendshipStatistics    = iota // requires Username
 )
 
 // TODO: send ClientTime back with every Action (forward it from the received message to the response)
