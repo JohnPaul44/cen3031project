@@ -325,7 +325,6 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		(*rsp.Conversations)[*convKeyString] = *conv
 	} else {
 		rsp.Message = memberMsg
-		rsp.Message.ClientTime = &message.ClientTime
 	}
 
 	log.Printf("Sending message: from='%s', convKey='%s', msgKey='%s', text='%s'\n", *memberMsg.From, *memberMsg.ConversationKey, *memberMsg.MessageKey, *memberMsg.Text)
@@ -346,6 +345,8 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 			}
 		}
 	}
+
+	rsp.Message.ClientTime = &message.ClientTime
 
 	return sendServerMessage(conn, rsp)
 }
