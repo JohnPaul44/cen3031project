@@ -59,6 +59,11 @@ public class Message implements Comparable<Message> {
         this.text = text;
     }
 
+    // Use this constructor for reading a message
+    public Message(String conversationKey) {
+        this.conversationKey = conversationKey;
+    }
+
     public String getClientTime() { return clientTime; }
     public String getServerTime() { return serverTime; }
     public ArrayList<String> getTo() { return to; }
