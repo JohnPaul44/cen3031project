@@ -166,6 +166,8 @@ func sendServerMessage(conn net.Conn, message *msg.ServerMessage) error {
 		return err
 	}
 
+	bytes = append(bytes, byte('\n'))
+
 	log.Printf("Sending message: %s\n", bytes)
 	_, err = conn.Write(bytes)
 	if err != nil {
