@@ -515,7 +515,16 @@ public class Home_View_controller extends ViewController{
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    currentSearch.setSearchResults(results);
+                    int children = view.getChildren().size();
+                    AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
+                    Label openedName = (Label) top.getChildren().get(0);
+
+                    if(openedName.equals("Explore")){
+                        //populate the explore page
+                    }
+                    else{
+                        currentSearch.setSearchResults(results);
+                    }
                 }
             });
         }
