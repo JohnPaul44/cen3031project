@@ -190,10 +190,11 @@ public class Home_View_controller extends ViewController{
             if(!stat.getRead()){
                 int size = contacts.size();
                 for(int i = 0; i < size; i++){
-                    Status memStat = mem.get(key);
-                    if(key.equals(contacts.get(i).getText())){
-                        HBox notif = (HBox) contacts.get(i).getGraphic();
-                        notif.getChildren().get(1).setVisible(true);
+                    for(String keyMem : mem.keySet()){
+                        if(keyMem.equals(contacts.get(i).getText())){
+                            HBox notif = (HBox) contacts.get(i).getGraphic();
+                            notif.getChildren().get(1).setVisible(true);
+                        }
                     }
                 }
             }
@@ -515,16 +516,7 @@ public class Home_View_controller extends ViewController{
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    int children = view.getChildren().size();
-                    AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
-                    Label openedName = (Label) top.getChildren().get(0);
-
-                    if(openedName.equals("Explore")){
-                        //populate the explore page
-                    }
-                    else{
-                        currentSearch.setSearchResults(results);
-                    }
+                    currentSearch.setSearchResults(results);
                 }
             });
         }
