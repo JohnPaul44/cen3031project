@@ -34,6 +34,10 @@ public class Contact {
 
     public FriendshipStats getFriendshipStats() {return friendshipStats;}
 
+    public void setFriendshipStats(FriendshipStats friendshipStats) {
+        this.friendshipStats = friendshipStats;
+    }
+
     public void updateOnline(NotificationUserOnlineStatusMessage message) {
         online = message.getOnline();
     }

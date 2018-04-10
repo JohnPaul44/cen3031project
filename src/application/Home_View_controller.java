@@ -549,16 +549,6 @@ public class Home_View_controller extends ViewController{
     }
 
     @Override
-    public void contactUpdatedNotification(ErrorInformation errorInformation, String username,HashMap<String, Contact> contacts) {
-        if (errorInformation.getErrorNumber() != 0){
-            System.out.println(errorInformation.getErrorString());
-        }
-        else {
-                vpScreen.setValuesContact();
-        }
-    }
-
-    @Override
     public void contactRemovedNotification(ErrorInformation errorInformation, String username){
         if(errorInformation.getErrorNumber() == 0){
             Platform.runLater(new Runnable() {

@@ -50,8 +50,8 @@ public class HandlerFactory {
                 return new QueryResultsMessageHandler(serverMessage);
             case NOTIFICATIONTYPING: // Typing Notification
                 return new TypingMessageHandler(serverMessage, userUpdater);
-            case NOTIFICATIONCONTACTUPDATED: // Contact Updated
-                return new ContactUpdatedMessageHandler(serverMessage, userUpdater);
+            case NOTIFICATIONFRIENDSHIPSTATS: // Contact Updated
+                return new FriendshipStatsMessageHandler(serverMessage, userUpdater);
             case ACTIONREGISTER: // Register Action
             case ACTIONLOGIN: // Log In Action
             case ACTIONREQUESTSECURITYQUESTION: // Request Security Question Action

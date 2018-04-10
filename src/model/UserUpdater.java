@@ -53,8 +53,8 @@ public class UserUpdater {
             case NOTIFICATIONTYPING: // Typing
                 currentUser.updateMessageTyping((NotificationTypingMessage) serverMessage);
                 break;
-            case NOTIFICATIONCONTACTUPDATED: // Contact updated
-                currentUser.updateContact((NotificationContactUpdatedMessage) serverMessage);
+            case NOTIFICATIONFRIENDSHIPSTATS: // Contact updated
+                currentUser.friendshipStats((NotificationFriendshipStatsMessage) serverMessage);
                 break;
         }
     }

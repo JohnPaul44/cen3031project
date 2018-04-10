@@ -2,10 +2,8 @@ package application;
 
 import connection.ErrorInformation;
 import connection.serverMessages.ServerMessage;
-import model.Contact;
-import model.Conversation;
-import model.Profile;
-import model.Reactions;
+import model.*;
+
 import java.util.ArrayList;
 
 import java.util.Arrays;
@@ -107,11 +105,7 @@ abstract public class ViewController {
 
     }
 
-    public void friendshipStatisticsNotification(ErrorInformation errorInformation, String username, Contact contact) {
-
-    }
-
-    public void contactUpdatedNotification(ErrorInformation errorInformation, String username, HashMap<String, Contact> contacts) {
+    public void friendshipStatsNotification(ErrorInformation errorInformation, String username, FriendshipStats friendshipStats) {
 
     }
 }
