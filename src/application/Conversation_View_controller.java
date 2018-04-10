@@ -95,12 +95,15 @@ public class Conversation_View_controller extends ViewController {
             ActionEvent aevent = new ActionEvent(keyEvent.getSource(), sendButton);
             //pass the keyEvent into the button action event
             sendMessageClicked(aevent);
+            keyEvent.consume();
         }
     }
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
         if (!yourMessageField.getText().isEmpty()) {
             String message = yourMessageField.getText();
+            //Setting the text to blank here to improve responsiveness -Lincoln
+            yourMessageField.setText("");
             //sentMessage(message);
             if (convKey.isEmpty()) {
                 ArrayList<String> mess = new ArrayList<String>();
@@ -132,8 +135,10 @@ public class Conversation_View_controller extends ViewController {
         pane.getChildren().add(new_message);
         box.getChildren().add(pane);
 
-        yourMessageField.setText("");
         scroll.vvalueProperty().bind(box.heightProperty());
+
+        //this is called elsewhere now and probably is redundant. It is being left in just in case -Lincoln
+        yourMessageField.setText("");
     }
 
     public void receivedMessage(String text){

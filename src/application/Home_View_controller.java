@@ -37,6 +37,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Home_View_controller extends ViewController{
 
@@ -323,34 +324,43 @@ public class Home_View_controller extends ViewController{
         try{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/directMessage.fxml"));
-            AnchorPane anchor = new AnchorPane();
-            anchor = loader.load();
+            AnchorPane anchor = loader.load();
             setView(anchor);
 
             currentConvo = loader.getController();
             currentConvo.passConnection(connection);
             //connection.setDelegate(dmScreen);
             currentConvo.setUsername(user.getText());
-            currentConvo.setTopic();
+
 
             for(int i = 0; i < contacts.size(); i++){
-                if(user.equals(contacts.get(i).getText())){
+                if(user.getText().equals(contacts.get(i).getText())){
                     HBox notif = (HBox) contacts.get(i).getGraphic();
                     notif.getChildren().get(1).setVisible(false);
                 }
             }
 
             HashMap<String, Conversation> convos = connection.getCurrentUser().getConversationList();
+
+            //conversationList is an empty map...
+            System.out.println(convos.size());
+
+
+            Set<Map.Entry<String, Conversation>> convSet = convos.entrySet();
             if(convos != null) {
-                for (Map.Entry<String, Conversation> entry : convos.entrySet()) {
+                for (Map.Entry<String, Conversation> entry : convSet) {
                     String key = entry.getKey();
                     Conversation value = entry.getValue();
-                    //TODO: set so it checks for all the members of the conversation
+
+                    System.out.println(value.getMessages().size());
+                    System.out.println(value.getMemberStatus().keySet());
+
                     if (value.getMemberStatus().containsKey(user.getText())) {
                         currentConvo.setConversationKey(key);
                     }
                 }
             }
+            else {System.out.println("conversationList is null"); }
             currentConvo.setMessages();
 
         } catch(Exception e){
@@ -435,8 +445,10 @@ public class Home_View_controller extends ViewController{
         AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
         Label openedName = (Label) top.getChildren().get(0);
 
-        //view.toFront();
         //currentConvo.passConnection(connection);
+
+        //this is to make the windows icon blink when you get a new message with your client not in view -Lincoln
+        view.getScene().getWindow().requestFocus();
 
         Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
         if(from.equals(connection.getCurrentUser().getUserName())){

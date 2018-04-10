@@ -65,6 +65,7 @@ public class Login_View_controller extends ViewController{
 			ActionEvent aevent = new ActionEvent(keyEvent.getSource(), loginButton);
 			//pass the keyEvent into the button action event
 			LoginEventButton(aevent);
+			keyEvent.consume();
 		}
 	}
 	
