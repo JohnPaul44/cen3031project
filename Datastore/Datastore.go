@@ -460,8 +460,6 @@ func CreateConversation(username string, members []string) (*Conversation, error
 	conversation.Key = new(datastore.Key)
 	*conversation.Key = *conversationKey
 
-	log.Printf("conversationKey: %s, conversation.Key: %s\n", conversationKey.ID, conversation.Key.ID)
-
 	// add members to conversation
 	for _, member := range members {
 		exists, err := UserExists(member)
@@ -624,8 +622,6 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 	q := datastore.NewQuery(KindConversationMember).Filter("Member =", user.Username)
 	it := client.Run(c, q)
 
-	log.Println("getting conversations for", user.Username)
-
 	var err error
 
 	for {
@@ -641,8 +637,6 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 			err = convErr
 			break
 		}
-
-		log.Println("getting conversation", conv.Key)
 
 		var conversation msg.Conversation
 		conversation.ConversationKey = fmt.Sprintf("%d", conv.Key.ID)
@@ -681,8 +675,6 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 				err = messageErr
 				break
 			}
-
-			log.Println("getting message", dsMessage)
 
 			var message msg.Message
 			msgKeyString := new(string)
@@ -824,7 +816,7 @@ func RemoveUserFromConversation(username string, removeUser string, conversation
 }
 
 func SetTypingStatus(username string, conversationKey *datastore.Key, typing bool) error {
-	errStr := fmt.Sprintf("'%s' cannot set typing status to %s:", username, typing)
+	errStr := fmt.Sprintf("'%s' cannot set typing status to %v:", username, typing)
 
 	authorized, err := IsUserInConversation(username, conversationKey)
 	if err != nil {
@@ -907,7 +899,7 @@ func AddMessage(message msg.Message) (*Message, error) {
 			return nil, err
 		}
 
-		log.Printf("%s created a new conversation with: %s, conversation.key: %s\n", *message.From, *members, conv.Key)
+		log.Println(*message.From, "created a new conversation with:", *members)
 		conversation = conv
 
 	} else {
@@ -925,8 +917,6 @@ func AddMessage(message msg.Message) (*Message, error) {
 		}
 		conversation = conv
 	}
-
-	log.Println("conversation key:", conversation.Key.ID)
 
 	// add message to datastore and get key
 	dsMessage := new(Message)
@@ -960,7 +950,6 @@ func AddMessage(message msg.Message) (*Message, error) {
 	}
 
 	dsMessage.Key = messageKey
-	log.Println("messageKey:", dsMessage.Key.ID, ", convKey:", dsMessage.Key.Parent.ID)
 
 	return dsMessage, nil
 }
