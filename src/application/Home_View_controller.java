@@ -435,6 +435,7 @@ public class Home_View_controller extends ViewController{
         AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
         Label openedName = (Label) top.getChildren().get(0);
 
+        //view.toFront();
         //currentConvo.passConnection(connection);
 
         Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
