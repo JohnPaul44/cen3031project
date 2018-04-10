@@ -642,6 +642,8 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 			break
 		}
 
+		log.Println("getting conversation", conv.Key)
+
 		var conversation msg.Conversation
 		conversation.ConversationKey = fmt.Sprintf("%d", conv.Key.ID)
 		conversation.LastMessage = conv.LastMessage
@@ -675,11 +677,12 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 		for {
 			var dsMessage Message
 			msgKey, messageErr := messageIt.Next(&dsMessage)
-			log.Printf("getting message: %s\n", dsMessage)
 			if messageErr != nil {
 				err = messageErr
 				break
 			}
+
+			log.Println("getting message", dsMessage)
 
 			var message msg.Message
 			msgKeyString := new(string)
