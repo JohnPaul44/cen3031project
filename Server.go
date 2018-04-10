@@ -161,19 +161,7 @@ func getServerMessage(conn net.Conn, message *msg.ServerMessage) error {
 }
 
 func sendServerMessage(conn net.Conn, message *msg.ServerMessage) error {
-	bytes, err := json.Marshal(message)
-	if err != nil {
-		return err
-	}
-
-	bytes = append(bytes, byte('\n'))
-
-	log.Printf("Sending message: %s\n", bytes)
-	_, err = conn.Write(bytes)
-	if err != nil {
-		log.Println("cannot send message", err)
-	}
-	return err
+	return json.NewEncoder(conn).Encode(message)
 }
 
 func sendServerMessageToUser(username string, message *msg.ServerMessage) {
