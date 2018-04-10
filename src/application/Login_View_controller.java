@@ -185,4 +185,6 @@ public class Login_View_controller extends ViewController{
 			});
 		}
 	}
+
+	public TextField getUsername() {return username;}
 }

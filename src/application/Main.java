@@ -29,6 +29,7 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			primaryStage.setResizable(false);
+			login.getUsername().requestFocus();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

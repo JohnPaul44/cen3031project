@@ -59,6 +59,7 @@ public class Conversation_View_controller extends ViewController {
     private TextField status;
     @FXML
     private TextField topic;
+
     private String thisUser;
 
 
