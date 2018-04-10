@@ -675,6 +675,7 @@ func GetConversations(user *User) (*map[string]msg.Conversation, error) {
 		for {
 			var dsMessage Message
 			msgKey, messageErr := messageIt.Next(&dsMessage)
+			log.Printf("getting message: %s\n", dsMessage)
 			if messageErr != nil {
 				err = messageErr
 				break
