@@ -37,7 +37,8 @@ public class Conversation_View_controller extends ViewController {
     public void passConnection(ServerConnection con){
         connection = con;
         setTopic();
-        connection.readMessage(convKey);
+
+        if (!convKey.isEmpty()) connection.readMessage(convKey);
     }
 
     @FXML
