@@ -346,6 +346,9 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		}
 	}
 
+	if rsp.Message == nil {
+		rsp.Message = new(msg.Message)
+	}
 	rsp.Message.ClientTime = &message.ClientTime
 
 	return sendServerMessage(conn, rsp)
