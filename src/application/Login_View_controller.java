@@ -56,7 +56,8 @@ public class Login_View_controller extends ViewController{
 	public void setStatus(String stat){
 		status.setText(stat);
 	}
-	
+
+
 	//event handlers for both when the login button is pressed or when the enter key is used
 	@FXML
 	public void LoginEventKey(KeyEvent keyEvent) throws Exception{

@@ -68,8 +68,9 @@ public class CurrentUser {
         contactList.remove(message.getUsername());
     }
 
-    public void updateContact(NotificationContactUpdatedMessage message) {
-        contactList = message.getContacts();
+    public void friendshipStats(NotificationFriendshipStatsMessage message) {
+        Contact contact = contactList.get(message.getUsername());
+        contact.setFriendshipStats(message.getFriendshipStats());
     }
 
     public void updateProfile(NotificationProfileUpdatedMessage message) {
