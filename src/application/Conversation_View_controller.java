@@ -37,8 +37,6 @@ public class Conversation_View_controller extends ViewController {
     public void passConnection(ServerConnection con){
         connection = con;
         setTopic();
-
-        if (!convKey.isEmpty()) connection.readMessage(convKey);
     }
 
     @FXML
@@ -93,6 +91,7 @@ public class Conversation_View_controller extends ViewController {
 
     public void setConversationKey(String convokey){
         convKey = convokey;
+        if (!convKey.isEmpty()) connection.readMessage(convKey);
     }
 
     @FXML
