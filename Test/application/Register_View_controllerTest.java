@@ -18,8 +18,6 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 class Register_View_Controller_Mock extends Register_View_controller{
-    DummyUser dummy = new DummyUser();
-
     @Override
     public void registerButtonClicked(ActionEvent event) throws Exception{
         //error checking for empty fields
@@ -102,7 +100,21 @@ public class Register_View_controllerTest extends ApplicationTest {
     }
 
     @Test
-    public void testAllFieldsEmpty(){
-        
+    public void testButtonsExist(){
+        FxAssert.verifyThat("#backButton", NodeMatchers.hasChild("<"));
+        FxAssert.verifyThat("#registerButton", NodeMatchers.hasChild("Register!"));
+    }
+
+    @Test
+    public void testBackButton(){
+        clickOn("#backButton");
+        //verify that the new window opened by checking for some of the fields
+        FxAssert.verifyThat("#loginButton", NodeMatchers.hasChild("Login"));
+        FxAssert.verifyThat("#createAnAccount", NodeMatchers.hasChild("Create an Account"));
+        FxAssert.verifyThat("#forgotPassword", NodeMatchers.hasChild("Forgot Password?"));
+    }
+
+    @Test
+    public void testRequiredFields(){
     }
 }
