@@ -349,6 +349,7 @@ public class Home_View_controller extends ViewController{
                     //TODO: set so it checks for all the members of the conversation
                     if (value.getMemberStatus().containsKey(user.getText())) {
                         currentConvo.setConversationKey(key);
+                        break;
                     }
                 }
             }
