@@ -27,6 +27,10 @@ public class ServerConnection implements IServerConnection {
         this.delegate = delegate;
     }
 
+    public void setCurrentUser(CurrentUser currUser) {
+        this.currentUser = currUser;
+    }
+
     public ServerConnection() {
         this.currentUser = new CurrentUser();
         try {

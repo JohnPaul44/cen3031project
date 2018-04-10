@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import model.Contact;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,8 @@ public class CreateGroupMessage_View_Controller extends ViewController {
     TextField addList;
     @FXML
     Button create;
+
+    ArrayList<String> groupMembers = new ArrayList<>();
 
     public void setContactList(){
         HashMap<String, Contact> contacts = connection.getCurrentUser().getContactList();
@@ -65,10 +68,12 @@ public class CreateGroupMessage_View_Controller extends ViewController {
         System.out.println("saved in field " + current);
         if(current.equals("")){
             addList.setText(user);
+            groupMembers.add(user);
             add.setVisible(false);
             return;
         }
         addList.setText(current + ", " + user);
+        groupMembers.add(user);
         add.setVisible(false);
     }
 
