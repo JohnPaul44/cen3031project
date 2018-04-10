@@ -938,6 +938,15 @@ func AddMessage(message msg.Message) (*Message, error) {
 		return nil, err
 	}
 
+	// update conversation member statuses
+	memberStatuses, err := GetConversationMemberStatuses(conversation.Key)
+	for member, status := range memberStatuses {
+		if member != *message.From {
+			client.Put(c, datastore.NameKey(KindConversationMember, member, conversation.Key), &msg.Status{Read:false, Typing:status.Typing})
+		}
+	}
+	client.Put(c, datastore.NameKey(KindConversationMember, *message.From, conversation.Key), &msg.Status{Read: true, Typing:false})
+
 	// put new message in datastore
 	messageKey := datastore.IncompleteKey(KindConversationMessage, conversation.Key)
 	messageKey, err = client.Put(c, messageKey, dsMessage)
