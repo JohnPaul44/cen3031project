@@ -572,6 +572,8 @@ func GetFriendshipStatistics(username1 string, username2 string) (msg.Friendship
 	conversationMemberKeys, err := client.GetAll(c, userConversationQuery, nil)
 
 	for _, key := range conversationMemberKeys {
+		log.Println("calculating statistics for conversation with ID:", key.Parent)
+
 		// get keys for conversation messages from username1 (sent)
 		sentMessagesQuery := datastore.NewQuery(KindConversationMessage).Filter("From =", username1).Ancestor(key.Parent)
 		sentKeys, err := client.GetAll(c, sentMessagesQuery, nil)
