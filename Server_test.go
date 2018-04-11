@@ -7,6 +7,7 @@ import (
 	msg "./ServerMessage"
 	"fmt"
 	"cloud.google.com/go/datastore"
+	"time"
 )
 
 const (
@@ -216,6 +217,8 @@ func TestConversations(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	defer ds.DeleteConversation(newConversation.Key)
+
 	testUser, err := ds.GetUserAccount(TestUser)
 	if err != nil {
 		t.Fatal(err)
@@ -236,15 +239,17 @@ func TestConversations(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if len(*testUserConversations) == 0 || (*testUserConversations)[0].ConversationKey != newConversation.Key.Name {
+	conversationKeyString := fmt.Sprintf("%d", newConversation.Key.ID)
+
+	if len(*testUserConversations) == 0 || (*testUserConversations)[conversationKeyString].ConversationKey != fmt.Sprintf("%d", newConversation.Key.ID) {
 		t.Fatal("testUserConversations does not contain conversation:", *testUserConversations)
 	}
 
-	if len((*testUserConversations)[0].MemberStatus) != 2 {
+	if len((*testUserConversations)[fmt.Sprintf("%d", newConversation.Key.ID)].MemberStatus) != 2 {
 		t.Fatal("testUserConversations.MemberStatus has incorrect length")
 	}
 
-	testUserMember, contains := (*testUserConversations)[0].MemberStatus[TestContact]
+	testUserMember, contains := (*testUserConversations)[conversationKeyString].MemberStatus[TestContact]
 	if !contains {
 		t.Fatal("testUserConversations.MemberStatus does not contain", TestContact)
 	}
@@ -253,15 +258,15 @@ func TestConversations(t *testing.T) {
 		t.Fatal("testUserMember.[Read | Typing] is set to true (should be false)")
 	}
 
-	if len(*testContactUserConversations) == 0 || (*testContactUserConversations)[0].ConversationKey != newConversation.Key.Name {
+	if len(*testContactUserConversations) == 0 || (*testContactUserConversations)[conversationKeyString].ConversationKey != fmt.Sprintf("%d", newConversation.Key.ID) {
 		t.Fatal("testContactUserConversations does not contain conversation")
 	}
 
-	if len((*testContactUserConversations)[0].MemberStatus) != 2 {
+	if len((*testContactUserConversations)[conversationKeyString].MemberStatus) != 2 {
 		t.Fatal("testContactUserConversations.MemberStatus has incorrect length")
 	}
 
-	testContactMember, contains := (*testContactUserConversations)[0].MemberStatus[TestUser]
+	testContactMember, contains := (*testContactUserConversations)[conversationKeyString].MemberStatus[TestUser]
 	if !contains {
 		t.Fatal("testUserConversations.MemberStatus does not contain", TestUser)
 	}
@@ -320,7 +325,29 @@ func TestConversations(t *testing.T) {
 		t.Fatal("testContactStatus.[Read | Typing] is set to true (should be false)")
 	}
 
+	clientTime := new(string)
+	*clientTime = time.Now().String()
+	text := new(string)
+	*text = "test message "
+	from := new(string)
+	*from = TestUser
 
+
+	message := msg.Message{
+		ClientTime: clientTime,
+		ConversationKey: &conversationKeyString,
+		Text: text,
+		From: from,
+	}
+
+	newMessage, err := ds.AddMessage(message)
+	if err != nil {
+		t.Fatal("could not add message to conversation:", err)
+	}
+
+	if newMessage.Key == nil {
+		t.Fatal("message key is nil")
+	}
 
 	err = ds.DeleteConversation(newConversation.Key)
 	if err != nil {
@@ -334,8 +361,6 @@ func TestConversations(t *testing.T) {
 		}
 		t.Fatal(err)
 	}
-
-
 }
 
 func TestAddUserToConversation(t *testing.T) {
@@ -369,57 +394,3 @@ func TestRemoveContact(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-
-/* Server Function Tests */
-/*func TestRegister(t *testing.T) {
-
-}
-
-func TestLogIn(t *testing.T) {
-
-}
-
-func TestUpdateOnlineStatus(t *testing.T) {
-
-}*/
-
-/* Handler Tests */
-/*func TestHandleLogOut(t *testing.T) {
-
-}
-
-func TestHandleAddContact(t *testing.T) {
-
-}
-
-func TestHandleRemoveContact(t *testing.T) {
-
-}
-
-func TestHandleUpdateProfile(t *testing.T) {
-
-}
-
-func TestHandleSendMessage(t *testing.T) {
-
-}
-
-func TestHandleReadMessage(t *testing.T) {
-
-}
-
-func TestHandleSetTyping(t *testing.T) {
-
-}
-
-func TestHandleUpdateMessage(t *testing.T) {
-
-}
-
-func TestHandleAddUserToConversation(t *testing.T) {
-
-}
-
-func TestHandleRemoveUserFromConversation(t *testing.T) {
-
-}*/

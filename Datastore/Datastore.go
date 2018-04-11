@@ -15,6 +15,8 @@ import (
 
 const (
 	KindUser                        = "User"
+	//KindUserInterests               = "UserInterests"
+	//KindUserHobbies                 = "UserHobbies"
 	KindConversation                = "Conversation"
 	KindConversationMessage         = "Message"
 	KindUserContact                 = "Contact"
@@ -40,6 +42,14 @@ type User struct {
 	SecurityQuestion string        `json:"securityQuestion"`
 	SecurityAnswer   string        `json:"securityAnswer"`
 }
+
+/*type UserInterest struct {
+	Interest string
+}
+
+type UserHobbies struct {
+	Hobby string
+}*/
 
 type MessageReaction struct {
 	// KindMessageReaction, key=KindUser(username), parent=KindConversationMessage
@@ -201,6 +211,90 @@ func DeleteUserAccount(username string) error {
 	return err
 }
 
+/*func clearUserProfileArray(username string, kind string) error {
+	q := datastore.NewQuery(kind).Ancestor(GetUserKey(username)).KeysOnly()
+	keys, err := client.GetAll(c, q, nil)
+	if err != nil {
+		return err
+	}
+
+	return client.DeleteMulti(c, keys)
+}
+
+func updateUserProfileArray(username string, kind string, values []string) error {
+	err := clearUserProfileArray(username, kind)
+	if err != nil {
+		return err
+	}
+
+	var keys []*datastore.Key
+
+	for range values {
+		keys = append(keys, datastore.IncompleteKey(kind, GetUserKey(username)))
+	}
+
+	_, err = client.PutMulti(c, keys, values)
+	return err
+}
+
+func setUserInterests(username string, interests []string) error {
+
+}
+
+func GetUserInterests(username string) ([]string, error) {var values []string
+	q := datastore.NewQuery(KindUserInterests).Ancestor(GetUserKey(username))
+	it := client.Run(c, q)
+
+	var err error
+
+	for {
+		var interest string
+		_, intErr := it.Next(&interest)
+		if intErr != nil {
+			err = intErr
+			break
+		}
+
+		values = append(values, interest)
+	}
+
+	if err != iterator.Done {
+		log.Println(err)
+		return values, err
+	}
+
+	return values, nil
+}
+
+func setUserHobbies(username string, hobbies []string) error {
+
+}
+
+func GetUserHobbies(username string) ([]string, error) {var values []string
+	q := datastore.NewQuery(KindUserHobbies).Ancestor(GetUserKey(username))
+	it := client.Run(c, q)
+
+	var err error
+
+	for {
+		var interest string
+		_, intErr := it.Next(&interest)
+		if intErr != nil {
+			err = intErr
+			break
+		}
+
+		values = append(values, interest)
+	}
+
+	if err != iterator.Done {
+		log.Println(err)
+		return values, err
+	}
+
+	return values, nil
+}*/
+
 func GetUserProfile(username string) (msg.Profile, error) {
 	var profile msg.Profile
 
@@ -209,31 +303,101 @@ func GetUserProfile(username string) (msg.Profile, error) {
 		return profile, err
 	}
 
+	profile = user.Profile
+
+	/*interests, err := GetUserInterests(username)
+	if err != nil {
+		log.Println("cannot get interests for user:", err)
+	}
+	profile.Interests = interests
+
+	hobbies, err := GetUserHobbies(username)
+	if err != nil {
+		log.Println("cannot get hobbies for user:", err)
+	}
+	profile.Hobbies = hobbies*/
+
 	return user.Profile, nil
 }
 
-func QueryUserAccounts(query string) (map[string]msg.Profile, error) {
-	usernameQuery := datastore.NewQuery(KindUser).Filter("__key__ =", GetUserKey(query))
-	it := client.Run(c, usernameQuery)
-
-	results := make(map[string]msg.Profile)
-
-	var err error
-
-	for {
-		user := new(User)
-		key, lerr := it.Next(user)
-		if lerr != nil {
-			err = lerr
-			break
+func contains(list []string, item string) bool {
+	for _, itm := range list {
+		if itm == item {
+			return true
 		}
+	}
+	return false
+}
 
-		results[key.Name] = user.Profile
+func QueryUserAccounts(query string) (map[string]msg.Profile, error) {
+	var err error
+	var usernames []string
+
+	// query username
+	usernames = append(usernames, query)
+
+
+	// query interests
+	interestsQuery := datastore.NewQuery(KindUser).Filter("Interests =", query).KeysOnly()
+	userKeys, err := client.GetAll(c, interestsQuery, nil)
+	if err != nil {
+		log.Println("cannot query interests", err)
+	} else {
+		for _, userKey := range userKeys {
+			if !contains(usernames, userKey.Name) {
+				usernames = append(usernames, userKey.Name)
+			}
+		}
 	}
 
-	if err != iterator.Done {
-		log.Println("cannot get query results:", err)
-		return results, err
+
+	// query hobbies
+	hobbiesQuery := datastore.NewQuery(KindUser).Filter("Hobbies =", query).KeysOnly()
+	userKeys, err = client.GetAll(c, hobbiesQuery, nil)
+	if err != nil {
+		log.Println("cannot query hobbies", err)
+	} else {
+		for _, userKey := range userKeys {
+			if !contains(usernames, userKey.Name) {
+				usernames = append(usernames, userKey.Name)
+			}
+		}
+	}
+
+	// query first name
+	firstNameQuery := datastore.NewQuery(KindUser).Filter("Profile.FirstName =", query).KeysOnly()
+	userKeys, err = client.GetAll(c, firstNameQuery, nil)
+	if err != nil {
+		log.Println("cannot query first name", err)
+	} else {
+		for _, userKey := range userKeys {
+			if !contains(usernames, userKey.Name) {
+				usernames = append(usernames, userKey.Name)
+			}
+		}
+	}
+
+	// query last name
+	lastNameQuery := datastore.NewQuery(KindUser).Filter("Profile.LastName =", query).KeysOnly()
+	userKeys, err = client.GetAll(c, lastNameQuery, nil)
+	if err != nil {
+		log.Println("cannot query last name", err)
+	} else {
+		for _, userKey := range userKeys {
+			if !contains(usernames, userKey.Name) {
+				usernames = append(usernames, userKey.Name)
+			}
+		}
+	}
+
+	// get user accounts
+	results := make(map[string]msg.Profile)
+
+	for _, username := range usernames {
+		userProfile, err := GetUserProfile(username)
+		if err == nil {
+			results[username] = userProfile
+		}
 	}
 
 	return results, nil
@@ -308,9 +472,9 @@ func AddContact(username string, contact string) (UserContact, error) {
 	// add contact
 	contactKey := GetContactKey(username, contact)
 	userContact = UserContact{
-		Added:   time.Now(),
+		Added: time.Now(),
 		Statistics: msg.FriendshipStatistics{
-			SentMessages: 0,
+			SentMessages:     0,
 			ReceivedMessages: 0,
 			//Games: make(map[string]msg.ContactGame),
 			FriendshipLevel: 0,
@@ -329,7 +493,6 @@ func calculateFriendshipStatistics(username1 string, username2 string) (msg.Frie
 	// calculate number of direct messages sent and received (find conversation between contacts and count messages)
 
 	// calculate friendship level using formula: ln(sent + received)
-
 
 	return msg.FriendshipStatistics{}
 }
@@ -355,9 +518,9 @@ func GetContact(username string, contactUsername string) (msg.Contact, error) {
 	}
 
 	contact = msg.Contact{
-		Online: ConnectionsContains(contactUsername),
-		Added: userContact.Added,
-		Profile: userProfile,
+		Online:     ConnectionsContains(contactUsername),
+		Added:      userContact.Added,
+		Profile:    userProfile,
 		Statistics: userContact.Statistics,
 	}
 
@@ -404,10 +567,10 @@ func GetContacts(user *User) ([]UserContact, error) {
 
 	for i, dsContact := range dsUserContacts {
 		contacts = append(contacts, UserContact{
-			Added:   dsContact.Added,
+			Added:      dsContact.Added,
 			Statistics: calculateFriendshipStatistics(user.Username, dsUserContactKeys[i].Name),
-			Contact: dsUserContactKeys[i].Name,
-			Owner:   user.Username,
+			Contact:    dsUserContactKeys[i].Name,
+			Owner:      user.Username,
 		})
 	}
 
@@ -936,10 +1099,10 @@ func AddMessage(message msg.Message) (*Message, error) {
 	memberStatuses, err := GetConversationMemberStatuses(conversation.Key)
 	for member, status := range memberStatuses {
 		if member != *message.From {
-			client.Put(c, datastore.NameKey(KindConversationMember, member, conversation.Key), &ConversationMember{Member: member, Status:msg.Status{Read:false, Typing:status.Typing}})
+			client.Put(c, datastore.NameKey(KindConversationMember, member, conversation.Key), &ConversationMember{Member: member, Status: msg.Status{Read: false, Typing: status.Typing}})
 		}
 	}
-	client.Put(c, datastore.NameKey(KindConversationMember, *message.From, conversation.Key), &ConversationMember{Member: *message.From, Status: msg.Status{Read: true, Typing:false}})
+	client.Put(c, datastore.NameKey(KindConversationMember, *message.From, conversation.Key), &ConversationMember{Member: *message.From, Status: msg.Status{Read: true, Typing: false}})
 
 	// put new message in datastore
 	messageKey := datastore.IncompleteKey(KindConversationMessage, conversation.Key)

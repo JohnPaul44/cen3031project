@@ -40,7 +40,6 @@ type Status struct {
 	Typing bool `json:"typing"`
 }
 
-// TODO: implement Created time in handlers
 type Conversation struct {
 	Created         time.Time          `json:"created"`
 	LastMessage     time.Time          `json:"lastMessage"`
@@ -100,23 +99,23 @@ type Profile struct {
 }
 
 type ServerMessage struct {
-	Status           int                      `json:"status"`
-	ErrorNumber      *int                     `json:"errorNumber,omitempty"`
-	ErrorString      *string                  `json:"errorString,omitempty"`
-	Username         *string                  `json:"username,omitempty"`
-	Password         *string                  `json:"password,omitempty"`
-	Profile          *Profile                 `json:"profile,omitempty"`
-	Query            *string                  `json:"query,omitempty"`
-	QueryResults     *map[string]Profile      `json:"queryResults,omitempty"`
-	SecurityQuestion *string                  `json:"securityQuestion,omitempty"`
-	SecurityAnswer   *string                  `json:"securityAnswer,omitempty"`
-	Phone            *string                  `json:"phone,omitempty"`
-	Contacts         *map[string]Contact      `json:"contacts,omitempty"`
-	Online           *bool                    `json:"online,omitempty"`
-	Conversations    *map[string]Conversation `json:"conversations,omitempty"`
-	Message          *Message                 `json:"message,omitempty"`
-	ClientTime       string                   `json:"clientTime"`
-	FriendshipStatistics *FriendshipStatistics `json:"friendship_statistics,omitempty"` // TODO: implement
+	Status               int                      `json:"status"`
+	ErrorNumber          *int                     `json:"errorNumber,omitempty"`
+	ErrorString          *string                  `json:"errorString,omitempty"`
+	Username             *string                  `json:"username,omitempty"`
+	Password             *string                  `json:"password,omitempty"`
+	Profile              *Profile                 `json:"profile,omitempty"`
+	Query                *string                  `json:"query,omitempty"`
+	QueryResults         *map[string]Profile      `json:"queryResults,omitempty"`
+	SecurityQuestion     *string                  `json:"securityQuestion,omitempty"`
+	SecurityAnswer       *string                  `json:"securityAnswer,omitempty"`
+	Phone                *string                  `json:"phone,omitempty"`
+	Contacts             *map[string]Contact      `json:"contacts,omitempty"`
+	Online               *bool                    `json:"online,omitempty"`
+	Conversations        *map[string]Conversation `json:"conversations,omitempty"`
+	Message              *Message                 `json:"message,omitempty"`
+	ClientTime           string                   `json:"clientTime"`
+	FriendshipStatistics *FriendshipStatistics    `json:"friendship_statistics,omitempty"` // TODO: implement
 }
 
 func (msg *ServerMessage) Clear() {

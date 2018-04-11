@@ -124,12 +124,23 @@ func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) 
 		return sendServerMessage(conn, rsp)
 	}
 
+	contactProfile, err := ds.GetUserProfile(*message.Username)
+	if err != nil {
+		serr := e.ErrInternalServer
+		log.Println(errStr, serr)
+		rsp.SetError(serr)
+		return sendServerMessage(conn, rsp)
+	}
+
 	user.Contacts = append(user.Contacts, contact)
 
 	rsp.Username = message.Username
+	rsp.Profile = &contactProfile
 
 	sendServerMessageToUser(user.Username, rsp)
 	log.Printf("%s added %s as a contact\n", user.Username, *message.Username)
+
+	// TODO: send notification to contact that user.Username has added him/her as a contact
 
 	return nil
 }
