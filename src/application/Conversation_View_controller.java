@@ -95,6 +95,10 @@ public class Conversation_View_controller extends ViewController {
         if (!convKey.isEmpty()) connection.readMessage(convKey);
     }
 
+    public String getConvKey(){
+        return convKey;
+    }
+
     @FXML
     public void SendEventKey(KeyEvent keyEvent) throws Exception{
         if(keyEvent.getCode() == KeyCode.ENTER) {

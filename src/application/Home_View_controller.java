@@ -450,6 +450,7 @@ public class Home_View_controller extends ViewController{
         else if(openedName.getText().equals(from)){
             currentConvo.setUsername(from);
             currentConvo.newMessage(conversationKey, messageKey, time, from, text, mem);
+            if (!currentConvo.getConvKey().isEmpty()) connection.readMessage(currentConvo.getConvKey());
         }
         //if the message is from a user when their conversation is not currently open
         else{
@@ -546,6 +547,7 @@ public class Home_View_controller extends ViewController{
 
     @Override
     public void contactRemovedNotification(ErrorInformation errorInformation, String username){
+        System.out.println("Contact removed notification");
         if(errorInformation.getErrorNumber() == 0){
             Platform.runLater(new Runnable() {
                 @Override

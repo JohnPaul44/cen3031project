@@ -65,8 +65,8 @@ public class Search_View_Controller extends ViewController{
     }
 
     public void setSearchResults(HashMap<String, Profile> userResults) {
+        HashMap<String, Contact> contacts = connection.getCurrentUser().getContactList();
 
-        System.out.println("setting search results");
         if(userResults == null){
             status.setText("No Results");
             return;
@@ -81,6 +81,7 @@ public class Search_View_Controller extends ViewController{
             //TODO: make it add additional rows
             String username = entry.getKey();
             Profile prof = entry.getValue();
+
             Button add = new Button();
             add.setText("Add Friend");
             add.setId("add");
@@ -117,6 +118,13 @@ public class Search_View_Controller extends ViewController{
                     viewProfile(username, prof);
                 }
             });
+
+            //check if the user is already in their contacts
+            Contact user = contacts.get(username);
+            //if the user is already in the contacts
+            if(user != null){
+                add.setVisible(false);
+            }
         }
     }
 
