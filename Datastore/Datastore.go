@@ -338,7 +338,7 @@ func QueryUserAccounts(query string) (map[string]msg.Profile, error) {
 
 
 	// query interests
-	interestsQuery := datastore.NewQuery(KindUser).Filter("Interests =", query).KeysOnly()
+	interestsQuery := datastore.NewQuery(KindUser).Filter("Profile.Interests =", query).KeysOnly()
 	userKeys, err := client.GetAll(c, interestsQuery, nil)
 	if err != nil {
 		log.Println("cannot query interests", err)
@@ -352,7 +352,7 @@ func QueryUserAccounts(query string) (map[string]msg.Profile, error) {
 
 
 	// query hobbies
-	hobbiesQuery := datastore.NewQuery(KindUser).Filter("Hobbies =", query).KeysOnly()
+	hobbiesQuery := datastore.NewQuery(KindUser).Filter("Profile.Hobbies =", query).KeysOnly()
 	userKeys, err = client.GetAll(c, hobbiesQuery, nil)
 	if err != nil {
 		log.Println("cannot query hobbies", err)
@@ -382,6 +382,32 @@ func QueryUserAccounts(query string) (map[string]msg.Profile, error) {
 	userKeys, err = client.GetAll(c, lastNameQuery, nil)
 	if err != nil {
 		log.Println("cannot query last name", err)
+	} else {
+		for _, userKey := range userKeys {
+			if !contains(usernames, userKey.Name) {
+				usernames = append(usernames, userKey.Name)
+			}
+		}
+	}
+
+	// query email
+	emailQuery := datastore.NewQuery(KindUser).Filter("Profile.Email =", query).KeysOnly()
+	userKeys, err = client.GetAll(c, emailQuery, nil)
+	if err != nil {
+		log.Println("cannot query email", err)
+	} else {
+		for _, userKey := range userKeys {
+			if !contains(usernames, userKey.Name) {
+				usernames = append(usernames, userKey.Name)
+			}
+		}
+	}
+
+	// query phone
+	phoneQuery := datastore.NewQuery(KindUser).Filter("Profile.Phone =", query).KeysOnly()
+	userKeys, err = client.GetAll(c, phoneQuery, nil)
+	if err != nil {
+		log.Println("cannot query phone", err)
 	} else {
 		for _, userKey := range userKeys {
 			if !contains(usernames, userKey.Name) {
