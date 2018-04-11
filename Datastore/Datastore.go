@@ -568,12 +568,20 @@ func GetFriendshipStatistics(username1 string, username2 string) (msg.Friendship
 	}
 
 	// calculate number of direct messages sent and received (find conversation between contacts and count messages)
-	// TODO: ensure conversations are being queried properly (no conversations are found)
-	userConversationQuery := datastore.NewQuery(KindConversationMember).Filter("Member =", username2)
+	userConversationQuery := datastore.NewQuery(KindConversationMember).Filter("Member =", username1)
 	conversationMemberKeys, err := client.GetAll(c, userConversationQuery, nil)
 
 	for _, key := range conversationMemberKeys {
 		log.Println("calculating statistics for conversation with ID:", key.Parent)
+		members, err := GetConversationMembers(key.Parent)
+		if err != nil {
+			log.Println(e.Tag, err)
+			continue
+		}
+
+		if !contains(*members, username2) {
+			continue
+		}
 
 		// get keys for conversation messages from username1 (sent)
 		sentMessagesQuery := datastore.NewQuery(KindConversationMessage).Filter("From =", username1).Ancestor(key.Parent)
