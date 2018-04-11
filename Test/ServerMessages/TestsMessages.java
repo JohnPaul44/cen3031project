@@ -8,10 +8,7 @@ import connection.serverMessages.notificationMessages.NotificationContactAddedMe
 import connection.serverMessages.notificationMessages.NotificationFriendshipStatsMessage;
 import connection.serverMessages.notificationMessages.NotificationLoggedInMessage;
 import junit.framework.TestCase;
-import model.Contact;
-import model.Conversation;
-import model.Message;
-import model.Status;
+import model.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -38,16 +35,28 @@ public class TestsMessages {
 
     @Test
     public void sendFriendshipStatsMessage() {
-        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
-        NotificationFriendshipStatsMessage friendshipStatsMessage = new NotificationFriendshipStatsMessage(dummyData.username2,dummyData.friendshipStats1);
         ArrayList<ServerMessage> serverMessages = new ArrayList<>();
+        NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
         serverMessages.add(loggedInMessage);
-        serverMessages.add(friendshipStatsMessage);
 
+
+        NotificationFriendshipStatsMessage friendshipStatsMessage = new NotificationFriendshipStatsMessage(dummyData.username2,dummyData.friendshipStats1);
+        serverMessages.add(friendshipStatsMessage);
         sendAndReceiveMessages(serverMessages);
-        Assert.assertTrue(connection.getCurrentUser().getContactList().get(dummyData.username2).getFriendshipStats().getFriendshipLevel()==1);
+
+        assertTrue(connection.getCurrentUser().getContactList().get(dummyData.username2).getFriendshipStats().getFriendshipLevel()==1);
         assertTrue(connection.getCurrentUser().getContactList().get(dummyData.username2).getFriendshipStats().getSentMessages()==3);
         assertTrue(connection.getCurrentUser().getContactList().get(dummyData.username2).getFriendshipStats().getReceivedMessages()==2);
+
+        NotificationFriendshipStatsMessage friendshipStatsMessage2 = new NotificationFriendshipStatsMessage(dummyData.username2,new FriendshipStats(0,0,0));
+        serverMessages.add(friendshipStatsMessage2);
+        sendAndReceiveMessages(serverMessages);
+
+
+        Assert.assertEquals((long)connection.getCurrentUser().getContactList().get(dummyData.username2).getFriendshipStats().getFriendshipLevel(),0);
+        assertTrue(connection.getCurrentUser().getContactList().get(dummyData.username2).getFriendshipStats().getSentMessages()==0);
+        assertTrue(connection.getCurrentUser().getContactList().get(dummyData.username2).getFriendshipStats().getReceivedMessages()==0);
+
     }
 
     private NotificationLoggedInMessage createLoggedInMessage() {
