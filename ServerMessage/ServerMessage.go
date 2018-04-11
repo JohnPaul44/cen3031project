@@ -143,6 +143,7 @@ func (msg *ServerMessage) SetError(err e.Error) {
 	*msg.ErrorString = err.Error()
 }
 
+// TODO: add Action and Notification for deleting user account
 const (
 	// Default status
 	StatusUninitialized = iota

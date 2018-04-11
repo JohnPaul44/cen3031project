@@ -18,6 +18,7 @@ var handlerMap = map[int]ServerMessageHandler{
 	msg.ActionAddContact:                 handleAddContact,
 	msg.ActionRemoveContact:              handleRemoveContact,
 	msg.ActionUpdateProfile:              handleUpdateProfile,
+	msg.ActionGetFriendshipStatistics:    handleGetFriendshipStatistics,
 	msg.ActionSendMessage:                handleSendMessage,
 	msg.ActionUpdateMessage:              handleUpdateMessage,
 	msg.ActionReactToMessage:             handleReactToMessage,
@@ -209,7 +210,7 @@ func handleUpdateProfile(user *ds.User, conn net.Conn, message *msg.ServerMessag
 	}
 
 	if len(message.Profile.FirstName) == 0 || len(message.Profile.LastName) == 0 || len(message.Profile.Email) == 0 ||
-		len(message.Profile.Phone) == 0 || len(message.Profile.Color) == 0{
+		len(message.Profile.Phone) == 0 || len(message.Profile.Color) == 0 {
 		err := e.New("empty profile.[firstName | lastName | email | phone | color]", e.EmptyParameter)
 		log.Println(errStr, err)
 		rsp.SetError(err)
@@ -244,11 +245,43 @@ func handleUpdateProfile(user *ds.User, conn net.Conn, message *msg.ServerMessag
 	return nil
 }
 
+func handleGetFriendshipStatistics(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
+	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationFriendshipStatistics
+	errStr := user.Username + " cannot get friendship statistics:"
+
+	if message.Username == nil {
+		err := e.New("missing Username", e.MissingParameter)
+		log.Println(errStr, err)
+		rsp.SetError(err)
+		return sendServerMessage(conn, rsp)
+	}
+
+	if len(*message.Username) == 0 {
+		err := e.New("empty Username", e.EmptyParameter)
+		log.Println(errStr, err)
+		rsp.SetError(err)
+		return sendServerMessage(conn, rsp)
+	}
+
+	errStr = user.Username + " cannot get friendship statistics for " + *message.Username + ":"
+
+	stats, err := ds.GetFriendshipStatistics(user.Username, *message.Username)
+	if err != nil {
+		log.Println(errStr, err)
+		rsp.SetError(e.ErrInternalServer)
+		return sendServerMessage(conn, rsp)
+	}
+
+	rsp.FriendshipStatistics = &stats
+
+	return sendServerMessage(conn, rsp)
+}
+
 func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
 	rsp.Status = msg.NotificationMessageReceived
 	errStr := user.Username + " cannot send message:"
-
 
 	if message.Message == nil {
 		err := e.New("missing Message", e.MissingParameter)
@@ -541,7 +574,6 @@ func handleAddUserToConversation(user *ds.User, conn net.Conn, message *msg.Serv
 	*rsp.Conversations = make(map[string]msg.Conversation)
 	conversation := msg.Conversation{MemberStatus: memberStatuses, LastMessage: conv.LastMessage, ConversationKey: convKey.Name, Messages: messages}
 	(*rsp.Conversations)[convKey.Name] = conversation
-
 
 	sendServerMessageToUser(*message.Username, rsp)
 	log.Printf("%s added %s to conversation with: %s\n", user.Username, *message.Username, func() []string {

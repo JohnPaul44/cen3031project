@@ -11,10 +11,11 @@ import (
 	e "../Errors"
 	msg "../ServerMessage"
 	"strconv"
+	"math"
 )
 
 const (
-	KindUser                        = "User"
+	KindUser = "User"
 	//KindUserInterests               = "UserInterests"
 	//KindUserHobbies                 = "UserHobbies"
 	KindConversation                = "Conversation"
@@ -203,12 +204,43 @@ func UpdateUserAccount(user *User) error {
 }
 
 func DeleteUserAccount(username string) error {
-	// TODO: remove all references to user account from database (conversations, contacts, etc.)
-	// TODO: close all connections under username
+	// remove from conversations
+	conversationMemberQuery := datastore.NewQuery(KindConversationMember).Filter("Member =", username).KeysOnly()
+	conversationMemberKeys, err := client.GetAll(c, conversationMemberQuery, nil)
+	if err != nil {
+		log.Printf("cannot get conversation member keys for %s: %s\n", username, err)
+	} else {
+		err := client.DeleteMulti(c, conversationMemberKeys)
+		if err != nil {
+			log.Printf("cannot remove %s from conversations: %s\n", username, err)
+		}
+	}
+
+	// delete contacts
+	contactQuery := datastore.NewQuery(KindConversationMember).Ancestor(GetUserKey(username)).KeysOnly()
+	contactKeys, err := client.GetAll(c, contactQuery, nil)
+	if err != nil {
+		if err == datastore.ErrNoSuchEntity {
+			return e.ErrInvalidUsername
+		}
+		log.Printf("cannot get contacts for %s: %s\n", username, err)
+	} else {
+		for _, key := range contactKeys {
+			err = RemoveContact(username, key.Name)
+			if err != nil {
+				log.Printf("cannot remove %s from %s's contacts: %s\n", key.Name, username, err)
+			}
+		}
+	}
+
+	// delete account
+	err = client.Delete(c, GetUserKey(username))
+	if err != nil {
+		log.Printf("cannot delete %s's user account: %s\n", username, err)
+	}
 
 	userKey := GetUserKey(username)
-	err := client.Delete(c, userKey)
-	return err
+	return client.Delete(c, userKey)
 }
 
 /*func clearUserProfileArray(username string, kind string) error {
@@ -336,7 +368,6 @@ func QueryUserAccounts(query string) (map[string]msg.Profile, error) {
 	// query username
 	usernames = append(usernames, query)
 
-
 	// query interests
 	interestsQuery := datastore.NewQuery(KindUser).Filter("Profile.Interests =", query).KeysOnly()
 	userKeys, err := client.GetAll(c, interestsQuery, nil)
@@ -349,7 +380,6 @@ func QueryUserAccounts(query string) (map[string]msg.Profile, error) {
 			}
 		}
 	}
-
 
 	// query hobbies
 	hobbiesQuery := datastore.NewQuery(KindUser).Filter("Profile.Hobbies =", query).KeysOnly()
@@ -512,15 +542,59 @@ func AddContact(username string, contact string) (UserContact, error) {
 	return userContact, err
 }
 
-func calculateFriendshipStatistics(username1 string, username2 string) (msg.FriendshipStatistics) {
-	// TODO: calculate friendship statistics
+func GetFriendshipStatistics(username1 string, username2 string) (msg.FriendshipStatistics, error) {
+	errStr := fmt.Sprintf("cannot get friendship statistics for user pair (%s, %s):", username1, username2)
+	var stats msg.FriendshipStatistics
+
 	// verify contact pair (both users must have the other as a contact)
+	var contact UserContact
+	err := client.Get(c, datastore.NameKey(KindUserContact, username2, GetUserKey(username1)), &contact)
+	if err != nil {
+		if err == datastore.ErrNoSuchEntity {
+			log.Println(errStr, fmt.Sprintf("%s is not a contact of %s", username2, username1))
+			return stats, err
+		}
+		log.Println(e.Tag, err)
+		return stats, err
+	}
+	err = client.Get(c, datastore.NameKey(KindUserContact, username1, GetUserKey(username2)), &contact)
+	if err != nil {
+		if err == datastore.ErrNoSuchEntity {
+			log.Println(errStr, fmt.Sprintf("%s is not a contact of %s", username1, username2))
+			return stats, err
+		}
+		log.Println(e.Tag, err)
+		return stats, err
+	}
 
 	// calculate number of direct messages sent and received (find conversation between contacts and count messages)
+	userConversationQuery := datastore.NewQuery(KindConversationMember).Filter("Member =", username2).Ancestor(GetUserKey(username1))
+	conversationMemberKeys, err := client.GetAll(c, userConversationQuery, nil)
+
+	for _, key := range conversationMemberKeys {
+		// get keys for conversation messages from username1 (sent)
+		sentMessagesQuery := datastore.NewQuery(KindConversationMessage).Filter("From =", username1).Ancestor(key.Parent)
+		sentKeys, err := client.GetAll(c, sentMessagesQuery, nil)
+		if err != nil {
+			log.Println(e.Tag, "cannot get sent messages from conversation:", err)
+		} else {
+			stats.SentMessages += len(sentKeys)
+		}
+
+		// get keys for conversation messages from username2 (received)
+		receivedMessagesQuery := datastore.NewQuery(KindConversationMessage).Filter("From =", username2).Ancestor(key.Parent)
+		receivedKeys, err := client.GetAll(c, receivedMessagesQuery, nil)
+		if err != nil {
+			log.Println(e.Tag, "cannot get received messages from conversation:", err)
+		} else {
+			stats.ReceivedMessages += len(receivedKeys)
+		}
+	}
 
 	// calculate friendship level using formula: ln(sent + received)
+	stats.FriendshipLevel = int(math.Log(float64(stats.SentMessages) + float64(stats.ReceivedMessages)))
 
-	return msg.FriendshipStatistics{}
+	return stats, nil
 }
 
 func GetContact(username string, contactUsername string) (msg.Contact, error) {
@@ -592,9 +666,14 @@ func GetContacts(user *User) ([]UserContact, error) {
 	}
 
 	for i, dsContact := range dsUserContacts {
+		stats, err := GetFriendshipStatistics(user.Username, dsUserContactKeys[i].Name)
+		if err != nil {
+			log.Printf("cannot get friendship statistics for %s: %s\n", dsContact.Contact, err)
+		}
+
 		contacts = append(contacts, UserContact{
 			Added:      dsContact.Added,
-			Statistics: calculateFriendshipStatistics(user.Username, dsUserContactKeys[i].Name),
+			Statistics: stats,
 			Contact:    dsUserContactKeys[i].Name,
 			Owner:      user.Username,
 		})
