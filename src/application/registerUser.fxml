@@ -10,7 +10,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="border" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Register_View_controller">
+<BorderPane fx:id="border" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="880.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Register_View_controller">
    <left>
       <VBox prefHeight="522.0" prefWidth="210.0" translateX="20.0" BorderPane.alignment="CENTER">
          <children>
@@ -91,22 +91,22 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
-            <ChoiceBox fx:id="genderField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="268.0" translateY="75.0">
+            <ChoiceBox fx:id="genderField" onKeyPressed="#registerEnterKey" prefHeight="27.0" prefWidth="514.0" translateY="75.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ChoiceBox>
-            <DatePicker fx:id="DOBField" editable="false" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="261.0" translateY="80.0">
+            <DatePicker fx:id="DOBField" editable="false" onKeyPressed="#registerEnterKey" prefHeight="27.0" prefWidth="517.0" translateY="80.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></DatePicker>
-            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonClicked" prefHeight="50.0" prefWidth="103.0" style="-fx-background-color: #698F3F;" text="Register!" textFill="#fbfaf9" translateX="80.0" translateY="90.0">
+            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonClicked" prefHeight="50.0" prefWidth="103.0" style="-fx-background-color: #698F3F;" text="Register!" textFill="#fbfaf9" translateX="200.0" translateY="90.0">
                <effect>
                   <Reflection />
                </effect>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>
-            <ChoiceBox fx:id="securityQuestion" prefWidth="268.0" translateY="-130.0" />
+            <ChoiceBox fx:id="securityQuestion" prefHeight="27.0" prefWidth="512.0" translateY="-130.0" />
          </children>
       </VBox>
    </center>

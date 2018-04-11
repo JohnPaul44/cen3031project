@@ -92,7 +92,7 @@ public class Login_View_controller extends ViewController{
 
 		Parent root = loader.getRoot();
 		Stage changeStage = (Stage) loginButton.getScene().getWindow();
-		Scene scene = new Scene(root,700,500);
+		Scene scene = new Scene(root,880,500);
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		changeStage.setScene(scene);
 		changeStage.show();
@@ -118,9 +118,6 @@ public class Login_View_controller extends ViewController{
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("/application/changePass.fxml"));
-
-			//TODO: delete this and reset the path through scenebuilder
-			//loader.setController(new ChangePassword_View_controller());
 			loader.load();
 
 			//creates instance of the change password controller
@@ -134,7 +131,7 @@ public class Login_View_controller extends ViewController{
 
 			Parent root = loader.getRoot();
 			Stage changeStage = (Stage) loginButton.getScene().getWindow();
-			Scene scene = new Scene(root, 700, 500);
+			Scene scene = new Scene(root, 880, 500);
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			changeStage.setScene(scene);
 			changeStage.show();

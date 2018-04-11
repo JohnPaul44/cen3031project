@@ -195,7 +195,7 @@ public class ViewCurrentUser_View_controller extends ViewController {
 
             Parent root = loader.getRoot();
             Stage registerStage = (Stage) firstName.getScene().getWindow();
-            Scene scene = new Scene(root, 700, 500);
+            Scene scene = new Scene(root, 880, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
