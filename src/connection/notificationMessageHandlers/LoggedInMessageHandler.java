@@ -11,6 +11,7 @@ public class LoggedInMessageHandler extends ModelUpdateMessageHandler implements
     public LoggedInMessageHandler(ServerMessage messageFromServer, UserUpdater userUpdater) {
         super(userUpdater);
         this.serverMessage = messageFromServer;
+        System.out.println(messageFromServer.toString());
     }
 
     @Override

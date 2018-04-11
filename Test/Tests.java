@@ -24,6 +24,16 @@ public class Tests {
 
     // TODO create test for sorting messages
     // TODO create test for sorting conversations
+
+
+
+
+
+
+
+
+
+
 //
 //    @Test
 //    public void receiveMessageReceivedForNewConversationMessage() throws InterruptedException {
