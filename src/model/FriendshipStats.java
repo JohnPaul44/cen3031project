@@ -14,12 +14,13 @@ public class FriendshipStats {
 
 
     //Test constructor
-    public FriendshipStats(int sentMessages, int receivedMessages, int friendshipLevel, ArrayList<String> mutualFriends) {
+    public FriendshipStats(int sentMessages, int receivedMessages, int friendshipLevel) {
         this.sentMessages = sentMessages;
         this.receivedMessages = receivedMessages;
         this.friendshipLevel = friendshipLevel;
-        this.mutualFriends = mutualFriends;
     }
+
+
 
 
     public int getSentMessages() {return sentMessages;}

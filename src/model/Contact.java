@@ -23,7 +23,7 @@ public class Contact {
     public Contact(NotificationContactAddedMessage message) {
         username = message.getUsername();
         online = false;
-        //profile = message.getProfile();
+        friendshipStats = new FriendshipStats(0,0,0);
     }
 
     public String getUsername() {return username;}
@@ -32,7 +32,12 @@ public class Contact {
 
     public Profile getProfile() {return profile;}
 
-    public FriendshipStats getFriendshipStats() {return friendshipStats;}
+    public FriendshipStats getFriendshipStats() {
+        if (friendshipStats == null) {
+            friendshipStats = new FriendshipStats(0,0,0);
+        }
+        return friendshipStats;
+    }
 
     public void setFriendshipStats(FriendshipStats friendshipStats) {
         this.friendshipStats = friendshipStats;
