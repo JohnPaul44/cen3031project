@@ -592,7 +592,9 @@ func GetFriendshipStatistics(username1 string, username2 string) (msg.Friendship
 	}
 
 	// calculate friendship level using formula: ln(sent + received)
-	stats.FriendshipLevel = int(math.Log(float64(stats.SentMessages) + float64(stats.ReceivedMessages)))
+	stats.FriendshipLevel = int(math.Max(math.Log(float64(stats.SentMessages) + float64(stats.ReceivedMessages)), 0))
+
+	log.Printf("calculated friendship statistics for contact pair (%s, %s): %+v", username1, username2, stats)
 
 	return stats, nil
 }
