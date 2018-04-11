@@ -588,7 +588,7 @@ func GetFriendshipStatistics(username1 string, username2 string) (msg.Friendship
 		}
 
 		// get keys for conversation messages from username1 (sent)
-		sentMessagesQuery := datastore.NewQuery(KindConversationMessage).Filter("From =", username1).Ancestor(key.Parent)
+		sentMessagesQuery := datastore.NewQuery(KindConversationMessage).Filter("From =", username1).Ancestor(key.Parent).KeysOnly()
 		sentKeys, err := client.GetAll(c, sentMessagesQuery, nil)
 		if err != nil {
 			log.Println(e.Tag, "cannot get sent messages from conversation:", err)
@@ -597,7 +597,7 @@ func GetFriendshipStatistics(username1 string, username2 string) (msg.Friendship
 		}
 
 		// get keys for conversation messages from username2 (received)
-		receivedMessagesQuery := datastore.NewQuery(KindConversationMessage).Filter("From =", username2).Ancestor(key.Parent)
+		receivedMessagesQuery := datastore.NewQuery(KindConversationMessage).Filter("From =", username2).Ancestor(key.Parent).KeysOnly()
 		receivedKeys, err := client.GetAll(c, receivedMessagesQuery, nil)
 		if err != nil {
 			log.Println(e.Tag, "cannot get received messages from conversation:", err)
