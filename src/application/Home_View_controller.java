@@ -438,8 +438,7 @@ public class Home_View_controller extends ViewController{
         AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
         Label openedName = (Label) top.getChildren().get(0);
 
-        view.toFront();
-//        currentConvo.passConnection(connection);
+        view.getScene().getWindow().requestFocus();
 
         Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
         if(from.equals(connection.getCurrentUser().getUserName())){
