@@ -37,7 +37,6 @@ public class Conversation_View_controller extends ViewController {
     public void passConnection(ServerConnection con){
         connection = con;
         setTopic();
-        connection.readMessage(convKey);
     }
 
     @FXML
@@ -189,6 +188,7 @@ public class Conversation_View_controller extends ViewController {
                 status.setText("Message Received " + values.getServerTime());
             }
         }
+        connection.readMessage(convKey);
     }
 
     public void newMessage(String conversationKey, String messageKey,
@@ -218,6 +218,7 @@ public class Conversation_View_controller extends ViewController {
                                            String text) {
 
     }
+
     @Override
     public void messageReactionNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
                                             Map<String, Reactions> reactions) {

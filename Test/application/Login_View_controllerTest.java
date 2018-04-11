@@ -69,7 +69,7 @@ public class Login_View_controllerTest extends ApplicationTest{
             connection.setDelegate(login);
 
             Parent root = loader.getRoot();
-            Scene scene = new Scene(root,700,500);
+            Scene scene = new Scene(root,880,500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             primaryStage.setScene(scene);
             primaryStage.show();

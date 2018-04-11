@@ -17,9 +17,6 @@ public class Main extends Application {
 			//opens the login window on start up
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("/application/login.fxml"));
-
-			//TODO: delete this and reset the controller in SceneBuilder
-			//loader.setController(new Login_View_controller());
 			loader.load();
 
 			Login_View_controller login = loader.getController();

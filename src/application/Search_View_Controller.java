@@ -66,6 +66,7 @@ public class Search_View_Controller extends ViewController{
 
     public void setSearchResults(HashMap<String, Profile> userResults) {
 
+        System.out.println("setting search results");
         if(userResults == null){
             status.setText("No Results");
             return;
