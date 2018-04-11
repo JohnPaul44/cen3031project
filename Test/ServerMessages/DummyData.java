@@ -1,9 +1,6 @@
 package ServerMessages;
 
-import model.Contact;
-import model.Message;
-import model.Profile;
-import model.Reactions;
+import model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +22,8 @@ class DummyData {
     public Contact contact1;
     public Map<String, Reactions> reactions1 = new HashMap<>();
     public Reactions specificReactions1 = new Reactions(new int[]{1, 2}, username1);
+
+    public FriendshipStats friendshipStats1 = new FriendshipStats(3,2,1);
 
     public String username2 = "User 2";
     public Contact contact2;
