@@ -37,8 +37,6 @@ public class Conversation_View_controller extends ViewController {
     public void passConnection(ServerConnection con){
         connection = con;
         setTopic();
-
-        if (!convKey.isEmpty()) connection.readMessage(convKey);
     }
 
     @FXML
@@ -70,7 +68,7 @@ public class Conversation_View_controller extends ViewController {
             "What are your goals for the next 2 years?", "If you could call anyone in the world, who would you call?",
             "What is the oddest job you have had?", "What would you do if you won the lottery?", "What are five things you couldn't live without?",
             "What was the high-point and low-point of your day so far?", "What is your biggest fear?", "Do you think we should live like we're dying?",
-            "Have you ever meet one of your heroes?", "What do you value most: free time, recognition, or money?",
+            "Have you ever met one of your heroes?", "What do you value most: free time, recognition, or money?",
             "What’s the best compliment you’ve ever received?" , "Would you rather be a lonely genius, or a sociable idiot?", "What are you most grateful for, right now, in this moment?"};
 
     public void setTopic(){
@@ -94,6 +92,7 @@ public class Conversation_View_controller extends ViewController {
     public void setConversationKey(String convokey){
         convKey = convokey;
         System.out.println("conv key in conv controller: " + convKey);
+        if (!convKey.isEmpty()) connection.readMessage(convKey);
     }
 
     @FXML

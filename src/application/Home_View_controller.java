@@ -281,7 +281,7 @@ public class Home_View_controller extends ViewController{
 
             Parent root = loader.getRoot();
             Stage registerStage = (Stage) scrollPane.getScene().getWindow();
-            Scene scene = new Scene(root, 700, 500);
+            Scene scene = new Scene(root, 880, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
@@ -439,7 +439,7 @@ public class Home_View_controller extends ViewController{
         Label openedName = (Label) top.getChildren().get(0);
 
         view.toFront();
-        currentConvo.passConnection(connection);
+//        currentConvo.passConnection(connection);
 
         Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
         if(from.equals(connection.getCurrentUser().getUserName())){
