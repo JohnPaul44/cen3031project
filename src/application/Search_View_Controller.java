@@ -38,6 +38,11 @@ public class Search_View_Controller extends ViewController{
         connection = con;
     }
 
+    Home_View_controller home;
+    public void setHome(Home_View_controller h){
+        home = h;
+    }
+
     @FXML
     private TextField searchField;
     @FXML
@@ -146,8 +151,9 @@ public class Search_View_Controller extends ViewController{
 
         ViewProfile_View_Controller view = loadEdit.getController();
         view.passConnection(connection);
-        view.setUsername(username);
+        view.setUsername(username, false);
         view.setValuesProfile(prof);
+        view.setHome(home);
     }
 
     private int calcAge(String DOB) {

@@ -221,6 +221,11 @@ public class Home_View_controller extends ViewController{
     private Conversation_View_controller currentConvo;
     private Search_View_Controller currentSearch;
     private ViewProfile_View_Controller vpScreen;
+    private Home_View_controller home;
+
+    public void setHome(Home_View_controller h){
+        home = h;
+    }
 
     private void setUsername(String user){
         usernameAcc.setText(user);
@@ -311,6 +316,7 @@ public class Home_View_controller extends ViewController{
             currentSearch = loader.getController();
             currentSearch.passConnection(connection);
             currentSearch.setSearchField(searchUser);
+            currentSearch.setHome(home);
             //connection.setDelegate(currentSearch);
 
         } catch (Exception e) {
@@ -377,7 +383,7 @@ public class Home_View_controller extends ViewController{
 
             vpScreen = loader.getController();
             vpScreen.passConnection(connection);
-            vpScreen.setUsername(user);
+            vpScreen.setUsername(user, true);
             vpScreen.setValuesContact();
             //connection.setDelegate(vpScreen);
 

@@ -25,6 +25,11 @@ import java.util.HashMap;
 
 public class ViewProfile_View_Controller extends ViewController {
     ServerConnection connection;
+    Home_View_controller home;
+
+    public void setHome(Home_View_controller h){
+        home = h;
+    }
 
     public void passConnection(ServerConnection con) {
         connection = con;
@@ -100,9 +105,12 @@ public class ViewProfile_View_Controller extends ViewController {
     private Button remove;
 
     @FXML
-    public void setUsername(String user){
+    public void setUsername(String user, boolean home){
         usern.setText(user);
         thisUser = user;
+        if(home){
+            backButton.setVisible(false);
+        }
     }
 
     public String getThisUser() {return thisUser;}
@@ -153,21 +161,9 @@ public class ViewProfile_View_Controller extends ViewController {
 
     @FXML
     public void BackButton(ActionEvent event){
+        System.out.println("hit back button");
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/application/search.fxml"));
-            AnchorPane temp = new AnchorPane();
-            try{
-                temp = loader.load();
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-            anchor.getChildren().add(temp);
-
-            Search_View_Controller search = loader.getController();
-            search.passConnection(connection);
-            search.setSearchField(usern.getText());
-            connection.setDelegate(search);
+            home.SearchHelper(usern.getText());
 
         } catch (Exception e) {
             e.printStackTrace();
