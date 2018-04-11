@@ -52,14 +52,16 @@ public class Conversation implements Comparable<Conversation> {
     public HashMap<String, Message> getMessages() { return messages; }
 
     public void addMessage(Message message) throws ParseException {
-        messages.put(message.getConversationKey(), message);
-        if(time!=null) {
-            Date currentConversationTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(time);
-            Date messageToAddTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(message.getServerTime());
-            if (messageToAddTime.after(currentConversationTime)) {
-                time = message.getServerTime();
-            }
-        }
+
+        messages.put(message.getMessageKey(), message);
+//        if(time!=null) {
+//            Date currentConversationTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(time);
+//            Date messageToAddTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(message.getServerTime());
+//            if (messageToAddTime.after(currentConversationTime)) {
+//                time = message.getServerTime();
+//            }
+//        }
+        time = message.getServerTime();
     }
 
     public void updateMessage(NotificationMessageUpdatedMessage notificationMessageUpdatedMessageMessage) {

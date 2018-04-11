@@ -3,6 +3,7 @@ package application;
 import connection.ServerConnection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,6 +14,9 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
+
+			//set icon
+			primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("taskbarIcon.png")));
 			ServerConnection connection = new ServerConnection();
 			//opens the login window on start up
 			FXMLLoader loader = new FXMLLoader();

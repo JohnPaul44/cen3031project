@@ -180,7 +180,7 @@ public class Home_View_controller extends ViewController{
     public void setMessageNotificationStart(){
         //checks whether the user has any unread conversations
 
-        /*HashMap<String, Conversation> convoList = connection.getCurrentUser().getConversationList();
+        HashMap<String, Conversation> convoList = connection.getCurrentUser().getConversationList();
         for(String key : convoList.keySet()){
             Conversation convo = connection.getCurrentUser().getConversationList().get(key);
             Map<String, Status> mem = convo.getMemberStatus();
@@ -190,17 +190,15 @@ public class Home_View_controller extends ViewController{
             if(!stat.getRead()){
                 int size = contacts.size();
                 for(int i = 0; i < size; i++){
-                    for(String keyMem : mem.keySet()) {
-                        System.out.println(keyMem);
-                        if (keyMem.equals(contacts.get(i).getText())) {
-                            System.out.println(keyMem);
+                    for(String keyMem : mem.keySet()){
+                        if(keyMem.equals(contacts.get(i).getText())){
                             HBox notif = (HBox) contacts.get(i).getGraphic();
                             notif.getChildren().get(1).setVisible(true);
                         }
                     }
                 }
             }
-        }*/
+        }
     }
 
     @FXML
@@ -283,7 +281,7 @@ public class Home_View_controller extends ViewController{
 
             Parent root = loader.getRoot();
             Stage registerStage = (Stage) scrollPane.getScene().getWindow();
-            Scene scene = new Scene(root, 880, 500);
+            Scene scene = new Scene(root, 700, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
@@ -345,16 +343,19 @@ public class Home_View_controller extends ViewController{
 
             HashMap<String, Conversation> convos = connection.getCurrentUser().getConversationList();
             if(convos != null) {
+
                 for (Map.Entry<String, Conversation> entry : convos.entrySet()) {
                     String key = entry.getKey();
                     Conversation value = entry.getValue();
                     //TODO: set so it checks for all the members of the conversation
                     if (value.getMemberStatus().containsKey(user.getText())) {
                         currentConvo.setConversationKey(key);
+                        break;
                     }
                 }
             }
             currentConvo.setMessages();
+
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -433,14 +434,12 @@ public class Home_View_controller extends ViewController{
     }
 
     public void deliverMessage(String conversationKey, String messageKey, String time, String from, String text){
-        System.out.println("inside delivered");
-
         int children = view.getChildren().size();
         AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
         Label openedName = (Label) top.getChildren().get(0);
 
-        //view.toFront();
-        //currentConvo.passConnection(connection);
+        view.toFront();
+        currentConvo.passConnection(connection);
 
         Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
         if(from.equals(connection.getCurrentUser().getUserName())){
@@ -451,7 +450,6 @@ public class Home_View_controller extends ViewController{
         else if(openedName.getText().equals(from)){
             currentConvo.setUsername(from);
             currentConvo.newMessage(conversationKey, messageKey, time, from, text, mem);
-            connection.readMessage(conversationKey);
         }
         //if the message is from a user when their conversation is not currently open
         else{
@@ -505,18 +503,7 @@ public class Home_View_controller extends ViewController{
     @Override
     public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
         if(errorInformation.getErrorNumber() == 0){
-            if(!from.equals(connection.getCurrentUser().getUserName())){
-//                int children = view.getChildren().size();
-//                AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
-//                Label openedName = (Label) top.getChildren().get(0);
-//
-//                if(openedName.equals(from)){
-//                    currentConvo.setStatus(from + " read");
-//                }
-            }
-        }
-        else{
-            System.out.println(errorInformation.getErrorString());
+
         }
     }
 
@@ -533,7 +520,6 @@ public class Home_View_controller extends ViewController{
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("callback recieved");
                     currentSearch.setSearchResults(results);
                 }
             });
@@ -555,18 +541,6 @@ public class Home_View_controller extends ViewController{
         }
         else{
             System.out.println(errorInformation.getErrorString());
-        }
-    }
-
-    @Override
-    public void contactUpdatedNotification(ErrorInformation errorInformation, HashMap<String, Contact> contacts) {
-        if (errorInformation.getErrorNumber() != 0){
-            System.out.println(errorInformation.getErrorString());
-        }
-        else {
-            if (contacts.keySet().contains(vpScreen.getThisUser())) {
-                vpScreen.setValuesContact();
-            }
         }
     }
 

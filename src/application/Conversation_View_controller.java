@@ -37,6 +37,8 @@ public class Conversation_View_controller extends ViewController {
     public void passConnection(ServerConnection con){
         connection = con;
         setTopic();
+
+        if (!convKey.isEmpty()) connection.readMessage(convKey);
     }
 
     @FXML
@@ -91,6 +93,7 @@ public class Conversation_View_controller extends ViewController {
 
     public void setConversationKey(String convokey){
         convKey = convokey;
+        System.out.println("conv key in conv controller: " + convKey);
     }
 
     @FXML
@@ -100,12 +103,15 @@ public class Conversation_View_controller extends ViewController {
             ActionEvent aevent = new ActionEvent(keyEvent.getSource(), sendButton);
             //pass the keyEvent into the button action event
             sendMessageClicked(aevent);
+            keyEvent.consume();
         }
     }
 
     public void sendMessageClicked (ActionEvent event) throws Exception {
         if (!yourMessageField.getText().isEmpty()) {
             String message = yourMessageField.getText();
+            //Setting the text to blank here to improve responsiveness -Lincoln
+            yourMessageField.setText("");
             //sentMessage(message);
             if (convKey.isEmpty()) {
                 ArrayList<String> mess = new ArrayList<String>();
@@ -137,9 +143,8 @@ public class Conversation_View_controller extends ViewController {
         pane.getChildren().add(new_message);
         box.getChildren().add(pane);
 
-        yourMessageField.setText("");
         scroll.vvalueProperty().bind(box.heightProperty());
-    }
+        }
 
     public void receivedMessage(String text){
         AnchorPane receivedPane = new AnchorPane();
@@ -170,11 +175,15 @@ public class Conversation_View_controller extends ViewController {
         }
 
         Conversation convo = connection.getCurrentUser().getConversationList().get(convKey);
+
+        System.out.println("number of messages in setMessages: " + convo.getMessages().size());//test
+
         Collection<Message> messagesColl = convo.getMessages().values();
         List<Message> messagesList = new ArrayList(messagesColl);
         Collections.sort(messagesList);
 
         for(Message values : messagesList){
+            System.out.println(values.getFrom() + "  |  " + values.getText());
             if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
                 sentMessage(values.getText());
                 status.setAlignment(Pos.CENTER_RIGHT);
@@ -188,7 +197,6 @@ public class Conversation_View_controller extends ViewController {
                 status.setText("Message Received " + values.getServerTime());
             }
         }
-        connection.readMessage(convKey);
     }
 
     public void newMessage(String conversationKey, String messageKey,
@@ -218,7 +226,6 @@ public class Conversation_View_controller extends ViewController {
                                            String text) {
 
     }
-
     @Override
     public void messageReactionNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
                                             Map<String, Reactions> reactions) {

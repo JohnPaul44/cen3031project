@@ -27,6 +27,8 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import model.Profile;
 
+import javax.xml.soap.Text;
+
 public class Register_View_controller extends ViewController {
     ServerConnection connection;
 
@@ -69,6 +71,66 @@ public class Register_View_controller extends ViewController {
     private TextField securityQuestionAnswer;
     @FXML
     private BorderPane border;
+
+    public TextField getUsernameField(){return usernameField;}
+    public void setUsernameField(String user) {usernameField.setText(user);}
+
+    public TextField getPasswordField(){return passwordField;}
+    public void setPasswordField(String pass) {usernameField.setText(pass);}
+
+    public TextField getConfirmPasswordField(){return confirmPasswordField;}
+    public void setConfirmPasswordField(String conPass) {usernameField.setText(conPass);}
+
+    public TextField getFirstNameField(){return firstNameField;}
+    public void setFirstNameField(String fn) {usernameField.setText(fn);}
+
+    public TextField getLastNameField(){return lastNameField;}
+    public void setLastNameField(String ln) {usernameField.setText(ln);}
+
+    public TextField getEmailField(){return emailField;}
+    public void setEmailField(String email) {usernameField.setText(email);}
+
+    public TextField getPhoneNumberField(){return phoneNumberField;}
+    public void setPhoneNumberField(String pNum) {usernameField.setText(pNum);}
+
+    public ChoiceBox getGenderField(){return genderField;}
+    public DatePicker getDOBField(){return DOBField;}
+    public Button getRegisterButton(){return registerButton;}
+    public Button getBackButton(){return backButton;}
+    public Label getStatus(){return status;}
+    public void setStatus(String stat){status.setText(stat);}
+    public ChoiceBox getSecurityQuestion(){return securityQuestion;}
+    public TextField getSecurityQuestionAnswer(){return securityQuestionAnswer;}
+    public boolean confPasswordTest (){
+        String password = passwordField.getText();
+        String confPassword = confirmPasswordField.getText();
+
+        if (!password.equals(confPassword)){
+            status.setText("Error: passwords do not match");
+            return false;
+        }
+        else if (password.equals(confPassword)) {
+            String passwordMathces = confPassword;
+            return true;
+        }
+        return true;
+    }
+    public String phoneNumberTest() {
+        String phoneNum = phoneNumberField.getText();
+        System.out.println(phoneNum);
+        if (phoneNum.matches("[0-9]*") && !phoneNum.isEmpty() && phoneNum.length() == 10) {
+            System.out.println("Phone # accepted!");
+            return phoneNum;
+        }
+        else if (phoneNum.isEmpty()){
+            phoneNum = "N/A";
+            return phoneNum;
+        }
+        else {
+            System.out.println("Numbers only! Please re-enter a valid phone number!");
+        }
+        return null;
+    }
 
     //overrides so the enter key allows the user to register
     public void registerEnterKey(KeyEvent keyEvent) throws Exception{
