@@ -44,7 +44,7 @@ public class Explore_View_Controller extends ViewController{
         for(String item : interestsList){
             connection.queryUsers(item);
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
             } catch(Exception e){
                 e.printStackTrace();
             }
@@ -53,7 +53,7 @@ public class Explore_View_Controller extends ViewController{
         for(String item : hobbiesList){
             connection.queryUsers(item);
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
             } catch(Exception e){
                 e.printStackTrace();
             }

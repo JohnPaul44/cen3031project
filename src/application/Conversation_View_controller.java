@@ -93,13 +93,16 @@ public class Conversation_View_controller extends ViewController {
         status.setEditable(false);
     }
 
+    public void setStatusRead(){
+        status.setText(status.getText() + " - Read");
+    }
+
     long startTime;
     long currTime;
     public void userTypingFirst(){
         currTime = System.nanoTime();
         if(first){
             startTime = currTime;
-            System.out.println("real start time " + startTime);
             first = false;
         }
         else {
@@ -107,10 +110,7 @@ public class Conversation_View_controller extends ViewController {
                 userTyping();
             }
             else{
-                long elapsedTime = System.nanoTime() - currTime;
-                if((elapsedTime / 1000000000) > 3){
-                    System.out.println("stopped typing");
-                }
+
             }
         }
     }
@@ -119,10 +119,24 @@ public class Conversation_View_controller extends ViewController {
         long elapsedTime = System.nanoTime() - startTime;
 
         if((elapsedTime / 1000000000) > 1){
-            connection.setTyping(convKey, true);
+            //connection.setTyping(convKey, true);
             typing = true;
         }
     }
+
+    public void typing(String from){
+        System.out.println("setting typing");
+        status.setAlignment(Pos.CENTER_LEFT);
+        status.setEditable(false);
+        status.setText("..." + from + " is typing...");
+    }
+
+    public void notTyping(){
+        status.setAlignment(Pos.CENTER_LEFT);
+        status.setEditable(false);
+        status.setText("");
+    }
+
 
     public void setConversationKey(String convokey){
         convKey = convokey;
@@ -221,12 +235,19 @@ public class Conversation_View_controller extends ViewController {
         List<Message> messagesList = new ArrayList(messagesColl);
         Collections.sort(messagesList);
 
+        boolean readConvo = connection.getCurrentUser().getConversationList().get(convKey).getMemberStatus().get(thisUser).getRead();
+
         for(Message values : messagesList){
             if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
                 sentMessage(values.getText());
                 status.setAlignment(Pos.CENTER_RIGHT);
                 status.setEditable(false);
-                status.setText("Message Delivered " + values.getServerTime());
+                if(readConvo){
+                    status.setText("Message Delivered " + values.getServerTime() + " - Read");
+                }
+                else{
+                    status.setText("Message Delivered " + values.getServerTime());
+                }
             }
             else{
                 receivedMessage(values.getText());
@@ -257,18 +278,6 @@ public class Conversation_View_controller extends ViewController {
                 status.setText("Message Delivered " + time);
             }
         }
-    }
-
-    public void typing(String from){
-        status.setAlignment(Pos.CENTER_LEFT);
-        status.setEditable(false);
-        status.setText("..." + from + " is typing...");
-    }
-
-    public void notTyping(){
-        status.setAlignment(Pos.CENTER_LEFT);
-        status.setEditable(false);
-        status.setText("");
     }
 
     @Override

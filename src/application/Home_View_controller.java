@@ -215,6 +215,8 @@ public class Home_View_controller extends ViewController{
     private SplitPane split;
     @FXML
     private AnchorPane view;
+    @FXML
+    private TitledPane explore;
 
     private Conversation_View_controller currentConvo;
     private Search_View_Controller currentSearch;
@@ -310,6 +312,12 @@ public class Home_View_controller extends ViewController{
 
         expl = loader.getController();
         expl.passConnection(connection);
+
+        explore.setText("Explore");
+    }
+
+    public void setLoading(){
+        explore.setText(explore.getText() + " ... Loading ...");
     }
 
     @FXML
@@ -523,7 +531,32 @@ public class Home_View_controller extends ViewController{
     @Override
     public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
         if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable(){
+                @Override
+                public void run(){
+                    boolean open = false;
+                    int children = view.getChildren().size();
+                    AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
+                    Label openedName = null;
 
+                    try {
+                        openedName = (Label) top.getChildren().get(0);
+                    } catch(Exception e){
+                        open = false;
+                    }
+
+                    if(openedName.getText().equals(from)){
+                        open = true;
+                    }
+
+                    if(open){
+                        currentConvo.setStatusRead();
+                    }
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
         }
     }
 

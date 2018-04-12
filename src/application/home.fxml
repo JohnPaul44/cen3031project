@@ -59,13 +59,10 @@
                         </VBox>
                      </content>
                 </TitledPane>
-                <TitledPane animated="false" collapsible="false" onMouseClicked="#openExplore" text="Explore">
+                <TitledPane fx:id="explore" animated="false" collapsible="false" onMousePressed="#setLoading" onMouseReleased="#openExplore" text="Explore">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
-                     <content>
-                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #E7DECD;" />
-                     </content>
                 </TitledPane>
                   <TitledPane fx:id="groupMessage" animated="false" collapsible="false" expanded="false" onMouseClicked="#createGroupMessage" text="+ New Group Message +">
                     <content>
