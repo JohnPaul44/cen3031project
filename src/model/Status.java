@@ -31,7 +31,7 @@ public class Status {
     public void setTyping(boolean typing) { this.typing = typing; }
 
     public void updateRead(NotificationMessageReadMessage message) {
-        read = message.getRead();
+        read = message.getMessage().getRead();
     }
 
     public void updateTyping(NotificationTypingMessage message) {

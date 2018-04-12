@@ -30,6 +30,7 @@ public class Message implements Comparable<Message> {
     private enum Reaction {  }
     private Map<String, Reactions> reactions;
     private boolean typing;
+    private boolean read;
 
     public Message() {}
 
@@ -73,6 +74,9 @@ public class Message implements Comparable<Message> {
     public String getText() { return text; }
     public Map<String, Reactions> getReactions() {
         return reactions;
+    }
+    public boolean getRead(){
+        return read;
     }
 
     public void setText(String text) { this.text = text; }

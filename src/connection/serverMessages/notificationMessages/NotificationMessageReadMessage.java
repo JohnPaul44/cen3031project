@@ -5,7 +5,6 @@ import model.Message;
 
 public class NotificationMessageReadMessage extends ServerMessage {
     private Message message;
-    private boolean read;
 
 //    public NotificationMessageReadMessage(String conversationKey, String from) {
 //        this.status = Status.NOTIFICATIONMESSAGEREAD.ordinal();
@@ -19,7 +18,7 @@ public class NotificationMessageReadMessage extends ServerMessage {
         return message.getFrom();
     }
 
-    public boolean getRead() {
-        return read;
+    public Message getMessage() {
+        return message;
     }
 }
