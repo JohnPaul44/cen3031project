@@ -33,7 +33,7 @@ public class Contact {
     public Profile getProfile() {return profile;}
 
     public FriendshipStats getFriendshipStats() {
-        if (friendshipStats == null) {
+        if(friendshipStats == null) {
             friendshipStats = new FriendshipStats(0,0,0);
         }
         return friendshipStats;

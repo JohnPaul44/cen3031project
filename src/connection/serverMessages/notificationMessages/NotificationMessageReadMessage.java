@@ -17,4 +17,8 @@ public class NotificationMessageReadMessage extends ServerMessage {
     public String getFrom() {
         return message.getFrom();
     }
+
+    public Message getMessage() {
+        return message;
+    }
 }
