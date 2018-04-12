@@ -217,15 +217,11 @@ public class Conversation_View_controller extends ViewController {
         }
 
         Conversation convo = connection.getCurrentUser().getConversationList().get(convKey);
-
-        System.out.println("number of messages in setMessages: " + convo.getMessages().size());//test
-
         Collection<Message> messagesColl = convo.getMessages().values();
         List<Message> messagesList = new ArrayList(messagesColl);
         Collections.sort(messagesList);
 
         for(Message values : messagesList){
-            System.out.println(values.getFrom() + "  |  " + values.getText());
             if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
                 sentMessage(values.getText());
                 status.setAlignment(Pos.CENTER_RIGHT);
