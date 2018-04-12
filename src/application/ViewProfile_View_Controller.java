@@ -79,7 +79,7 @@ public class ViewProfile_View_Controller extends ViewController {
     @FXML
     private TextField dob;
     @FXML
-    private TextField level;
+    private Label level;
     @FXML
     private TextField sent;
     @FXML
