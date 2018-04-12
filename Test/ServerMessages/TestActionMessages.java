@@ -144,7 +144,7 @@ public class TestActionMessages {
 
     @Test
     public void sendSetTypingMessage() {
-        ActionSetTypingMessage message = new ActionSetTypingMessage(dummyData.conversationKey1, true);
+        ActionSetTypingMessage message = new ActionSetTypingMessage(dummyData.message1);
 
         connection.sendMessageToServer(message);
         assertTrue(server.getStatusOfLastMessageReceived().equals(ServerMessage.Status.ACTIONSETTYPING));

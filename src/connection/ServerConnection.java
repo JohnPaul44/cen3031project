@@ -178,8 +178,9 @@ public class ServerConnection implements IServerConnection {
     }
 
     public void setTyping(String conversationKey, boolean typing) {
-        ServerMessage message = new ActionSetTypingMessage(conversationKey, typing);
-        sendMessageToServer(message);
+        Message message = new Message(conversationKey, typing);
+        ServerMessage serverMessage = new ActionSetTypingMessage(message);
+        sendMessageToServer(serverMessage);
     }
 
     public void registerNewUser(String username, String password, String firstName, String lastName, String email,

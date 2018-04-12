@@ -65,6 +65,11 @@ public class Message implements Comparable<Message> {
         this.conversationKey = conversationKey;
     }
 
+    public Message(String conversationKey, boolean typing) {
+        this.conversationKey = conversationKey;
+        this.typing = typing;
+    }
+
     public String getClientTime() { return clientTime; }
     public String getServerTime() { return serverTime; }
     public ArrayList<String> getTo() { return to; }
