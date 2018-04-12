@@ -273,6 +273,7 @@ func handleGetFriendshipStatistics(user *ds.User, conn net.Conn, message *msg.Se
 		return sendServerMessage(conn, rsp)
 	}
 
+	rsp.Username = message.Username
 	rsp.FriendshipStatistics = &stats
 
 	return sendServerMessage(conn, rsp)

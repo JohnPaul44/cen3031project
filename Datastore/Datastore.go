@@ -151,7 +151,7 @@ func CreateUserAccount(username string, password string, profile msg.Profile, se
 }
 
 func GetUserAccount(username string) (*User, error) {
-	errStr := "cannot get user account:"
+	errStr := "cannot get user account " + username + ":"
 
 	userKey := GetUserKey(username)
 	user := new(User)
