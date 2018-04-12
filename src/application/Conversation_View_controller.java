@@ -61,6 +61,8 @@ public class Conversation_View_controller extends ViewController {
     private TextField topic;
 
     private String thisUser;
+    boolean first;
+    boolean typing;
 
 
     String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
@@ -82,6 +84,8 @@ public class Conversation_View_controller extends ViewController {
     public void setUsername(String user){
         thisUser = user;
         username.setText(user);
+        first = true;
+        typing = false;
     }
 
     public void setStatus(String stat){
@@ -89,10 +93,45 @@ public class Conversation_View_controller extends ViewController {
         status.setEditable(false);
     }
 
+    long startTime;
+    long currTime;
+    public void userTypingFirst(){
+        currTime = System.nanoTime();
+        if(first){
+            startTime = currTime;
+            System.out.println("real start time " + startTime);
+            first = false;
+        }
+        else {
+            if(!typing){
+                userTyping();
+            }
+            else{
+                long elapsedTime = System.nanoTime() - currTime;
+                if((elapsedTime / 1000000000) > 3){
+                    System.out.println("stopped typing");
+                }
+            }
+        }
+    }
+
+    public void userTyping(){
+        long elapsedTime = System.nanoTime() - startTime;
+
+        if((elapsedTime / 1000000000) > 1){
+            connection.setTyping(convKey, true);
+            typing = true;
+        }
+    }
+
     public void setConversationKey(String convokey){
         convKey = convokey;
         System.out.println("conv key in conv controller: " + convKey);
-        if (!convKey.isEmpty()) connection.readMessage(convKey);
+        if (!convKey.isEmpty()) {
+            if(!connection.getCurrentUser().getConversationList().get(convokey).getMemberStatus().get(connection.getCurrentUser().getUserName()).getRead()){
+                connection.readMessage(convKey);
+            }
+        }
     }
 
     public String getConvKey(){
@@ -224,6 +263,18 @@ public class Conversation_View_controller extends ViewController {
         }
     }
 
+    public void typing(String from){
+        status.setAlignment(Pos.CENTER_LEFT);
+        status.setEditable(false);
+        status.setText("..." + from + " is typing...");
+    }
+
+    public void notTyping(){
+        status.setAlignment(Pos.CENTER_LEFT);
+        status.setEditable(false);
+        status.setText("");
+    }
+
     @Override
     public void messageUpdatedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
                                            String text) {
@@ -238,22 +289,6 @@ public class Conversation_View_controller extends ViewController {
     public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
         if(errorInformation.getErrorNumber() == 0){
 
-        }
-    }
-    @Override
-    public void typingNotification(ErrorInformation errorInformation, String conversationKey, String from, boolean typing) {
-        if(errorInformation.getErrorNumber() == 0 && typing){
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    status.setAlignment(Pos.CENTER_LEFT);
-                    status.setEditable(false);
-                    status.setText("..." + from + " is typing...");
-                }
-            });
-        }
-        else{
-            System.out.println(errorInformation.getErrorString());
         }
     }
 }

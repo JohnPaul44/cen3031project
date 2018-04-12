@@ -184,7 +184,6 @@ public class Home_View_controller extends ViewController{
             Conversation convo = connection.getCurrentUser().getConversationList().get(key);
             Map<String, Status> mem = convo.getMemberStatus();
             Status stat = mem.get(connection.getCurrentUser().getUserName());
-            System.out.println(stat.getRead() + " " + key);
 
             if(!stat.getRead()){
                 int size = contacts.size();
@@ -629,6 +628,43 @@ public class Home_View_controller extends ViewController{
                     scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
                     registerStage.setScene(scene);
                     registerStage.show();
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void typingNotification(ErrorInformation errorInformation, String conversationKey, String from, boolean typing) {
+        if(errorInformation.getErrorNumber() == 0 && typing){
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    boolean open = false;
+                    int children = view.getChildren().size();
+                    AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
+                    Label openedName = null;
+
+                    try {
+                        openedName = (Label) top.getChildren().get(0);
+                    } catch(Exception e){
+                        open = false;
+                    }
+
+                    if(openedName.equals(from)){
+                        open = true;
+                    }
+
+                    if(open){
+                        if(typing){
+                            currentConvo.typing(from);
+                        }
+                        else{
+                            currentConvo.notTyping();
+                        }
+                    }
                 }
             });
         }
