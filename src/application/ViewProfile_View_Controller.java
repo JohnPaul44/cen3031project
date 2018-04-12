@@ -46,6 +46,7 @@ public class ViewProfile_View_Controller extends ViewController {
 
     public void setValuesContact(){
         setLevel(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipStats().getFriendshipLevel());
+
         setName(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getFirstName(), connection.getCurrentUser().getContactList().get(thisUser).getProfile().getLastName());
         setEmail(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getEmail());
         setBirthday(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getBirthday());
@@ -55,7 +56,6 @@ public class ViewProfile_View_Controller extends ViewController {
         setIcon(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getColor());
         setHobbies(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getHobbies());
         setInterests(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getInterests());
-
     }
 
     public void setValuesFriendshipStats(FriendshipStats stats){
@@ -77,12 +77,6 @@ public class ViewProfile_View_Controller extends ViewController {
     private Label level;
     @FXML
     private ProgressBar levelProgress;
-    @FXML
-    private Label game1Wins;
-    @FXML
-    private Label game1Losses;
-    @FXML
-    private Label game1Ties;
     @FXML
     private Label usern;
     @FXML
