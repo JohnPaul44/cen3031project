@@ -23,6 +23,7 @@ public abstract class ServerMessage {
         NOTIFICATIONMESSAGEREAD,
         NOTIFICATIONTYPING,
         NOTIFICATIONFRIENDSHIPSTATS,
+        NOTIFICATIONACCOUNTDELETED,
 
         ACTIONREGISTER,
         ACTIONLOGIN,
@@ -41,6 +42,7 @@ public abstract class ServerMessage {
         ACTIONREADMESSAGE,
         ACTIONSETTYPING,
         ACTIONGETFRIENDSHIPSTATISTICS,
+        ACTIONDELETEACCOUNT,
     }
     public int status;
     public int errorNumber = 0;
