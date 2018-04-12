@@ -151,6 +151,7 @@ public class Login_View_controller extends ViewController{
 			home.passConnection(connection);
 			connection.setDelegate(home);
 			home.loadCurrentProfile();
+			home.setHome(home);
 			//home.initialize();
 
 			Parent root = loader.getRoot();

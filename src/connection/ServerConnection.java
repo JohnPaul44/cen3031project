@@ -194,6 +194,11 @@ public class ServerConnection implements IServerConnection {
         sendMessageToServer(message);
     }
 
+    public void getFriendshipStatistics(String username) {
+        ActionGetFriendshipStatsMessage message = new ActionGetFriendshipStatsMessage(username);
+        sendMessageToServer(message);
+    }
+
     public void logout() {
         ActionLogOutMessage message = new ActionLogOutMessage();
         sendMessageToServer(message);

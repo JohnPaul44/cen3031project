@@ -21,7 +21,7 @@ abstract public class ViewController {
             boolean first = true;
             for (String s : list) {
                 if(!first) {
-                    sb.append(",");
+                    sb.append(", ");
                 }
                 first = false;
                 sb.append(s);
@@ -32,7 +32,7 @@ abstract public class ViewController {
     }
 
     public ArrayList<String> StringToArrayList(String s) {
-        return new ArrayList<>(Arrays.asList(s.split(",")));
+        return new ArrayList<>(Arrays.asList(s.split(", ")));
     }
     /********************************************
      * All notifications will receive an integer error number and error string details. Not fully implemented yet

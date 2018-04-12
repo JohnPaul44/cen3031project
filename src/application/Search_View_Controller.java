@@ -20,6 +20,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -36,6 +37,11 @@ public class Search_View_Controller extends ViewController{
     ServerConnection connection;
     public void passConnection(ServerConnection con){
         connection = con;
+    }
+
+    Home_View_controller home;
+    public void setHome(Home_View_controller h){
+        home = h;
     }
 
     @FXML
@@ -64,16 +70,43 @@ public class Search_View_Controller extends ViewController{
         connection.queryUsers(searchField.getText());
     }
 
-    public void setSearchResults(HashMap<String, Profile> userResults) {
+    public void setSearchResults(HashMap<String, Profile> userResults, boolean explore){
+        grid = setSearchResultsHelper(userResults, explore, anchor);
+    }
+
+    public GridPane setSearchResultsHelper(HashMap<String, Profile> userResults, boolean explore, AnchorPane anchorp) {
         HashMap<String, Contact> contacts = connection.getCurrentUser().getContactList();
+
+        if(explore){
+            GridPane gridp = new GridPane();
+            //set the sizes of each column in the gridpane
+            ColumnConstraints col0 = new ColumnConstraints(137);
+            ColumnConstraints col1 = new ColumnConstraints(116);
+            ColumnConstraints col2 = new ColumnConstraints(126);
+            ColumnConstraints col3 = new ColumnConstraints(49);
+            ColumnConstraints col4 = new ColumnConstraints(100);
+            ColumnConstraints col5 = new ColumnConstraints(100);
+            gridp.getColumnConstraints().addAll(col0, col1, col2, col3, col4, col5);
+            gridp.setVgap(3);
+            gridp.setHgap(3);
+
+            gridp.addRow(0, new Label("Username"), new Label("Name"), new Label("Email"), new Label("Age"), new Label(""), new Label(""));
+            grid = gridp;
+        }
 
         if(userResults == null){
             status.setText("No Results");
-            return;
+            return null;
         }
         if(userResults.isEmpty()){
             status.setText("No Results");
-            return;
+            return null;
+        }
+        if(userResults.size() == 1 && userResults.containsKey(connection.getCurrentUser().getUserName())){
+            if(!explore) {
+                status.setText("No Results");
+            }
+            return null;
         }
 
         int count = 1;
@@ -81,6 +114,10 @@ public class Search_View_Controller extends ViewController{
             //TODO: make it add additional rows
             String username = entry.getKey();
             Profile prof = entry.getValue();
+
+            if(username.equals(connection.getCurrentUser().getUserName())){
+                continue;
+            }
 
             Button add = new Button();
             add.setText("Add Friend");
@@ -115,7 +152,7 @@ public class Search_View_Controller extends ViewController{
             view.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    viewProfile(username, prof);
+                    viewProfile(username, prof, anchorp, explore);
                 }
             });
 
@@ -126,14 +163,14 @@ public class Search_View_Controller extends ViewController{
                 add.setVisible(false);
             }
         }
+        return grid;
     }
 
     public void addContact(String username){
-        //TODO:add function
         connection.addContact(username);
     }
 
-    public void viewProfile(String username, Profile prof){
+    public void viewProfile(String username, Profile prof, AnchorPane anchorp, boolean exp){
         FXMLLoader loadEdit = new FXMLLoader();
         loadEdit.setLocation(getClass().getResource("/application/viewProfile.fxml"));
         AnchorPane temp = new AnchorPane();
@@ -142,12 +179,13 @@ public class Search_View_Controller extends ViewController{
         } catch(Exception e){
             e.printStackTrace();
         }
-        anchor.getChildren().add(temp);
+        anchorp.getChildren().add(temp);
 
         ViewProfile_View_Controller view = loadEdit.getController();
         view.passConnection(connection);
-        view.setUsername(username);
+        view.setUsername(username, exp);
         view.setValuesProfile(prof);
+        view.setHome(home);
     }
 
     private int calcAge(String DOB) {
