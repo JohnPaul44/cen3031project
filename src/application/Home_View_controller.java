@@ -397,13 +397,11 @@ public class Home_View_controller extends ViewController{
             AnchorPane anchor = new AnchorPane();
             anchor = loader.load();
             setView(anchor);
-
             vpScreen = loader.getController();
             vpScreen.passConnection(connection);
             vpScreen.setUsername(user, true);
             vpScreen.setValuesContact();
-            //connection.setDelegate(vpScreen);
-
+            connection.getFriendshipStatistics(user);
         } catch(Exception e){
             e.printStackTrace();
         }

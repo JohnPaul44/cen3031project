@@ -23,7 +23,7 @@
         <Label layoutX="62.0" layoutY="23.0" text="System.out.chat()" textFill="#fbfaf9" visible="false" />
         <AnchorPane layoutX="18.0" layoutY="60.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
             <children>
-                <TextArea fx:id="bio" editable="false" layoutX="10.0" layoutY="259.0" prefHeight="117.0" prefWidth="226.0" text="Bio">
+                <TextArea fx:id="bio" editable="false" focusTraversable="false" layoutX="10.0" layoutY="259.0" prefHeight="117.0" prefWidth="226.0" text="Bio">
                     <cursor>
                         <Cursor fx:constant="TEXT" />
                     </cursor>
@@ -94,8 +94,8 @@
                         <Font size="13.0" />
                     </font>
                 </Label>
-                <TextArea fx:id="interests" editable="false" layoutX="22.0" layoutY="350.0" prefHeight="62.0" prefWidth="348.0" />
-                <TextArea fx:id="hobbies" editable="false" layoutX="22.0" layoutY="258.0" prefHeight="62.0" prefWidth="348.0" />
+                <TextArea fx:id="interests" editable="false" focusTraversable="false" layoutX="22.0" layoutY="350.0" prefHeight="62.0" prefWidth="348.0" />
+                <TextArea fx:id="hobbies" editable="false" focusTraversable="false" layoutX="22.0" layoutY="258.0" prefHeight="62.0" prefWidth="348.0" />
                 <ProgressBar fx:id="levelProgress" layoutX="70.0" layoutY="102.0" prefHeight="18.0" prefWidth="148.0" progress="0.25" style="-fx-border-color: #804E49;">
                <effect>
                   <SepiaTone />
@@ -130,17 +130,17 @@
                   <Font size="13.0" />
                </font>
             </Label>
-            <Label layoutX="14.0" layoutY="147.0" prefHeight="19.0" prefWidth="55.0" text="Recieved:" textFill="#401b1b">
+            <Label layoutX="14.0" layoutY="147.0" prefHeight="19.0" prefWidth="55.0" text="Received:" textFill="#401b1b">
                <font>
                   <Font size="13.0" />
                </font>
             </Label>
-            <Label fx:id="sent" layoutX="70.0" layoutY="124.0" prefHeight="21.0" prefWidth="91.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="sent" textFill="#401b1b">
+            <Label fx:id="sent" alignment="CENTER" layoutX="70.0" layoutY="124.0" prefHeight="21.0" prefWidth="91.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="sent" textAlignment="CENTER" textFill="#401b1b">
                <font>
                   <Font size="13.0" />
                </font>
             </Label>
-            <Label fx:id="recieved" layoutX="70.0" layoutY="146.0" prefHeight="21.0" prefWidth="91.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="recieved" textFill="#401b1b">
+            <Label fx:id="received" alignment="CENTER" layoutX="70.0" layoutY="146.0" prefHeight="21.0" prefWidth="91.0" style="-fx-border-width: 1; -fx-border-color: #804E49;" text="received" textAlignment="CENTER" textFill="#401b1b">
                <font>
                   <Font size="13.0" />
                </font>

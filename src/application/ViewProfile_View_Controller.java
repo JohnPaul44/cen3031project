@@ -37,7 +37,6 @@ public class ViewProfile_View_Controller extends ViewController {
     }
 
     public void setValuesProfile(Profile prof){
-       // setLevel(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipLevel());
         setName(prof.getFirstName(), prof.getLastName());
         setEmail(prof.getEmail());
         setBirthday(prof.getBirthday());
@@ -50,8 +49,7 @@ public class ViewProfile_View_Controller extends ViewController {
     }
 
     public void setValuesContact(){
-        setLevel(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipStats().getFriendshipLevel());
-
+        setValuesFriendshipStats(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipStats());
         setName(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getFirstName(), connection.getCurrentUser().getContactList().get(thisUser).getProfile().getLastName());
         setEmail(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getEmail());
         setBirthday(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getBirthday());
@@ -65,6 +63,8 @@ public class ViewProfile_View_Controller extends ViewController {
 
     public void setValuesFriendshipStats(FriendshipStats stats){
         setLevel(stats.getFriendshipLevel());
+        setSent(stats.getSentMessages());
+        setReceived(stats.getReceivedMessages());
     }
 
     private String thisUser;
@@ -80,6 +80,10 @@ public class ViewProfile_View_Controller extends ViewController {
     private Label dob;
     @FXML
     private Label level;
+    @FXML
+    private Label sent;
+    @FXML
+    private Label received;
     @FXML
     private ProgressBar levelProgress;
     @FXML
@@ -102,11 +106,31 @@ public class ViewProfile_View_Controller extends ViewController {
     private AnchorPane anchor;
     @FXML
     private Button remove;
+    @FXML
+    private Button add;
 
     @FXML
     public void setUsername(String user, boolean home){
         usern.setText(user);
         thisUser = user;
+        if(connection.getCurrentUser().getContactList().containsKey(user)){
+            backButton.setVisible(true);
+            add.setVisible(false);
+            remove.setVisible(true);
+            level.setVisible(true);
+            levelProgress.setVisible(true);
+            sent.setVisible(true);
+            received.setVisible(true);
+        }
+        else {
+            backButton.setVisible(true);
+            add.setVisible(true);
+            remove.setVisible(false);
+            level.setVisible(false);
+            levelProgress.setVisible(false);
+            sent.setVisible(false);
+            received.setVisible(false);
+        }
         if(home){
             backButton.setVisible(false);
         }
@@ -117,6 +141,14 @@ public class ViewProfile_View_Controller extends ViewController {
     private void setLevel(int lvl){
         level.setText(Integer.toString(lvl/100));
         levelProgress.setProgress((double)(lvl%100)/100);
+    }
+
+    private void setSent(int sentMessages){
+        sent.setText(Integer.toString(sentMessages));
+    }
+
+    private void setReceived(int receivedMessages){
+        received.setText(Integer.toString(receivedMessages));
     }
 
     private void setName(String first, String last){
@@ -162,7 +194,6 @@ public class ViewProfile_View_Controller extends ViewController {
     public void BackButton(ActionEvent event){
         try {
             home.SearchHelper(usern.getText());
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,5 +202,10 @@ public class ViewProfile_View_Controller extends ViewController {
     @FXML
     public void removeContact(){
         connection.removeContact(usern.getText());
+    }
+
+    @FXML
+    public void addContact() {
+        connection.addContact(usern.getText());
     }
 }
