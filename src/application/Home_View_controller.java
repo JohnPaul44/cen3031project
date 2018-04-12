@@ -523,7 +523,33 @@ public class Home_View_controller extends ViewController{
     @Override
     public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
         if(errorInformation.getErrorNumber() == 0){
+            Platform.runLater(new Runnable(){
+                @Override
+                public void run(){
+                    System.out.println("read callback");
+                    boolean open = false;
+                    int children = view.getChildren().size();
+                    AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
+                    Label openedName = null;
 
+                    try {
+                        openedName = (Label) top.getChildren().get(0);
+                    } catch(Exception e){
+                        open = false;
+                    }
+
+                    if(openedName.equals(from)){
+                        open = true;
+                    }
+
+                    if(open){
+                        currentConvo.setStatusRead();
+                    }
+                }
+            });
+        }
+        else{
+            System.out.println(errorInformation.getErrorString());
         }
     }
 
