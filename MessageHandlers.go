@@ -24,8 +24,9 @@ var handlerMap = map[int]ServerMessageHandler{
 	msg.ActionReactToMessage:             handleReactToMessage,
 	msg.ActionAddUserToConversation:      handleAddUserToConversation,
 	msg.ActionRemoveUserFromConversation: handleRemoveUserFromConversation,
-	msg.ActionReadMessage:                handleReadMessage,
+	msg.ActionReadMessage:                handleSetRead,
 	msg.ActionSetTyping:                  handleSetTyping,
+	msg.ActionDeleteAccount:              handleDeleteAccount,
 }
 
 func handleServerMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
@@ -79,6 +80,7 @@ func handleQueryUsers(_ *ds.User, conn net.Conn, message *msg.ServerMessage) err
 	}
 
 	rsp.QueryResults = &results
+	rsp.Query = message.Query
 
 	return sendServerMessage(conn, rsp)
 }
@@ -369,6 +371,13 @@ func handleSendMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 		*rsp.Conversations = make(map[string]msg.Conversation)
 		(*rsp.Conversations)[*convKeyString] = *conv
 	} else {
+		// TODO: send notification to all conversation members to set read status to false (except sender)
+		//for member := range memberStatuses {
+		//	if member != user.Username {
+		//		sendServerMessageToUser()
+		//	}
+		//}
+
 		rsp.Message = memberMsg
 	}
 
@@ -655,18 +664,18 @@ func handleRemoveUserFromConversation(user *ds.User, conn net.Conn, message *msg
 			default:
 				return "themself"
 			}
-		}(), members)
+		}(), *members)
 	} else {
 		sendServerMessageToUser(*message.Username, rsp)
-		log.Printf("'%s' was removed from conversation with: %s\n", *message.Username, members)
+		log.Printf("'%s' was removed from conversation with: %s\n", *message.Username, *members)
 	}
 
 	return nil
 }
 
-func handleReadMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
+func handleSetRead(user *ds.User, conn net.Conn, message *msg.ServerMessage) error {
 	rsp := new(msg.ServerMessage)
-	rsp.Status = msg.NotificationMessageRead
+	rsp.Status = msg.NotificationRead
 	errStr := user.Username + " cannot read message:"
 
 	if message.Message == nil {
@@ -692,7 +701,7 @@ func handleReadMessage(user *ds.User, conn net.Conn, message *msg.ServerMessage)
 
 	convKey := ds.GetConversationKey(*message.Message.ConversationKey)
 
-	err := ds.ReadConversation(user.Username, convKey)
+	err := ds.SetRead(user.Username, convKey, true)
 	if err != nil {
 		log.Println(e.Tag, errStr, err)
 		rsp.SetError(e.ErrInternalServer)
@@ -778,6 +787,22 @@ func handleSetTyping(user *ds.User, conn net.Conn, message *msg.ServerMessage) e
 			return "stopped"
 		}
 	}())
+
+	return nil
+}
+
+func handleDeleteAccount(user *ds.User, conn net.Conn, _ *msg.ServerMessage) error {
+	rsp := new(msg.ServerMessage)
+	rsp.Status = msg.NotificationAccountDeleted
+
+	err := ds.DeleteUserAccount(user.Username)
+	if err != nil {
+		log.Println(e.Tag, "could not delete account:", err)
+		rsp.SetError(e.ErrInternalServer)
+		return sendServerMessage(conn, rsp)
+	}
+
+	sendServerMessageToUser(user.Username, rsp)
 
 	return nil
 }

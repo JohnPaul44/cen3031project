@@ -16,8 +16,6 @@ import (
 
 const (
 	KindUser = "User"
-	//KindUserInterests               = "UserInterests"
-	//KindUserHobbies                 = "UserHobbies"
 	KindConversation                = "Conversation"
 	KindConversationMessage         = "Message"
 	KindUserContact                 = "Contact"
@@ -43,14 +41,6 @@ type User struct {
 	SecurityQuestion string        `json:"securityQuestion"`
 	SecurityAnswer   string        `json:"securityAnswer"`
 }
-
-/*type UserInterest struct {
-	Interest string
-}
-
-type UserHobbies struct {
-	Hobby string
-}*/
 
 type MessageReaction struct {
 	// KindMessageReaction, key=KindUser(username), parent=KindConversationMessage
@@ -242,90 +232,6 @@ func DeleteUserAccount(username string) error {
 	return client.Delete(c, userKey)
 }
 
-/*func clearUserProfileArray(username string, kind string) error {
-	q := datastore.NewQuery(kind).Ancestor(GetUserKey(username)).KeysOnly()
-	keys, err := client.GetAll(c, q, nil)
-	if err != nil {
-		return err
-	}
-
-	return client.DeleteMulti(c, keys)
-}
-
-func updateUserProfileArray(username string, kind string, values []string) error {
-	err := clearUserProfileArray(username, kind)
-	if err != nil {
-		return err
-	}
-
-	var keys []*datastore.Key
-
-	for range values {
-		keys = append(keys, datastore.IncompleteKey(kind, GetUserKey(username)))
-	}
-
-	_, err = client.PutMulti(c, keys, values)
-	return err
-}
-
-func setUserInterests(username string, interests []string) error {
-
-}
-
-func GetUserInterests(username string) ([]string, error) {var values []string
-	q := datastore.NewQuery(KindUserInterests).Ancestor(GetUserKey(username))
-	it := client.Run(c, q)
-
-	var err error
-
-	for {
-		var interest string
-		_, intErr := it.Next(&interest)
-		if intErr != nil {
-			err = intErr
-			break
-		}
-
-		values = append(values, interest)
-	}
-
-	if err != iterator.Done {
-		log.Println(err)
-		return values, err
-	}
-
-	return values, nil
-}
-
-func setUserHobbies(username string, hobbies []string) error {
-
-}
-
-func GetUserHobbies(username string) ([]string, error) {var values []string
-	q := datastore.NewQuery(KindUserHobbies).Ancestor(GetUserKey(username))
-	it := client.Run(c, q)
-
-	var err error
-
-	for {
-		var interest string
-		_, intErr := it.Next(&interest)
-		if intErr != nil {
-			err = intErr
-			break
-		}
-
-		values = append(values, interest)
-	}
-
-	if err != iterator.Done {
-		log.Println(err)
-		return values, err
-	}
-
-	return values, nil
-}*/
-
 func GetUserProfile(username string) (msg.Profile, error) {
 	var profile msg.Profile
 
@@ -335,18 +241,6 @@ func GetUserProfile(username string) (msg.Profile, error) {
 	}
 
 	profile = user.Profile
-
-	/*interests, err := GetUserInterests(username)
-	if err != nil {
-		log.Println("cannot get interests for user:", err)
-	}
-	profile.Interests = interests
-
-	hobbies, err := GetUserHobbies(username)
-	if err != nil {
-		log.Println("cannot get hobbies for user:", err)
-	}
-	profile.Hobbies = hobbies*/
 
 	return user.Profile, nil
 }
@@ -531,7 +425,6 @@ func AddContact(username string, contact string) (UserContact, error) {
 		Statistics: msg.FriendshipStatistics{
 			SentMessages:     0,
 			ReceivedMessages: 0,
-			//Games: make(map[string]msg.ContactGame),
 			FriendshipLevel: 0,
 		},
 		Contact: contact,
@@ -1133,7 +1026,7 @@ func SetTypingStatus(username string, conversationKey *datastore.Key, typing boo
 	return nil
 }
 
-func ReadConversation(username string, conversationKey *datastore.Key) error {
+func SetRead(username string, conversationKey *datastore.Key, read bool) error {
 	errStr := fmt.Sprintf("'%s' cannot read conversation:", username)
 
 	authorized, err := IsUserInConversation(username, conversationKey)
@@ -1154,7 +1047,7 @@ func ReadConversation(username string, conversationKey *datastore.Key) error {
 		return err
 	}
 
-	member.Read = true
+	member.Read = read
 	_, err = client.Put(c, memberKey, &member)
 	if err != nil {
 		log.Println(e.Tag, errStr, "cannot update member in datastore:", err)
