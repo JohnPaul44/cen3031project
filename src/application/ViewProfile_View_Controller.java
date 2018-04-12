@@ -161,7 +161,6 @@ public class ViewProfile_View_Controller extends ViewController {
 
     @FXML
     public void BackButton(ActionEvent event){
-        System.out.println("hit back button");
         try {
             home.SearchHelper(usern.getText());
 

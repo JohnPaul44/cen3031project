@@ -59,19 +59,15 @@
                         </VBox>
                      </content>
                 </TitledPane>
-                <TitledPane animated="false" text="Explore">
+                <TitledPane animated="false" collapsible="false" onMouseClicked="#openExplore" text="Explore">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
                      <content>
-                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #E7DECD;">
-                           <children>
-                              <Label text="coming soon" />
-                           </children>
-                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #E7DECD;" />
                      </content>
                 </TitledPane>
-                  <TitledPane fx:id="groupMessage" animated="false" collapsible="false" onMouseClicked="#createGroupMessage" text="+ New Group Message +">
+                  <TitledPane fx:id="groupMessage" animated="false" collapsible="false" expanded="false" onMouseClicked="#createGroupMessage" text="+ New Group Message +">
                     <content>
                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>

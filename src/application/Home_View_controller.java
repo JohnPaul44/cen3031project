@@ -1,8 +1,10 @@
 package application;
 
+import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import connection.ErrorInformation;
 import connection.ServerConnection;
 import connection.serverMessages.ServerMessage;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -222,6 +224,7 @@ public class Home_View_controller extends ViewController{
     private Search_View_Controller currentSearch;
     private ViewProfile_View_Controller vpScreen;
     private Home_View_controller home;
+    private Explore_View_Controller expl;
 
     public void setHome(Home_View_controller h){
         home = h;
@@ -294,6 +297,23 @@ public class Home_View_controller extends ViewController{
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    public void openExplore(){
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/application/explore.fxml"));
+        AnchorPane anchor = new AnchorPane();
+
+        try {
+            anchor = loader.load();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        setView(anchor);
+
+        expl = loader.getController();
+        expl.passConnection(connection);
     }
 
     @FXML
@@ -526,7 +546,30 @@ public class Home_View_controller extends ViewController{
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    currentSearch.setSearchResults(results);
+                    boolean explore = false;
+
+                    //check if the explore screen is open
+                    int children = view.getChildren().size();
+                    AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
+                    Label openedName = null;
+                    try {
+                        openedName = (Label) top.getChildren().get(0);
+                    } catch(Exception e){
+                        explore = false;
+                    }
+
+                    if(openedName != null){
+                        if(openedName.getText().equals("Explore")){
+                            explore = true;
+                        }
+                    }
+
+                    if(!explore) {
+                        currentSearch.setSearchResults(results, explore);
+                    }
+                    else{
+                        expl.setSearchResults(results);
+                    }
                 }
             });
         }
