@@ -18,6 +18,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import model.Contact;
+import model.FriendshipStats;
 import model.Profile;
 
 import java.util.ArrayList;
@@ -55,6 +56,10 @@ public class ViewProfile_View_Controller extends ViewController {
         setHobbies(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getHobbies());
         setInterests(connection.getCurrentUser().getContactList().get(thisUser).getProfile().getInterests());
 
+    }
+
+    public void setValuesFriendshipStats(FriendshipStats stats){
+        setLevel(stats.getFriendshipLevel());
     }
 
     private String thisUser;
