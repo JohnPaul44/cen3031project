@@ -29,10 +29,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import model.Contact;
-import model.Conversation;
-import model.Profile;
-import model.Status;
+import model.*;
 import sun.plugin.javascript.navig.Anchor;
 
 import java.time.LocalDate;
@@ -536,6 +533,18 @@ public class Home_View_controller extends ViewController{
     @Override
     public void profileUpdatedNotification(ErrorInformation errorInformation, Profile profile) {
         if (errorInformation.getErrorNumber() != 0){
+            System.out.println(errorInformation.getErrorString());
+        }
+    }
+
+    @Override
+    public void friendshipStatsNotification(ErrorInformation errorInformation, String username, FriendshipStats friendshipStats) {
+        if (errorInformation.getErrorNumber() != 0){
+            if(vpScreen.getThisUser().equals(username)) {
+                vpScreen.setValuesFriendshipStats(friendshipStats);
+            }
+        }
+        else {
             System.out.println(errorInformation.getErrorString());
         }
     }

@@ -124,6 +124,8 @@ public class ServerConnection implements IServerConnection {
         sendMessageToServer(message);
     }
 
+
+
     public void addContact(String username) {
         ServerMessage message = new ActionAddContactMessage(username);
         sendMessageToServer(message);
@@ -189,6 +191,11 @@ public class ServerConnection implements IServerConnection {
 
     public void updateProfile() {
         ActionUpdateProfileMessage message = new ActionUpdateProfileMessage(this.currentUser.getProfile());
+        sendMessageToServer(message);
+    }
+
+    public void getFriendshipStatistics(String username) {
+        ActionGetFriendshipStatsMessage message = new ActionGetFriendshipStatsMessage(username);
         sendMessageToServer(message);
     }
 
