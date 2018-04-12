@@ -215,6 +215,8 @@ public class Home_View_controller extends ViewController{
     private SplitPane split;
     @FXML
     private AnchorPane view;
+    @FXML
+    private TitledPane explore;
 
     private Conversation_View_controller currentConvo;
     private Search_View_Controller currentSearch;
@@ -310,6 +312,12 @@ public class Home_View_controller extends ViewController{
 
         expl = loader.getController();
         expl.passConnection(connection);
+
+        explore.setText("Explore");
+    }
+
+    public void setLoading(){
+        explore.setText(explore.getText() + " ... Loading ...");
     }
 
     @FXML

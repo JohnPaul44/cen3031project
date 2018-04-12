@@ -33,7 +33,7 @@
                   <Font size="10.0" />
                </font>
             </TextField>
-            <TextField fx:id="topic" alignment="CENTER" prefHeight="27.0" prefWidth="632.0" />
+            <TextField fx:id="topic" alignment="CENTER" editable="false" prefHeight="27.0" prefWidth="632.0" />
             <Button fx:id="refresh" layoutX="630.0" layoutY="1.0" mnemonicParsing="false" onAction="#setTopic" prefHeight="27.0" prefWidth="29.0">
                <font>
                   <Font size="9.0" />
