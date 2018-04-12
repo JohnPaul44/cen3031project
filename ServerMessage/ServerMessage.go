@@ -116,7 +116,7 @@ type ServerMessage struct {
 	Conversations        *map[string]Conversation `json:"conversations,omitempty"`
 	Message              *Message                 `json:"message,omitempty"`
 	ClientTime           string                   `json:"clientTime"`
-	FriendshipStatistics *FriendshipStatistics    `json:"friendshipStatistics,omitempty"`
+	FriendshipStatistics *FriendshipStatistics    `json:"friendshipStats,omitempty"`
 }
 
 func (msg *ServerMessage) Clear() {
