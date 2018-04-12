@@ -30,6 +30,7 @@ public class Message implements Comparable<Message> {
     private enum Reaction {  }
     private Map<String, Reactions> reactions;
     private boolean typing;
+    private boolean read;
 
     public Message() {}
 
@@ -64,6 +65,11 @@ public class Message implements Comparable<Message> {
         this.conversationKey = conversationKey;
     }
 
+    public Message(String conversationKey, boolean typing) {
+        this.conversationKey = conversationKey;
+        this.typing = typing;
+    }
+
     public String getClientTime() { return clientTime; }
     public String getServerTime() { return serverTime; }
     public ArrayList<String> getTo() { return to; }
@@ -73,6 +79,9 @@ public class Message implements Comparable<Message> {
     public String getText() { return text; }
     public Map<String, Reactions> getReactions() {
         return reactions;
+    }
+    public boolean getRead(){
+        return read;
     }
 
     public void setText(String text) { this.text = text; }
