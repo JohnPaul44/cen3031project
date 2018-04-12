@@ -159,7 +159,6 @@ func GetUserAccount(username string) (*User, error) {
 	if err != nil {
 		if err == datastore.ErrNoSuchEntity {
 			// user doesn't exist
-			log.Println(errStr, e.ErrInvalidUsername)
 			return nil, e.ErrInvalidUsername
 		}
 
@@ -610,7 +609,7 @@ func GetFriendshipStatistics(username1 string, username2 string) (msg.Friendship
 	}
 
 	// calculate friendship level using formula: ln(sent + received)
-	stats.FriendshipLevel = int(math.Max(math.Log(float64(stats.SentMessages) + float64(stats.ReceivedMessages)), 0))
+	stats.FriendshipLevel = int(math.Max(math.Log(float64(stats.SentMessages) + float64(stats.ReceivedMessages)) * 100.0, 0))
 
 	log.Printf("calculated friendship statistics for contact pair (%s, %s): %+v", username1, username2, stats)
 
