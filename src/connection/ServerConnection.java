@@ -124,6 +124,8 @@ public class ServerConnection implements IServerConnection {
         sendMessageToServer(message);
     }
 
+
+
     public void addContact(String username) {
         ServerMessage message = new ActionAddContactMessage(username);
         sendMessageToServer(message);
