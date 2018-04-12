@@ -526,7 +526,6 @@ public class Home_View_controller extends ViewController{
             Platform.runLater(new Runnable(){
                 @Override
                 public void run(){
-                    System.out.println("read callback");
                     boolean open = false;
                     int children = view.getChildren().size();
                     AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
@@ -538,7 +537,7 @@ public class Home_View_controller extends ViewController{
                         open = false;
                     }
 
-                    if(openedName.equals(from)){
+                    if(openedName.getText().equals(from)){
                         open = true;
                     }
 
