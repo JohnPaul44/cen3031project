@@ -33,6 +33,7 @@ type Message struct {
 	Text            *string               `json:"text,omitempty"`
 	Reactions       *map[string]Reactions `json:"reactions,omitempty"`
 	Typing          *bool                 `json:"typing,omitempty"`
+	Read            *bool                 `json:"read,omitempty"`
 }
 
 type Status struct {
@@ -67,10 +68,10 @@ type FriendshipStatistics struct {
 }
 
 type Contact struct {
-	Online     bool                 `json:"online"`
-	Added      time.Time            `json:"added"` // when contact was first added
-	Profile    Profile              `json:"profile"`
-	Statistics FriendshipStatistics `json:"statistics"`
+	Online          bool                 `json:"online"`
+	Added           time.Time            `json:"added"` // when contact was first added
+	Profile         Profile              `json:"profile"`
+	FriendshipStats FriendshipStatistics `json:"friendshipStats"`
 }
 
 const (

@@ -394,10 +394,10 @@ func handleConnect(w http.ResponseWriter, _ *http.Request) {
 			}
 
 			(*rsp.Contacts)[contact.Contact] = msg.Contact{
-				Online: ds.ConnectionsContains(contact.Contact),
-				Added: contact.Added,
-				Profile: contactProfile,
-				Statistics: contact.Statistics,
+				Online:          ds.ConnectionsContains(contact.Contact),
+				Added:           contact.Added,
+				Profile:         contactProfile,
+				FriendshipStats: contact.Statistics,
 			}
 		}
 

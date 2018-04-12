@@ -570,7 +570,7 @@ func GetFriendshipStatistics(username1 string, username2 string) (msg.Friendship
 	userConversationQuery := datastore.NewQuery(KindConversationMember).Filter("Member =", username1).KeysOnly()
 	conversationMemberKeys, err := client.GetAll(c, userConversationQuery, nil)
 	if err != nil {
-		log.Println(e.Tag, "cannot get conversation member keys for " + username1 + ":", err)
+		log.Println(e.Tag, "cannot get conversation member keys for "+username1+":", err)
 		return stats, err
 	}
 
@@ -609,7 +609,7 @@ func GetFriendshipStatistics(username1 string, username2 string) (msg.Friendship
 	}
 
 	// calculate friendship level using formula: ln(sent + received)
-	stats.FriendshipLevel = int(math.Max(math.Log(float64(stats.SentMessages) + float64(stats.ReceivedMessages)) * 100.0, 0))
+	stats.FriendshipLevel = int(math.Max(math.Log(float64(stats.SentMessages)+float64(stats.ReceivedMessages))*100.0, 0))
 
 	log.Printf("calculated friendship statistics for contact pair (%s, %s): %+v", username1, username2, stats)
 
@@ -637,10 +637,10 @@ func GetContact(username string, contactUsername string) (msg.Contact, error) {
 	}
 
 	contact = msg.Contact{
-		Online:     ConnectionsContains(contactUsername),
-		Added:      userContact.Added,
-		Profile:    userProfile,
-		Statistics: userContact.Statistics,
+		Online:          ConnectionsContains(contactUsername),
+		Added:           userContact.Added,
+		Profile:         userProfile,
+		FriendshipStats: userContact.Statistics,
 	}
 
 	return contact, nil
