@@ -9,10 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -46,6 +43,9 @@ public class ViewProfile_View_Controller extends ViewController {
         setIcon(prof.getColor());
         setHobbies(prof.getHobbies());
         setInterests(prof.getInterests());
+        if(connection.getCurrentUser().getContactList().containsKey(thisUser)) {
+            setValuesFriendshipStats(connection.getCurrentUser().getContactList().get(thisUser).getFriendshipStats());
+        }
     }
 
     public void setValuesContact(){
@@ -71,25 +71,25 @@ public class ViewProfile_View_Controller extends ViewController {
     @FXML
     private Button backButton;
     @FXML
-    private Label name;
+    private TextField name;
     @FXML
-    private Label email;
+    private TextField email;
     @FXML
-    private Label gender;
+    private TextField gender;
     @FXML
-    private Label dob;
+    private TextField dob;
     @FXML
     private Label level;
     @FXML
-    private Label sent;
+    private TextField sent;
     @FXML
-    private Label received;
+    private TextField received;
     @FXML
     private ProgressBar levelProgress;
     @FXML
     private Label usern;
     @FXML
-    private Label mind;
+    private TextField mind;
     @FXML
     private TextArea bio;
     @FXML
@@ -108,6 +108,10 @@ public class ViewProfile_View_Controller extends ViewController {
     private Button remove;
     @FXML
     private Button add;
+    @FXML
+    private Label sentLabel;
+    @FXML
+    private Label receivedLabel;
 
     @FXML
     public void setUsername(String user, boolean home){
@@ -121,6 +125,8 @@ public class ViewProfile_View_Controller extends ViewController {
             levelProgress.setVisible(true);
             sent.setVisible(true);
             received.setVisible(true);
+            sentLabel.setVisible(true);
+            receivedLabel.setVisible(true);
         }
         else {
             backButton.setVisible(true);
@@ -130,6 +136,8 @@ public class ViewProfile_View_Controller extends ViewController {
             levelProgress.setVisible(false);
             sent.setVisible(false);
             received.setVisible(false);
+            sentLabel.setVisible(false);
+            receivedLabel.setVisible(false);
         }
         if(home){
             backButton.setVisible(false);

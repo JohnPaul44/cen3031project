@@ -19,6 +19,9 @@ public class NotificationFriendshipStatsMessage extends ServerMessage {
     }
 
     public FriendshipStats getFriendshipStats() {
+        if(friendshipStats == null) {
+            friendshipStats = new FriendshipStats(0,0,0);
+        }
         return friendshipStats;
     }
 }
