@@ -47,7 +47,7 @@
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextArea>
-      <Button fx:id="backButton" layoutX="465.0" layoutY="452.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #ff0000;" text="Discard Changes" textFill="#fbfaf9">
+      <Button fx:id="backButton" layoutX="465.0" layoutY="452.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #ff6961;" text="Discard Changes" textFill="#fbfaf9">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
@@ -107,5 +107,10 @@
       </AnchorPane>
       <ChoiceBox fx:id="genderField" layoutX="298.0" layoutY="158.0" prefHeight="27.0" prefWidth="341.0" />
       <DatePicker fx:id="dob" layoutX="298.0" layoutY="196.0" prefHeight="27.0" prefWidth="341.0" />
+      <Button layoutX="104.0" layoutY="471.0" mnemonicParsing="false" style="-fx-background-color: #ff0000;" text="Delete Account" textFill="WHITE">
+         <font>
+            <Font size="9.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

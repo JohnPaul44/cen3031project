@@ -419,21 +419,16 @@ public class Home_View_controller extends ViewController{
         //load the view to add contacts
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/application/createGroupMessage.fxml"));
+        AnchorPane anchor = new AnchorPane();
         try {
-            loader.load();
+            anchor = loader.load();
         }catch(Exception e){
             e.printStackTrace();
         }
+        setView(anchor);
 
         CreateGroupMessage_View_Controller group = loader.getController();
         group.passConnection(connection);
-
-        Parent root = loader.getRoot();
-        Stage registerStage = new Stage();
-        Scene scene = new Scene(root, 463, 400);
-        scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-        registerStage.setScene(scene);
-        registerStage.show();
     }
 
     @FXML
