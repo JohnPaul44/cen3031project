@@ -6,10 +6,7 @@
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane fx:id="anchor" focusTraversable="true" maxWidth="504.0" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewCurrentUser_View_controller">
     <children>

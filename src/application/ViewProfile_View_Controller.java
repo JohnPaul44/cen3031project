@@ -1,29 +1,18 @@
 package application;
 
-import connection.ErrorInformation;
 import connection.ServerConnection;
-import connection.serverMessages.ServerMessage;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import javafx.stage.Stage;
-import model.Contact;
 import model.FriendshipStats;
 import model.Profile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ViewProfile_View_Controller extends ViewController {
     ServerConnection connection;
-    Home_View_controller home;
+    private Home_View_controller home;
 
     public void setHome(Home_View_controller h){
         home = h;
@@ -103,8 +92,6 @@ public class ViewProfile_View_Controller extends ViewController {
     @FXML
     private Label icon_letter;
     @FXML
-    private AnchorPane anchor;
-    @FXML
     private Button remove;
     @FXML
     private Button add;
@@ -179,7 +166,7 @@ public class ViewProfile_View_Controller extends ViewController {
         bio.setText(biography);
     }
 
-    public void setIcon(String col){
+    private void setIcon(String col){
         String first_letter = "" + usern.getText().charAt(0);
         icon_letter.setText(first_letter);
 
@@ -199,7 +186,7 @@ public class ViewProfile_View_Controller extends ViewController {
 
 
     @FXML
-    public void BackButton(ActionEvent event){
+    public void BackButton(){
         try {
             home.SearchHelper(usern.getText());
         } catch (Exception e) {

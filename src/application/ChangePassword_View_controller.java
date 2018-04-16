@@ -19,9 +19,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
-import javax.xml.soap.Text;
-import java.time.Duration;
-
 public class ChangePassword_View_controller extends ViewController {
 	ServerConnection connection;
 
@@ -46,20 +43,8 @@ public class ChangePassword_View_controller extends ViewController {
 	@FXML
 	private ChoiceBox securityQuestion;
 
-	public TextField getAnswer(){
-		return answer;
-	}
-
 	public TextField getPhone(){
 		return phone;
-	}
-
-	public TextField getNewPass(){
-		return newPass;
-	}
-
-	public TextField getConfPass() {
-		return confPass;
 	}
 
 	public Label getStatus(){
@@ -68,10 +53,6 @@ public class ChangePassword_View_controller extends ViewController {
 
 	public void setStatus(String stat){
 		status.setText(stat);
-	}
-
-	public Button getChangeButton(){
-		return changeButton;
 	}
 	
 	public String getUsername() {
@@ -90,7 +71,7 @@ public class ChangePassword_View_controller extends ViewController {
 	}
 	
 	@FXML
-    public void BackButton(ActionEvent event) throws Exception{
+    public void BackButton(){
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/login.fxml"));
@@ -113,7 +94,7 @@ public class ChangePassword_View_controller extends ViewController {
     }
 
 	@FXML
-	public void changePasswordEventKey(KeyEvent keyEvent) throws Exception{
+	public void changePasswordEventKey(KeyEvent keyEvent){
 		if(keyEvent.getCode() == KeyCode.ENTER) {
 		//calls the same action that occurs when the button is pressed
 		ActionEvent aevent = new ActionEvent(keyEvent.getSource(), changeButton);
@@ -133,7 +114,7 @@ public class ChangePassword_View_controller extends ViewController {
 	}
 
 	@FXML
-	public void confPassChanged(){
+	private void confPassChanged(){
     	try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("/application/login.fxml"));
@@ -157,7 +138,7 @@ public class ChangePassword_View_controller extends ViewController {
 	}
 
 	@FXML
-	public boolean confPassword() {
+	private boolean confPassword() {
 		if(!newPass.getText().equals(confPass.getText())) {
 			status.setText("Passwords do not match");
 			return false;

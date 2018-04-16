@@ -1,36 +1,17 @@
 package application;
 
-import connection.ErrorInformation;
 import connection.ServerConnection;
-import connection.serverMessages.*;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import model.*;
 
 import javax.swing.*;
-import javax.xml.soap.Text;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.Timer;
 
@@ -48,28 +29,21 @@ public class Conversation_View_controller extends ViewController {
     @FXML
     private Button sendButton;
     @FXML
-    private ListView chatWindow;
-    @FXML
-    private TextField userYou, userThem;
-    @FXML
     private VBox box;
     @FXML
     private ScrollPane scroll;
     @FXML
     private Label username;
     @FXML
-    private AnchorPane anchor;
-    @FXML
     private TextField status;
     @FXML
     private TextField topic;
 
     private String thisUser;
-    boolean first;
-    boolean typing;
+    private boolean typing;
 
 
-    String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
+    private String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
             "What was your favorite book as a child?", "Who are the three greatest athletes of all time?", "Where would you like to travel next?", "What was the best invention of the last 50 years?",
             "What are your goals for the next 2 years?", "If you could call anyone in the world, who would you call?",
             "What is the oddest job you have had?", "What would you do if you won the lottery?", "What are five things you couldn't live without?",
@@ -83,12 +57,11 @@ public class Conversation_View_controller extends ViewController {
         topic.setText(convoTopics[n]);
     }
 
-    public String convKey = "";
+    private String convKey = "";
 
     public void setUsername(String user){
         thisUser = user;
         username.setText(user);
-        first = true;
         typing = false;
     }
 
@@ -102,7 +75,7 @@ public class Conversation_View_controller extends ViewController {
     }
 
 
-    public Timer timer(){
+    private Timer timer(){
         Timer time = new Timer();
         TimerTask task = new TimerTask(){
             @Override
@@ -115,8 +88,8 @@ public class Conversation_View_controller extends ViewController {
         return time;
     }
 
-    Timer t;
-    TextField prevMess;
+    private Timer t;
+    private TextField prevMess;
     public void userTyping(){
         if(!typing){
             typing = true;
@@ -159,7 +132,7 @@ public class Conversation_View_controller extends ViewController {
     }
 
     @FXML
-    public void SendEventKey(KeyEvent keyEvent) throws Exception{
+    public void SendEventKey(KeyEvent keyEvent){
         if(keyEvent.getCode() == KeyCode.ENTER) {
             //sets typing to false
             connection.setTyping(convKey, false);
@@ -171,14 +144,14 @@ public class Conversation_View_controller extends ViewController {
         }
     }
 
-    public void sendMessageClicked (ActionEvent event) throws Exception {
+    public void sendMessageClicked (ActionEvent event) {
         if (!yourMessageField.getText().isEmpty()) {
             String message = yourMessageField.getText();
             //Setting the text to blank here to improve responsiveness -Lincoln
             yourMessageField.setText("");
             //sentMessage(message);
             if (convKey.isEmpty()) {
-                ArrayList<String> mess = new ArrayList<String>();
+                ArrayList<String> mess = new ArrayList<>();
                 mess.add(username.getText());
                 connection.sendFirstMessage(mess, message);
             } else {
@@ -187,7 +160,7 @@ public class Conversation_View_controller extends ViewController {
         }
     }
 
-    public void sentMessage(String text){
+    private void sentMessage(String text){
         AnchorPane pane = new AnchorPane();
         TextArea new_message = new TextArea();
         new_message.setText(text);
@@ -210,7 +183,7 @@ public class Conversation_View_controller extends ViewController {
         scroll.vvalueProperty().bind(box.heightProperty());
         }
 
-    public void receivedMessage(String text){
+    private void receivedMessage(String text){
         AnchorPane receivedPane = new AnchorPane();
         TextArea received_message = new TextArea();
         received_message.setText(text);

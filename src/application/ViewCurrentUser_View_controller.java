@@ -1,36 +1,22 @@
 package application;
 
-import connection.ErrorInformation;
 import connection.ServerConnection;
-import connection.serverMessages.ServerMessage;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
-import model.Contact;
 import model.Profile;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class ViewCurrentUser_View_controller extends ViewController {
 
@@ -41,7 +27,7 @@ public class ViewCurrentUser_View_controller extends ViewController {
         setValues();
     }
 
-    public void setValues() {
+    private void setValues() {
         setUsername(connection.getCurrentUser().getUserName());
         setFirstName(connection.getCurrentUser().getProfile().getFirstName());
         setLastName(connection.getCurrentUser().getProfile().getLastName());
@@ -56,7 +42,7 @@ public class ViewCurrentUser_View_controller extends ViewController {
         setIcon();
     }
 
-    public void setIcon() {
+    private void setIcon() {
         String first_letter = "" + connection.getCurrentUser().getUserName().charAt(0);
         icon_letter.setText(first_letter);
 
@@ -94,8 +80,6 @@ public class ViewCurrentUser_View_controller extends ViewController {
     private Circle icon_design;
     @FXML
     private Label icon_letter;
-    @FXML
-    private Button editProfile;
     @FXML
     private AnchorPane anchor;
 
@@ -181,7 +165,7 @@ public class ViewCurrentUser_View_controller extends ViewController {
     }
 
     @FXML
-    public void Logout(ActionEvent event) {
+    public void Logout() {
         connection.logout();
 
         try {

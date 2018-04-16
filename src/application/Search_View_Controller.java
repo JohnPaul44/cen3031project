@@ -1,32 +1,21 @@
 package application;
 
-import connection.ErrorInformation;
 import connection.ServerConnection;
-import connection.serverMessages.ServerMessage;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Stage;
 import model.Contact;
 import model.Profile;
 
@@ -42,7 +31,7 @@ public class Search_View_Controller extends ViewController{
         connection = con;
     }
 
-    Home_View_controller home;
+    private Home_View_controller home;
     public void setHome(Home_View_controller h){
         home = h;
     }
@@ -54,10 +43,6 @@ public class Search_View_Controller extends ViewController{
     @FXML
     private Label status;
     @FXML
-    private Button add;
-    @FXML
-    private Button view;
-    @FXML
     private AnchorPane anchor;
 
     public void setSearchField(String s){
@@ -65,7 +50,7 @@ public class Search_View_Controller extends ViewController{
         search();
     }
 
-    public void search(){
+    private void search(){
         if(searchField.getText().equals(connection.getCurrentUser().getUserName())){
             status.setText("No Results");
             return;
@@ -125,7 +110,6 @@ public class Search_View_Controller extends ViewController{
 
         int count = 1;
         for(Map.Entry<String, Profile> entry : userResults.entrySet()){
-            //TODO: make it add additional rows
             String username = entry.getKey();
             Profile prof = entry.getValue();
 
@@ -186,11 +170,11 @@ public class Search_View_Controller extends ViewController{
         return grid;
     }
 
-    public void addContact(String username){
+    private void addContact(String username){
         connection.addContact(username);
     }
 
-    public void viewProfile(String username, Profile prof, AnchorPane anchorp, boolean exp){
+    private void viewProfile(String username, Profile prof, AnchorPane anchorp, boolean exp){
         FXMLLoader loadEdit = new FXMLLoader();
         loadEdit.setLocation(getClass().getResource("/application/viewProfile.fxml"));
         AnchorPane temp = new AnchorPane();

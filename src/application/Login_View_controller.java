@@ -38,8 +38,6 @@ public class Login_View_controller extends ViewController{
 	@FXML
 	private Button loginButton;
 
-	@FXML
-	private AnchorPane anchor;
 
 	public TextField getUsername(){
 		return username;
@@ -60,7 +58,7 @@ public class Login_View_controller extends ViewController{
 
 	//event handlers for both when the login button is pressed or when the enter key is used
 	@FXML
-	public void LoginEventKey(KeyEvent keyEvent) throws Exception{
+	public void LoginEventKey(KeyEvent keyEvent){
 		if(keyEvent.getCode() == KeyCode.ENTER) {
 			//calls the same action that occurs when the button is pressed
 			ActionEvent aevent = new ActionEvent(keyEvent.getSource(), loginButton);
@@ -77,7 +75,7 @@ public class Login_View_controller extends ViewController{
 	}
 	
 	@FXML
-	public void RegisterEvent(ActionEvent event) throws Exception{
+	public void RegisterEvent() throws Exception{
 		//opens a new window where a user can register their account
 
 		FXMLLoader loader = new FXMLLoader();
@@ -100,7 +98,7 @@ public class Login_View_controller extends ViewController{
 	}
 	
 	@FXML
-	public void ChangePassEvent(ActionEvent event) {
+	public void ChangePassEvent() {
 		
 		if(username.getText().equals("")) {
 			status.setText("Please enter your username");
@@ -113,7 +111,7 @@ public class Login_View_controller extends ViewController{
 	}
 
 	@FXML
-	public void openChangePassword(String ques){
+	private void openChangePassword(String ques){
 
 		try {
 			FXMLLoader loader = new FXMLLoader();
@@ -141,7 +139,7 @@ public class Login_View_controller extends ViewController{
 	}
 
 	@FXML
-	public void openHome() {
+	private void openHome() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("/application/home.fxml"));
