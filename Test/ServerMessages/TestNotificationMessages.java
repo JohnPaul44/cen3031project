@@ -100,7 +100,7 @@ public class TestNotificationMessages {
     @Test
     public void receiveContactAddedMessage() throws InterruptedException {
         NotificationLoggedInMessage loggedInMessage = createLoggedInMessage();
-        NotificationContactAddedMessage contactAddedMessage = new NotificationContactAddedMessage(dummyData.username1);
+        NotificationContactAddedMessage contactAddedMessage = new NotificationContactAddedMessage(dummyData.username1, dummyData.profile);
         ArrayList<ServerMessage> serverMessages = new ArrayList<>();
         serverMessages.add(loggedInMessage);
         serverMessages.add(contactAddedMessage);

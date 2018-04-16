@@ -543,7 +543,7 @@ public class Home_View_controller extends ViewController{
 
     @Override
     public void friendshipStatsNotification(ErrorInformation errorInformation, String username, FriendshipStats friendshipStats) {
-        if (errorInformation.getErrorNumber() != 0){
+        if (errorInformation.getErrorNumber() == 0){
             if(vpScreen.getThisUser().equals(username)) {
                 vpScreen.setValuesFriendshipStats(friendshipStats);
             }

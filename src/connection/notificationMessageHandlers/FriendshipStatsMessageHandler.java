@@ -19,8 +19,9 @@ public class FriendshipStatsMessageHandler extends ModelUpdateMessageHandler imp
         ErrorInformation errorInformation = new ErrorInformation();
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
+        } else {
+            updateUser(serverMessage);
         }
-        updateUser(serverMessage);
         delegate.friendshipStatsNotification(errorInformation, serverMessage.getUsername(), serverMessage.getFriendshipStats());
     }
 }

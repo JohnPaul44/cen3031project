@@ -22,6 +22,7 @@ public class Contact {
 
     public Contact(NotificationContactAddedMessage message) {
         username = message.getUsername();
+        profile = message.getProfile();
         online = false;
         friendshipStats = new FriendshipStats(0,0,0);
     }
