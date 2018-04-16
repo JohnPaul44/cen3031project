@@ -24,8 +24,9 @@ public class MessageReceivedMessageHandler extends ModelUpdateMessageHandler imp
         ErrorInformation errorInformation = new ErrorInformation();
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
+        } else {
+            updateUser(serverMessage);
         }
-        updateUser(serverMessage);
 
         if (serverMessage.getConversation() == null) {
             Message m = serverMessage.getMessage();
