@@ -84,18 +84,18 @@ public class Conversation_View_controller extends ViewController {
                 connection.setTyping(convKey, false);
             }
         };
-        time.schedule(task, 4000);
+        time.schedule(task, 1500);
         return time;
     }
 
     private Timer t;
-    private TextField prevMess;
+    private String prevMess;
+    private String align = "";
     public void userTyping(){
         if(!typing){
             typing = true;
             connection.setTyping(convKey, true);
             t = timer();
-            prevMess = status;
         }
         else{
             t.cancel();
@@ -104,22 +104,28 @@ public class Conversation_View_controller extends ViewController {
     }
 
     public void setTypingStatus(String from){
+        prevMess = status.getText();
+        System.out.println("alignment " + status.getAlignment());
+        if(status.getAlignment() == Pos.CENTER_RIGHT){
+            align = "r";
+        }
         status.setAlignment(Pos.CENTER_LEFT);
         status.setEditable(false);
-        status.setText("..." + from + " is typing...");
+        status.setText(from + " is typing...");
     }
 
     public void notTyping(){
-        System.out.println("inside not typing");
-        status.setAlignment(prevMess.getAlignment());
+        if(align.equals("r")){
+            status.setAlignment(Pos.CENTER_RIGHT);
+            align = "";
+        }
         status.setEditable(false);
-        status.setText(prevMess.getText());
+        status.setText(prevMess);
     }
 
 
     public void setConversationKey(String convokey){
         convKey = convokey;
-        System.out.println("conv key in conv controller: " + convKey);
         if (!convKey.isEmpty()) {
             if(!connection.getCurrentUser().getConversationList().get(convokey).getMemberStatus().get(connection.getCurrentUser().getUserName()).getRead()){
                 connection.readMessage(convKey);
@@ -219,22 +225,23 @@ public class Conversation_View_controller extends ViewController {
         boolean readConvo = connection.getCurrentUser().getConversationList().get(convKey).getMemberStatus().get(thisUser).getRead();
 
         for(Message values : messagesList){
+            String time = convertTimeView(values.getServerTime(), false);
             if(values.getFrom().equals(connection.getCurrentUser().getUserName())){
                 sentMessage(values.getText());
                 status.setAlignment(Pos.CENTER_RIGHT);
                 status.setEditable(false);
                 if(readConvo){
-                    status.setText("Message Delivered " + values.getServerTime() + " - Read");
+                    status.setText("Message Delivered " + time + " - Read");
                 }
                 else{
-                    status.setText("Message Delivered " + values.getServerTime());
+                    status.setText("Message Delivered " + time);
                 }
             }
             else{
                 receivedMessage(values.getText());
                 status.setAlignment(Pos.CENTER_LEFT);
                 status.setEditable(false);
-                status.setText("Message Received " + values.getServerTime());
+                status.setText("Message Received " + time);
             }
         }
     }
@@ -242,6 +249,7 @@ public class Conversation_View_controller extends ViewController {
     public void newMessage(String conversationKey, String messageKey,
                            String time, String from, String text, Map<String, Status> mem){
 
+        time = convertTimeView(time, true);
         if(mem.keySet().contains(thisUser)){
             if(convKey.isEmpty()){
                 setConversationKey(conversationKey);
@@ -259,5 +267,27 @@ public class Conversation_View_controller extends ViewController {
                 status.setText("Message Delivered " + time);
             }
         }
+    }
+
+    private String convertTimeView(String serverTime, boolean newM){
+
+        String newTime = serverTime.substring(5,7) + "/" + serverTime.substring(8,10) + "/" + serverTime.substring(2,4);
+
+        int hour = Integer.parseInt(serverTime.substring(11,13));
+        String ampm = "";
+        if(!newM){
+            hour = hour - 4;
+        }
+
+        if(hour > 12){
+            hour = hour - 12;
+            ampm = "pm";
+        }
+        else{
+            ampm = "am";
+        }
+
+       newTime = newTime + " " + hour + ":" + serverTime.substring(14,16) + " " + ampm;
+        return newTime;
     }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -52,7 +53,7 @@
                         </VBox>
                      </content>
                 </TitledPane>
-                <TitledPane fx:id="explore" animated="false" collapsible="false" onMouseClicked="#setLoading" onMousePressed="#setLoading" onMouseReleased="#openExplore" text="Explore">
+                <TitledPane fx:id="explore" animated="false" collapsible="false" onMousePressed="#setLoading" onMouseReleased="#openExplore" text="Explore">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
