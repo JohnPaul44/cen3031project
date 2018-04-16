@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Timer;
 
 public class Conversation_View_controller extends ViewController {
     ServerConnection connection;
@@ -97,35 +98,35 @@ public class Conversation_View_controller extends ViewController {
         status.setText(status.getText() + " - Read");
     }
 
-    long startTime;
-    long currTime;
-    public void userTypingFirst(){
-        currTime = System.nanoTime();
-        if(first){
-            startTime = currTime;
-            first = false;
-        }
-        else {
-            if(!typing){
-                userTyping();
-            }
-            else{
 
+    public Timer timer(){
+        Timer time = new Timer();
+        TimerTask task = new TimerTask(){
+            @Override
+            public void run(){
+                typing = false;
+                notTyping();
+                connection.setTyping(convKey, false);
             }
-        }
+        };
+        time.schedule(task, 4000);
+        return time;
     }
 
+    Timer t;
     public void userTyping(){
-        long elapsedTime = System.nanoTime() - startTime;
-
-        if((elapsedTime / 1000000000) > 1){
-            //connection.setTyping(convKey, true);
+        if(!typing){
             typing = true;
+            connection.setTyping(convKey, true);
+            t = timer();
+        }
+        else{
+            t.cancel();
+            t = timer();
         }
     }
 
-    public void typing(String from){
-        System.out.println("setting typing");
+    public void setTypingStatus(String from){
         status.setAlignment(Pos.CENTER_LEFT);
         status.setEditable(false);
         status.setText("..." + from + " is typing...");
