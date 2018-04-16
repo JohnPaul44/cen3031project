@@ -74,31 +74,40 @@ public class ServerConnection implements IServerConnection {
     @Override
     public void listenToServer() {
         Thread thread = new Thread(() -> {
-            String messageFromServer;
+            while (true) {
+                String messageFromServer;
 
-            JsonParser parser = new JsonParser();
-            JsonObject jsonObject;
+                JsonParser parser = new JsonParser();
+                JsonObject jsonObject;
 
-            MessageFactory messageFactory = new MessageFactory();
+                MessageFactory messageFactory = new MessageFactory();
 
-            HandlerFactory handlerFactory = new HandlerFactory();
-            UserUpdater userUpdater = new UserUpdater(currentUser);
+                HandlerFactory handlerFactory = new HandlerFactory();
+                UserUpdater userUpdater = new UserUpdater(currentUser);
 
-            try {
-                while ((messageFromServer = in.readLine()) != null) {
-                    jsonObject = parser.parse(messageFromServer).getAsJsonObject();
-                    System.out.println("Received: " + messageFromServer);
-                    ServerMessage serverMessage = messageFactory.produce(jsonObject);
+                try {
+                    while ((messageFromServer = in.readLine()) != null) {
+                        jsonObject = parser.parse(messageFromServer).getAsJsonObject();
+                        System.out.println("Received: " + messageFromServer);
+                        ServerMessage serverMessage = messageFactory.produce(jsonObject);
 
-                    MessageHandler handler = handlerFactory.produce(serverMessage, userUpdater);
-                    handler.handle(delegate);
+                        MessageHandler handler = handlerFactory.produce(serverMessage, userUpdater);
+                        handler.handle(delegate);
+                    }
+                } catch (IOException e) {
+                    System.out.println("Error while receiving a message from server: " + e);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                System.out.println("Error while receiving a message from server: " + e);
-            } catch (Exception e) {
-                e.printStackTrace();
+
+                try {
+                    Thread.sleep(200);
+                } catch (Exception e) {
+                    // do nothing, it's fine...
+                }
+
+                System.out.println("Reconnecting to server");
             }
-            System.out.println("Done listening");
         });
 
         thread.start();
