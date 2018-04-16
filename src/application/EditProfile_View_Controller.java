@@ -272,4 +272,20 @@ public class EditProfile_View_Controller extends ViewController {
             e.printStackTrace();
         }
     }
+
+    public void deleteUser(){
+        FXMLLoader loadEdit = new FXMLLoader();
+        loadEdit.setLocation(getClass().getResource("/application/confirmDelete.fxml"));
+        AnchorPane temp = new AnchorPane();
+        try {
+            temp = loadEdit.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        anchor.getChildren().add(temp);
+
+        confirmDelete_View_Controller conf = loadEdit.getController();
+        conf.passConnection(connection);
+        conf.setAnchorPane(anchor);
+    }
 }

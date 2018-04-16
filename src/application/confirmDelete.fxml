@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #E7DECD; -fx-border-color: #804E49; -fx-border-width: 6;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.confirmDelete_View_Controller">
+   <children>
+      <QuadCurve controlX="-50.0" controlY="-100.0" endX="200.0" endY="100.0" fill="#182f6b" layoutX="198.0" layoutY="304.0" rotate="40.0" startX="-50.0" stroke="BLACK" strokeType="INSIDE" />
+      <QuadCurve controlX="-50.0" controlY="-100.0" endX="200.0" endY="100.0" layoutX="139.0" layoutY="357.0" rotate="10.0" startX="-50.0" stroke="BLACK" strokeType="INSIDE">
+         <fill>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop color="#182f6b" />
+                  <Stop color="#182f6b" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </fill>
+      </QuadCurve>
+      <QuadCurve controlX="-50.0" controlY="-100.0" endX="400.0" endY="100.0" fill="#182f69" layoutX="19.0" layoutY="274.0" rotate="35.0" startX="-50.0" stroke="BLACK" strokeType="INSIDE" />
+      <Label layoutX="286.0" layoutY="47.0" text="Hold on!">
+         <font>
+            <Font size="24.0" />
+         </font>
+      </Label>
+      <Label layoutX="223.0" layoutY="109.0" text="This action is permanent.">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="133.0" layoutY="143.0" text="Are you sure you want to delete your account?">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <Button layoutX="418.0" layoutY="236.0" mnemonicParsing="false" onAction="#deleteAccount" scaleX="1.5" scaleY="1.5" scaleZ="1.5" style="-fx-background-color: #ff0000;" text="Delete Account" textFill="WHITE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+      <Button layoutX="414.0" layoutY="316.0" mnemonicParsing="false" onAction="#returnToProfile" scaleX="1.5" scaleY="1.5" scaleZ="1.5" style="-fx-background-color: #698F3F;" text="Return to Profile" textFill="WHITE">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor></Button>
+   </children>
+</AnchorPane>
