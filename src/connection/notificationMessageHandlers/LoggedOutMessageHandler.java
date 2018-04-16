@@ -18,8 +18,9 @@ public class LoggedOutMessageHandler extends ModelUpdateMessageHandler implement
         ErrorInformation errorInformation = new ErrorInformation();
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
+        } else {
+            updateUser(serverMessage);
         }
-        updateUser(serverMessage);
         delegate.loggedOutNotification(errorInformation);
     }
 }
