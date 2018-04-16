@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -18,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -37,6 +39,7 @@ public class Conversation_View_controller extends ViewController {
 
     public void passConnection(ServerConnection con){
         connection = con;
+        box.setSpacing(3);
         setTopic();
     }
 
@@ -106,7 +109,7 @@ public class Conversation_View_controller extends ViewController {
             public void run(){
                 typing = false;
                 notTyping();
-                connection.setTyping(convKey, false);
+                //connection.setTyping(convKey, false);
             }
         };
         time.schedule(task, 4000);
@@ -114,11 +117,13 @@ public class Conversation_View_controller extends ViewController {
     }
 
     Timer t;
+    String preMess;
     public void userTyping(){
         if(!typing){
             typing = true;
-            connection.setTyping(convKey, true);
+            //connection.setTyping(convKey, true);
             t = timer();
+            preMess = status.getText();
         }
         else{
             t.cancel();
@@ -135,7 +140,7 @@ public class Conversation_View_controller extends ViewController {
     public void notTyping(){
         status.setAlignment(Pos.CENTER_LEFT);
         status.setEditable(false);
-        status.setText("");
+        status.setText(preMess);
     }
 
 
@@ -187,13 +192,13 @@ public class Conversation_View_controller extends ViewController {
         new_message.setWrapText(true);
         new_message.setEditable(false);
         new_message.setMinWidth(644);
-        new_message.setStyle("-fx-padding: 5 10 0 375");
+        new_message.setStyle("-fx-padding: 5 10 1 375; -fx-background-color: transparent; -fx-control-inner-background:#698F3F; fx-highlight-fill: #ffffff; -fx-highlight-text-fill: #ffffff; -fx-text-fill: #ffffff; ");
 
         JEditorPane dummyEP = new JEditorPane();
         dummyEP.setSize(100, Short.MAX_VALUE);
         dummyEP.setText(text);
         new_message.setPrefHeight(dummyEP.getPreferredSize().height);
-        new_message.setMinHeight(30);
+        new_message.setMinHeight(35);
 
         pane.setPrefHeight(dummyEP.getPreferredSize().height);
 
@@ -210,13 +215,13 @@ public class Conversation_View_controller extends ViewController {
         received_message.setWrapText(true);
         received_message.setEditable(false);
         received_message.setMinWidth(644);
-        received_message.setStyle("-fx-padding: 5 375 0 10");
+        received_message.setStyle("-fx-padding: 2 375 2 10; -fx-background-color: transparent; ");
 
         JEditorPane dummyEP = new JEditorPane();
         dummyEP.setSize(100, Short.MAX_VALUE);
         dummyEP.setText(text);
         received_message.setPrefHeight(dummyEP.getPreferredSize().height);
-        received_message.setMinHeight(30);
+        received_message.setMinHeight(35);
 
         receivedPane.setPrefHeight(dummyEP.getPreferredSize().height);
 

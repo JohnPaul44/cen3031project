@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.*?>
@@ -36,13 +37,13 @@
          </cursor>
       </TextField>
       <Label layoutX="298.0" layoutY="242.0" prefHeight="18.0" prefWidth="366.0" text="Interests: (television shows, favorite foods, music, etc.)" textFill="#fbfaf9" />
-      <TextArea fx:id="interest" layoutX="298.0" layoutY="274.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Interests">
+      <TextArea fx:id="interest" layoutX="298.0" layoutY="274.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Interests" wrapText="true">
          <cursor>
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextArea>
       <Label layoutX="298.0" layoutY="348.0" prefHeight="18.0" prefWidth="366.0" text="Hobbies: (video games, instruments, sports, etc.)" textFill="#fbfaf9" />
-      <TextArea fx:id="hobbies" layoutX="298.0" layoutY="375.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Hobbies">
+      <TextArea fx:id="hobbies" layoutX="298.0" layoutY="375.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Hobbies" wrapText="true">
          <cursor>
             <Cursor fx:constant="TEXT" />
          </cursor>
