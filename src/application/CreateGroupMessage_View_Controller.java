@@ -79,6 +79,5 @@ public class CreateGroupMessage_View_Controller extends ViewController {
 
     public void createConversation(){
         //TODO: pass the list of users over to create a group message
-        create.getScene().getWindow().hide();
     }
 }

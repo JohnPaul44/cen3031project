@@ -624,7 +624,7 @@ public class Home_View_controller extends ViewController{
 
                     Home_View_controller home = loader.getController();
                     home.passConnection(connection);
-                    home.ViewOtherProfileHelper(username);
+                    home.loadCurrentProfile();
                     connection.setDelegate(home);
 
                     Parent root = loader.getRoot();

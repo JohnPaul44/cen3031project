@@ -2,7 +2,9 @@ package application;
 
 import connection.ServerConnection;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import model.FriendshipStats;
@@ -99,6 +101,8 @@ public class ViewProfile_View_Controller extends ViewController {
     private Label sentLabel;
     @FXML
     private Label receivedLabel;
+    @FXML
+    private AnchorPane anchor;
 
     @FXML
     public void setUsername(String user, boolean home){
