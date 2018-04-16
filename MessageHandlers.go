@@ -270,8 +270,12 @@ func handleGetFriendshipStatistics(user *ds.User, conn net.Conn, message *msg.Se
 
 	stats, err := ds.GetFriendshipStatistics(user.Username, *message.Username)
 	if err != nil {
-		log.Println(errStr, err)
-		rsp.SetError(e.ErrInternalServer)
+		if err == datastore.ErrNoSuchEntity {
+			rsp.SetError(e.New(fmt.Sprintf("you are not a contact of %s", *message.Username), e.Unauthorized))
+		} else {
+			log.Println(errStr, err)
+			rsp.SetError(e.ErrInternalServer)
+		}
 		return sendServerMessage(conn, rsp)
 	}
 
