@@ -157,7 +157,7 @@ const (
 	NotificationPasswordChanged             = iota
 	NotificationLoggedOut                   = iota // session has ended, returns nothing
 	NotificationQueryResults                = iota // returns QueryResults
-	NotificationContactAdded                = iota // returns Username
+	NotificationContactAdded                = iota // returns Username, Profile
 	NotificationContactRemoved              = iota // returns Username
 	NotificationProfileUpdated              = iota // returns Profile
 	NotificationMessageReceived             = iota // returns Message.[ConversationKey, MessageKey, ServerTime, From, Text] (Message is embedded in Conversations if it is the first message in a conversation)

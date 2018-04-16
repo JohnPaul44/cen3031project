@@ -764,6 +764,7 @@ func handleSetTyping(user *ds.User, conn net.Conn, message *msg.ServerMessage) e
 		return sendServerMessage(conn, rsp)
 	}
 
+	rsp.Message = new(msg.Message)
 	rsp.Message.ConversationKey = message.Message.ConversationKey
 	rsp.Message.From = &user.Username
 	rsp.Message.Typing = message.Message.Typing
