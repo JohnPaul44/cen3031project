@@ -7,6 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import model.Profile;
 import sun.plugin.javascript.navig.Anchor;
 import sun.plugin.javascript.navig.Array;
@@ -27,6 +28,7 @@ public class Explore_View_Controller extends ViewController{
     private Label item;
     @FXML
     private AnchorPane anchor;
+    private AnchorPane noRes;
 
     ArrayList<String> interestsList;
     int interestsCount;
@@ -77,12 +79,30 @@ public class Explore_View_Controller extends ViewController{
             return;
         }
 
+        noRes.setVisible(false);
         setInterestLabel();
         vbox.getChildren().add(grid);
     }
 
+    public void setNoResults(){
+        noRes = new AnchorPane();
+        noRes.setId("noRes");
+        noRes.setStyle("-fx-background-color: #0A122A");
+
+        Label interestLabel = new Label("There are no users with similar interests or hobbies");
+
+        interestLabel.setTextFill(Color.WHITE);
+        interestLabel.setLayoutX(5);
+
+        noRes.getChildren().add(interestLabel);
+
+        vbox.getChildren().add(noRes);
+    }
+
     public void setInterestLabel(){
         AnchorPane interest = new AnchorPane();
+        interest.setPrefHeight(20);
+        interest.setMinHeight(20);
         interest.setStyle("-fx-background-color: #0A122A");
 
         Label interestLabel = new Label();
@@ -94,6 +114,7 @@ public class Explore_View_Controller extends ViewController{
         }
 
         interestLabel.setTextFill(Color.WHITE);
+        interestLabel.setFont(Font.font(16));
         interestLabel.setLayoutX(5);
 
         interest.getChildren().add(interestLabel);

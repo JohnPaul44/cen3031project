@@ -312,6 +312,7 @@ public class Home_View_controller extends ViewController{
 
         expl = loader.getController();
         expl.passConnection(connection);
+        expl.setNoResults();
 
         explore.setText("Explore");
     }
@@ -679,13 +680,13 @@ public class Home_View_controller extends ViewController{
                         open = false;
                     }
 
-                    if(openedName.equals(from)){
+                    if(openedName.getText().equals(from)){
                         open = true;
                     }
 
                     if(open){
                         if(typing){
-                            currentConvo.typing(from);
+                            currentConvo.setTypingStatus(from);
                         }
                         else{
                             currentConvo.notTyping();

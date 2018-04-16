@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,6 +24,8 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import model.Contact;
 import model.Profile;
@@ -87,10 +90,21 @@ public class Search_View_Controller extends ViewController{
             ColumnConstraints col4 = new ColumnConstraints(100);
             ColumnConstraints col5 = new ColumnConstraints(100);
             gridp.getColumnConstraints().addAll(col0, col1, col2, col3, col4, col5);
-            gridp.setVgap(3);
-            gridp.setHgap(3);
 
-            gridp.addRow(0, new Label("Username"), new Label("Name"), new Label("Email"), new Label("Age"), new Label(""), new Label(""));
+            Label u = new Label("Username");
+            u.setFont(Font.font("System", FontWeight.BOLD,14));
+            u.setAlignment(Pos.CENTER);
+            Label n = new Label("Name");
+            n.setFont(Font.font("System", FontWeight.BOLD,14));
+            n.setAlignment(Pos.CENTER);
+            Label e = new Label("Email");
+            e.setFont(Font.font("System", FontWeight.BOLD, 14));
+            e.setAlignment(Pos.CENTER);
+            Label a = new Label("Age");
+            a.setFont(Font.font("System", FontWeight.BOLD,14));
+            a.setAlignment(Pos.CENTER);
+
+            gridp.addRow(0, u, n, e, a, new Label(""), new Label(""));
             grid = gridp;
         }
 
@@ -134,6 +148,7 @@ public class Search_View_Controller extends ViewController{
             view.setTextFill(Color.WHITE);
 
             Label age = new Label();
+            age.setAlignment(Pos.CENTER);
             if(calcAge(prof.getBirthday()) == -1){
                 age.setText("N/A");
             }
@@ -141,7 +156,12 @@ public class Search_View_Controller extends ViewController{
                 age.setText("" + calcAge(prof.getBirthday()));
             }
 
-            grid.addRow(count++, new Label(username), new Label(prof.getFirstName() + " " + prof.getLastName()), new Label(prof.getEmail()), age, add, view);
+            Label us = new Label(username);
+            us.setAlignment(Pos.CENTER);
+            Label na = new Label(prof.getFirstName() + " " + prof.getLastName());
+            na.setAlignment(Pos.CENTER);
+            Label em = new Label(prof.getEmail());
+            grid.addRow(count++, us, na, em, age, add, view);
 
             add.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
