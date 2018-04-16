@@ -108,8 +108,7 @@ public class Conversation_View_controller extends ViewController {
             @Override
             public void run(){
                 typing = false;
-                notTyping();
-                //connection.setTyping(convKey, false);
+                connection.setTyping(convKey, false);
             }
         };
         time.schedule(task, 4000);
@@ -117,13 +116,13 @@ public class Conversation_View_controller extends ViewController {
     }
 
     Timer t;
-    String preMess;
+    TextField prevMess;
     public void userTyping(){
         if(!typing){
             typing = true;
-            //connection.setTyping(convKey, true);
+            connection.setTyping(convKey, true);
             t = timer();
-            preMess = status.getText();
+            prevMess = status;
         }
         else{
             t.cancel();
@@ -138,9 +137,10 @@ public class Conversation_View_controller extends ViewController {
     }
 
     public void notTyping(){
-        status.setAlignment(Pos.CENTER_LEFT);
+        System.out.println("inside not typing");
+        status.setAlignment(prevMess.getAlignment());
         status.setEditable(false);
-        status.setText(preMess);
+        status.setText(prevMess.getText());
     }
 
 
@@ -161,6 +161,8 @@ public class Conversation_View_controller extends ViewController {
     @FXML
     public void SendEventKey(KeyEvent keyEvent) throws Exception{
         if(keyEvent.getCode() == KeyCode.ENTER) {
+            //sets typing to false
+            connection.setTyping(convKey, false);
             //calls the same action that occurs when the button is pressed
             ActionEvent aevent = new ActionEvent(keyEvent.getSource(), sendButton);
             //pass the keyEvent into the button action event
@@ -283,23 +285,6 @@ public class Conversation_View_controller extends ViewController {
                 status.setEditable(false);
                 status.setText("Message Delivered " + time);
             }
-        }
-    }
-
-    @Override
-    public void messageUpdatedNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                           String text) {
-
-    }
-    @Override
-    public void messageReactionNotification(ErrorInformation errorInformation, String conversationKey, String messageKey,
-                                            Map<String, Reactions> reactions) {
-
-    }
-    @Override
-    public void messageReadNotification(ErrorInformation errorInformation, String conversationKey, String from) {
-        if(errorInformation.getErrorNumber() == 0){
-
         }
     }
 }

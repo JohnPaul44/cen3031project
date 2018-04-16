@@ -669,6 +669,7 @@ public class Home_View_controller extends ViewController{
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
+                    System.out.println("typing from " + from);
                     boolean open = false;
                     int children = view.getChildren().size();
                     AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
