@@ -523,6 +523,7 @@ public class Home_View_controller extends ViewController{
                         open = true;
                     }
 
+                    System.out.println("opened name " + openedName.getText() + " " + open);
                     if(open){
                         currentConvo.setStatusRead();
                     }
