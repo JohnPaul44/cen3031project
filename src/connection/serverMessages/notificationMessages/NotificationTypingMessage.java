@@ -1,26 +1,17 @@
 package connection.serverMessages.notificationMessages;
 
 import connection.serverMessages.ServerMessage;
+import model.Message;
 
 public class NotificationTypingMessage extends ServerMessage {
-    private String conversationKey;
-    private String from;
-    private boolean typing;
+    private Message message;
 
-    public NotificationTypingMessage(String conversationKey, String from, boolean typing) {
+    public NotificationTypingMessage(Message message) {
         this.status = Status.NOTIFICATIONTYPING.ordinal();
-        this.conversationKey = conversationKey;
-        this.from = from;
-        this.typing = typing;
+        this.message = message;
     }
 
-    public String getConversationKey() {
-        return conversationKey;
-    }
-    public String getFrom() {
-        return from;
-    }
-    public boolean getTyping() {
-        return typing;
+    public Message getMessage() {
+        return message;
     }
 }

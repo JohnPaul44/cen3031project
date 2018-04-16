@@ -35,6 +35,6 @@ public class Status {
     }
 
     public void updateTyping(NotificationTypingMessage message) {
-        typing = message.getTyping();
+        typing = message.getMessage().getTyping();
     }
 }
