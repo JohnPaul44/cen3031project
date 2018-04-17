@@ -140,8 +140,6 @@ public class Conversation_View_controller extends ViewController {
     @FXML
     public void SendEventKey(KeyEvent keyEvent){
         if(keyEvent.getCode() == KeyCode.ENTER) {
-            //sets typing to false
-            connection.setTyping(convKey, false);
             //calls the same action that occurs when the button is pressed
             ActionEvent aevent = new ActionEvent(keyEvent.getSource(), sendButton);
             //pass the keyEvent into the button action event
