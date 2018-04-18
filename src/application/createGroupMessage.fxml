@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #E7DECD;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.CreateGroupMessage_View_Controller">
+<AnchorPane fx:id="anchor" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #E7DECD;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.CreateGroupMessage_View_Controller">
    <children>
+      <Label fx:id="mem" text="Label" visible="false" />
       <TextField fx:id="addList" editable="false" focusTraversable="false" layoutY="37.0" prefHeight="27.0" prefWidth="659.0" />
       <Label layoutY="6.0" text="Add Contacts to the Group Message" translateX="5.0" translateY="5.0" />
       <ScrollPane layoutY="70.0" prefHeight="430.0" prefViewportHeight="17.0" prefViewportWidth="463.0" prefWidth="659.0" style="-fx-background-color: #E7DECD;">

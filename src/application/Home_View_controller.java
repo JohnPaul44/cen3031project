@@ -46,17 +46,16 @@ public class Home_View_controller extends ViewController{
             }
         }
 
-        //TODO: import current conversations
-//        HashMap<String, Conversation> conversationList = connection.getCurrentUser().getConversationList();
-//        if(!conversationList.isEmpty()){
-//            for(Map.Entry<String, Conversation> entry : conversationList.entrySet()){
-//                String key = entry.getKey();
-//                Conversation value = entry.getValue();
-//                if(value.getMemberStatus().size() > 2){
-//                    createNewConversationCard(value);
-//                }
-//            }
-//        }
+        HashMap<String, Conversation> conversationList = connection.getCurrentUser().getConversationList();
+        if(!conversationList.isEmpty()){
+            for(Map.Entry<String, Conversation> entry : conversationList.entrySet()){
+                String key = entry.getKey();
+                Conversation value = entry.getValue();
+                if(value.getMemberStatus().size() > 2){
+                    createNewConversationCard(value);
+                }
+            }
+        }
         setMessageNotificationStart();
     }
 
@@ -127,6 +126,9 @@ public class Home_View_controller extends ViewController{
         Map<String, Status> mem = convo.getMemberStatus();
         boolean first = true;
         for(String key : mem.keySet()){
+            if(key.equals(connection.getCurrentUser().getUserName())){
+                continue;
+            }
             if(first){
                 newContact.setText(key);
                 first = false;
@@ -136,7 +138,6 @@ public class Home_View_controller extends ViewController{
             }
         }
         newContact.setStyle("-fx-background-color: #E7DECD");
-
 
         VBox content = new VBox();
         Label dm = new Label("Group Message");
@@ -152,14 +153,24 @@ public class Home_View_controller extends ViewController{
             }
         });
 
+        HBox notification = new HBox();
+        notification.setAlignment(Pos.CENTER);
+        notification.setSpacing(3);
+
+        Circle notificationOnline = new Circle(3);
+        notificationOnline.setFill(Color.GREEN);
+        notificationOnline.setVisible(false);
+
         Label notificationNew = new Label("!");
         notificationNew.setTextFill(Color.RED);
         notificationNew.setVisible(false);
 
+        notification.getChildren().addAll(notificationOnline, notificationNew);
+
         content.setStyle("-fx-background-color: #E7DECD");
         content.getChildren().add(dm);
         newContact.setContent(content);
-        newContact.setGraphic(notificationNew);
+        newContact.setGraphic(notification);
 
         contacts.add(newContact);
         conversations.getPanes().add(newContact);
@@ -209,6 +220,10 @@ public class Home_View_controller extends ViewController{
 
     public void setHome(Home_View_controller h){
         home = h;
+    }
+
+    public void setCurrentConvo(Conversation_View_controller convo){
+        currentConvo = convo;
     }
 
     private void setUsername(String user){
@@ -408,6 +423,7 @@ public class Home_View_controller extends ViewController{
 
         CreateGroupMessage_View_Controller group = loader.getController();
         group.passConnection(connection);
+        group.setHome(home);
     }
 
     @FXML
@@ -442,14 +458,21 @@ public class Home_View_controller extends ViewController{
 
         view.getScene().getWindow().requestFocus();
 
+        System.out.println("openedName " + openedName.getText());
+
         Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
+        int size = mem.size();
         if(from.equals(connection.getCurrentUser().getUserName())){
-            currentConvo.setUsername(openedName.getText());
+            System.out.println("inside here");
+            currentConvo.setFrom(openedName.getText());
             currentConvo.newMessage(conversationKey, messageKey, time, from, text, mem);
         }
         //if the message is from the user that is currently open
-        else if(openedName.getText().equals(from)){
-            currentConvo.setUsername(from);
+        else if(openedName.getText().contains(from)){
+            if(size > 2){
+                text = from + ": "  + text;
+            }
+            currentConvo.setFrom(from);
             currentConvo.newMessage(conversationKey, messageKey, time, from, text, mem);
             if (!currentConvo.getConvKey().isEmpty()) connection.readMessage(currentConvo.getConvKey());
         }

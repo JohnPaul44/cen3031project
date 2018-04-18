@@ -1,18 +1,24 @@
 package application;
 
 import connection.ServerConnection;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import model.Contact;
+import model.Conversation;
+import sun.plugin.javascript.navig.Anchor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,8 +38,17 @@ public class CreateGroupMessage_View_Controller extends ViewController {
     TextField addList;
     @FXML
     Button create;
+    @FXML
+    AnchorPane anchor;
+    @FXML
+    Label mem;
 
+    private Home_View_controller home;
     private ArrayList<String> groupMembers = new ArrayList<>();
+
+    public void setHome(Home_View_controller h){
+        home = h;
+    }
 
     private void setContactList(){
         HashMap<String, Contact> contacts = connection.getCurrentUser().getContactList();
@@ -65,19 +80,38 @@ public class CreateGroupMessage_View_Controller extends ViewController {
 
     private void addContact(String user, Button add){
         String current = addList.getText();
-        System.out.println("saved in field " + current);
         if(current.equals("")){
             addList.setText(user);
+            mem.setText(user);
             groupMembers.add(user);
             add.setVisible(false);
             return;
         }
         addList.setText(current + ", " + user);
+        mem.setText(current + ", " + user);
         groupMembers.add(user);
         add.setVisible(false);
     }
 
     public void createConversation(){
-        //TODO: pass the list of users over to create a group message
+
+        FXMLLoader loadEdit = new FXMLLoader();
+        loadEdit.setLocation(getClass().getResource("/application/directMessage.fxml"));
+        AnchorPane temp = new AnchorPane();
+        try {
+            temp = loadEdit.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        anchor.getChildren().add(temp);
+
+        Conversation_View_controller convo = loadEdit.getController();
+        convo.setGroupMembers(groupMembers);
+        convo.passConnection(connection);
+        convo.setUsername(groupMembers.toString());
+        convo.setTopic();
+        convo.setHome(home);
+
+        home.setCurrentConvo(convo);
     }
 }
