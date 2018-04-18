@@ -41,7 +41,19 @@ public class Conversation_View_controller extends ViewController {
 
     private String thisUser;
     private boolean typing;
+    private Home_View_controller home;
+    private String fromUser;
+    private ArrayList<String> groupMembers = new ArrayList<>();
 
+    public void setHome(Home_View_controller h){
+        home = h;
+    }
+    public void setFrom(String f){
+        fromUser = f;
+    }
+    public void setGroupMembers(ArrayList<String> mems){
+        groupMembers = mems;
+    }
 
     private String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
             "What was your favorite book as a child?", "Who are the three greatest athletes of all time?", "Where would you like to travel next?", "What was the best invention of the last 50 years?",
@@ -80,11 +92,14 @@ public class Conversation_View_controller extends ViewController {
         TimerTask task = new TimerTask(){
             @Override
             public void run(){
+                if(!typing){
+                    return;
+                }
                 typing = false;
                 connection.setTyping(convKey, false);
             }
         };
-        time.schedule(task, 1500);
+        time.schedule(task, 3000);
         return time;
     }
 
@@ -92,6 +107,9 @@ public class Conversation_View_controller extends ViewController {
     private String prevMess;
     private String align = "";
     public void userTyping(){
+        if(convKey.isEmpty()){
+            return;
+        }
         if(!typing){
             typing = true;
             connection.setTyping(convKey, true);
@@ -105,7 +123,6 @@ public class Conversation_View_controller extends ViewController {
 
     public void setTypingStatus(String from){
         prevMess = status.getText();
-        System.out.println("alignment " + status.getAlignment());
         if(status.getAlignment() == Pos.CENTER_RIGHT){
             align = "r";
         }
@@ -115,6 +132,7 @@ public class Conversation_View_controller extends ViewController {
     }
 
     public void notTyping(){
+        System.out.println("not typing");
         if(align.equals("r")){
             status.setAlignment(Pos.CENTER_RIGHT);
             align = "";
@@ -150,13 +168,23 @@ public class Conversation_View_controller extends ViewController {
 
     public void sendMessageClicked (ActionEvent event) {
         if (!yourMessageField.getText().isEmpty()) {
+            t.cancel();
+            typing = false;
+            connection.setTyping(convKey, false);
+
             String message = yourMessageField.getText();
             //Setting the text to blank here to improve responsiveness -Lincoln
             yourMessageField.setText("");
             //sentMessage(message);
             if (convKey.isEmpty()) {
                 ArrayList<String> mess = new ArrayList<>();
-                mess.add(username.getText());
+                if(groupMembers.size() > 2){
+                    mess = groupMembers;
+                }
+                else{
+                    mess.add(username.getText());
+                }
+                System.out.println("First message with " + mess.toString());
                 connection.sendFirstMessage(mess, message);
             } else {
                 connection.sendMessage(convKey, message);
@@ -221,6 +249,7 @@ public class Conversation_View_controller extends ViewController {
         Collections.sort(messagesList);
 
         boolean readConvo = connection.getCurrentUser().getConversationList().get(convKey).getMemberStatus().get(thisUser).getRead();
+        int size = connection.getCurrentUser().getConversationList().get(convKey).getMemberStatus().size();
 
         for(Message values : messagesList){
             String time = convertTimeView(values.getServerTime(), false);
@@ -236,7 +265,11 @@ public class Conversation_View_controller extends ViewController {
                 }
             }
             else{
-                receivedMessage(values.getText());
+                String message = values.getText();
+                if(size > 2){
+                    message = values.getFrom() + ": " + values.getText();
+                }
+                receivedMessage(message);
                 status.setAlignment(Pos.CENTER_LEFT);
                 status.setEditable(false);
                 status.setText("Message Received " + time);
@@ -247,12 +280,16 @@ public class Conversation_View_controller extends ViewController {
     public void newMessage(String conversationKey, String messageKey,
                            String time, String from, String text, Map<String, Status> mem){
 
+        System.out.println("inside new message");
         time = convertTimeView(time, true);
-        if(mem.keySet().contains(thisUser)){
+        if(mem.keySet().contains(from)){
             if(convKey.isEmpty()){
                 setConversationKey(conversationKey);
+                if(mem.size() > 2){
+                    home.createNewConversationCard(connection.getCurrentUser().getConversationList().get(conversationKey));
+                }
             }
-            if(from.equals(username.getText())){
+            if(from.equals(fromUser)){
                 receivedMessage(text);
                 status.setAlignment(Pos.CENTER_LEFT);
                 status.setEditable(false);
@@ -275,6 +312,12 @@ public class Conversation_View_controller extends ViewController {
         String ampm = "";
         if(!newM){
             hour = hour - 4;
+            if(hour == 0){
+                hour = 12;
+            }
+            else if(hour < 0){
+                hour = 24 + hour;
+            }
         }
 
         if(hour > 12){
