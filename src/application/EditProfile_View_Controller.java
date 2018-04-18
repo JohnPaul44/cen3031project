@@ -1,15 +1,11 @@
 package application;
 
-import connection.ErrorInformation;
 import connection.ServerConnection;
-import connection.serverMessages.ServerMessage;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -17,7 +13,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import javafx.stage.Stage;
 import model.Profile;
 
 import java.time.LocalDate;
@@ -79,7 +74,7 @@ public class EditProfile_View_Controller extends ViewController {
     @FXML
     private AnchorPane anchor;
 
-    public void setIconLetter(){
+    private void setIconLetter(){
         icon_letter.setText("" + connection.getCurrentUser().getUserName().charAt((0)));
 
 
@@ -89,7 +84,7 @@ public class EditProfile_View_Controller extends ViewController {
         iconDesign.setOpacity(0.4);
     }
 
-    public void setColorPicker(){
+    private void setColorPicker(){
         color.setValue((Color)icon.getFill());
     }
 
@@ -154,7 +149,7 @@ public class EditProfile_View_Controller extends ViewController {
 
     //event handlers for both when the button is pressed or when the enter key is used
     @FXML
-    public void SaveChangesEventKey(KeyEvent keyEvent) throws Exception {
+    public void SaveChangesEventKey(KeyEvent keyEvent) {
         if (keyEvent.getCode() == KeyCode.ENTER) {
             //calls the same action that occurs when the button is pressed
             ActionEvent aevent = new ActionEvent(keyEvent.getSource(), save);
@@ -203,7 +198,7 @@ public class EditProfile_View_Controller extends ViewController {
 
         connection.updateProfile();
         //call the function to open the home screen up
-        BackButton(event);
+        BackButton();
     }
 
     private String firstName(){
@@ -222,7 +217,7 @@ public class EditProfile_View_Controller extends ViewController {
         return phone.getText();
     }
 
-    ObservableList<Profile.Gender> genderFieldList = FXCollections.observableArrayList(Profile.Gender.values());
+    private ObservableList<Profile.Gender> genderFieldList = FXCollections.observableArrayList(Profile.Gender.values());
     private String gender(){
         return genderField.getValue().toString();
     }
@@ -252,7 +247,7 @@ public class EditProfile_View_Controller extends ViewController {
     }
 
     @FXML
-    public void BackButton(ActionEvent event){
+    public void BackButton(){
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/viewCurrentUser.fxml"));
@@ -271,5 +266,21 @@ public class EditProfile_View_Controller extends ViewController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void deleteUser(){
+        FXMLLoader loadEdit = new FXMLLoader();
+        loadEdit.setLocation(getClass().getResource("/application/confirmDelete.fxml"));
+        AnchorPane temp = new AnchorPane();
+        try {
+            temp = loadEdit.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        anchor.getChildren().add(temp);
+
+        confirmDelete_View_Controller conf = loadEdit.getController();
+        conf.passConnection(connection);
+        conf.setAnchorPane(anchor);
     }
 }

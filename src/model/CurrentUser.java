@@ -129,7 +129,7 @@ public class CurrentUser {
     }
 
     public void updateMessageTyping(NotificationTypingMessage message) {
-        Conversation conversation = conversationList.get(message.getConversationKey());
+        Conversation conversation = conversationList.get(message.getMessage().getConversationKey());
         conversation.updateTyping(message);
     }
 }

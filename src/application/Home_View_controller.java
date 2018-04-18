@@ -1,20 +1,13 @@
 package application;
 
-import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader;
 import connection.ErrorInformation;
 import connection.ServerConnection;
-import connection.serverMessages.ServerMessage;
-import javafx.animation.PauseTransition;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -22,17 +15,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.*;
-import sun.plugin.javascript.navig.Anchor;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +35,7 @@ public class Home_View_controller extends ViewController{
         setUsername(connection.getCurrentUser().getUserName());
     }
 
-    public void setConversationsList(){
+    private void setConversationsList(){
         HashMap<String, Contact> contactList = connection.getCurrentUser().getContactList();
 
         if(!contactList.isEmpty()){
@@ -72,9 +60,9 @@ public class Home_View_controller extends ViewController{
         setMessageNotificationStart();
     }
 
-    ArrayList<TitledPane> contacts = new ArrayList<>();
+    private ArrayList<TitledPane> contacts = new ArrayList<>();
 
-    public void createNewContact(String user, Boolean online){
+    private void createNewContact(String user, Boolean online){
         TitledPane newContact = new TitledPane();
         newContact.setText(user);
         newContact.setStyle("-fx-background-color: #E7DECD");
@@ -82,25 +70,27 @@ public class Home_View_controller extends ViewController{
         VBox content = new VBox();
         Label dm = new Label("Direct Message");
         dm.setCursor(Cursor.HAND);
-        dm.setLabelFor(directMessage);
         dm.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 try{
                     OpenDirectMessage(event, newContact);
-                } catch(Exception e){}
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
         Label vp = new Label("View Profile");
         vp.setCursor(Cursor.HAND);
-        vp.setLabelFor(viewProfile);
         vp.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 try{
                     ViewOtherProfile(event, user);
-                } catch(Exception e){}
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -151,13 +141,14 @@ public class Home_View_controller extends ViewController{
         VBox content = new VBox();
         Label dm = new Label("Group Message");
         dm.setCursor(Cursor.HAND);
-        dm.setLabelFor(directMessage);
         dm.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 try{
                     OpenDirectMessage(event, newContact);
-                } catch(Exception e){}
+                } catch(Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -172,11 +163,9 @@ public class Home_View_controller extends ViewController{
 
         contacts.add(newContact);
         conversations.getPanes().add(newContact);
-
-        //TODO: check whether there are unread messages
     }
 
-    public void setMessageNotificationStart(){
+    private void setMessageNotificationStart(){
         //checks whether the user has any unread conversations
 
         HashMap<String, Conversation> convoList = connection.getCurrentUser().getConversationList();
@@ -208,12 +197,6 @@ public class Home_View_controller extends ViewController{
     @FXML
     private TextField search;
     @FXML
-    private Label directMessage;
-    @FXML
-    private Label viewProfile;
-    @FXML
-    private SplitPane split;
-    @FXML
     private AnchorPane view;
     @FXML
     private TitledPane explore;
@@ -234,10 +217,9 @@ public class Home_View_controller extends ViewController{
 
     public void loadCurrentProfile(){
         try {
-            AnchorPane temp = new AnchorPane();
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/viewCurrentUser.fxml"));
-            temp = loader.load();
+            AnchorPane temp = loader.load();
             view.getChildren().add(temp);
 
             ViewCurrentUser_View_controller profile = loader.getController();
@@ -250,10 +232,9 @@ public class Home_View_controller extends ViewController{
 
     public void loadEditProfile(){
         try {
-            AnchorPane temp = new AnchorPane();
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/createProfile.fxml"));
-            temp = loader.load();
+            AnchorPane temp = loader.load();
             setView(temp);
 
             EditProfile_View_Controller edit = loader.getController();
@@ -264,7 +245,7 @@ public class Home_View_controller extends ViewController{
         }
     }
 
-    public void setView(AnchorPane anchor){
+    private void setView(AnchorPane anchor){
         try{
             view.getChildren().add(anchor);
         } catch(Exception e){
@@ -322,7 +303,7 @@ public class Home_View_controller extends ViewController{
     }
 
     @FXML
-    public void Search(javafx.scene.input.KeyEvent keyEvent) throws Exception{
+    public void Search(javafx.scene.input.KeyEvent keyEvent){
         if(keyEvent.getCode() == KeyCode.ENTER) {
             SearchHelper(search.getText());
         }
@@ -333,8 +314,7 @@ public class Home_View_controller extends ViewController{
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/search.fxml"));
-            AnchorPane anchor = new AnchorPane();
-            anchor = loader.load();
+            AnchorPane anchor = loader.load();
 
             setView(anchor);
 
@@ -350,12 +330,11 @@ public class Home_View_controller extends ViewController{
     }
 
     @FXML
-    public void OpenDirectMessage(MouseEvent actionEvent, TitledPane user) throws Exception{
+    private void OpenDirectMessage(MouseEvent actionEvent, TitledPane user){
         try{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/directMessage.fxml"));
-            AnchorPane anchor = new AnchorPane();
-            anchor = loader.load();
+            AnchorPane anchor = loader.load();
             setView(anchor);
 
             currentConvo = loader.getController();
@@ -393,17 +372,16 @@ public class Home_View_controller extends ViewController{
     }
 
     @FXML
-    public void ViewOtherProfile(MouseEvent actionEvent, String user) throws Exception{
+    private void ViewOtherProfile(MouseEvent actionEvent, String user){
         ViewOtherProfileHelper(user);
     }
 
     @FXML
-    public void ViewOtherProfileHelper(String user){
+    private void ViewOtherProfileHelper(String user){
         try{
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/viewProfile.fxml"));
-            AnchorPane anchor = new AnchorPane();
-            anchor = loader.load();
+            AnchorPane anchor = loader.load();
             setView(anchor);
             vpScreen = loader.getController();
             vpScreen.passConnection(connection);
@@ -433,7 +411,7 @@ public class Home_View_controller extends ViewController{
     }
 
     @FXML
-    public void setOnlineStatus(String username, boolean online){
+    private void setOnlineStatus(String username, boolean online){
         for(int i = 0; i < contacts.size(); i++){
             if(username.equals(contacts.get(i).getText())){
                 HBox notif = (HBox) contacts.get(i).getGraphic();
@@ -448,7 +426,7 @@ public class Home_View_controller extends ViewController{
     }
 
     @FXML
-    public void setMessageNotification(String username){
+    private void setMessageNotification(String username){
         for(int i = 0; i < contacts.size(); i++){
             if(username.equals(contacts.get(i).getText())){
                 HBox notif = (HBox) contacts.get(i).getGraphic();
@@ -457,7 +435,7 @@ public class Home_View_controller extends ViewController{
         }
     }
 
-    public void deliverMessage(String conversationKey, String messageKey, String time, String from, String text){
+    private void deliverMessage(String conversationKey, String messageKey, String time, String from, String text){
         int children = view.getChildren().size();
         AnchorPane top = (AnchorPane) view.getChildren().get(children - 1);
         Label openedName = (Label) top.getChildren().get(0);
@@ -545,6 +523,7 @@ public class Home_View_controller extends ViewController{
                         open = true;
                     }
 
+                    System.out.println("opened name " + openedName.getText() + " " + open);
                     if(open){
                         currentConvo.setStatusRead();
                     }
@@ -565,7 +544,7 @@ public class Home_View_controller extends ViewController{
 
     @Override
     public void friendshipStatsNotification(ErrorInformation errorInformation, String username, FriendshipStats friendshipStats) {
-        if (errorInformation.getErrorNumber() != 0){
+        if (errorInformation.getErrorNumber() == 0){
             if(vpScreen.getThisUser().equals(username)) {
                 vpScreen.setValuesFriendshipStats(friendshipStats);
             }
@@ -600,7 +579,7 @@ public class Home_View_controller extends ViewController{
                     }
 
                     if(!explore) {
-                        currentSearch.setSearchResults(results, explore);
+                        currentSearch.setSearchResults(results, false);
                     }
                     else{
                         expl.setSearchResults(results);
@@ -646,7 +625,7 @@ public class Home_View_controller extends ViewController{
 
                     Home_View_controller home = loader.getController();
                     home.passConnection(connection);
-                    home.ViewOtherProfileHelper(username);
+                    home.loadCurrentProfile();
                     connection.setDelegate(home);
 
                     Parent root = loader.getRoot();
@@ -665,7 +644,7 @@ public class Home_View_controller extends ViewController{
 
     @Override
     public void typingNotification(ErrorInformation errorInformation, String conversationKey, String from, boolean typing) {
-        if(errorInformation.getErrorNumber() == 0 && typing){
+        if(errorInformation.getErrorNumber() == 0){
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {

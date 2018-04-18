@@ -33,9 +33,9 @@ public class CreateGroupMessage_View_Controller extends ViewController {
     @FXML
     Button create;
 
-    ArrayList<String> groupMembers = new ArrayList<>();
+    private ArrayList<String> groupMembers = new ArrayList<>();
 
-    public void setContactList(){
+    private void setContactList(){
         HashMap<String, Contact> contacts = connection.getCurrentUser().getContactList();
 
         int count = 1;
@@ -63,7 +63,7 @@ public class CreateGroupMessage_View_Controller extends ViewController {
         }
     }
 
-    public void addContact(String user, Button add){
+    private void addContact(String user, Button add){
         String current = addList.getText();
         System.out.println("saved in field " + current);
         if(current.equals("")){
@@ -79,6 +79,5 @@ public class CreateGroupMessage_View_Controller extends ViewController {
 
     public void createConversation(){
         //TODO: pass the list of users over to create a group message
-        create.getScene().getWindow().hide();
     }
 }

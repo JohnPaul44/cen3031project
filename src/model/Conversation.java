@@ -88,7 +88,7 @@ public class Conversation implements Comparable<Conversation> {
     }
 
     public void updateTyping(NotificationTypingMessage message) {
-        Status status = memberStatus.get(message.getFrom());
+        Status status = memberStatus.get(message.getMessage().getFrom());
         status.updateTyping(message);
     }
 

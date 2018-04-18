@@ -6,10 +6,7 @@
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane fx:id="anchor" focusTraversable="true" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EditProfile_View_Controller">
    <children>
@@ -36,13 +33,13 @@
          </cursor>
       </TextField>
       <Label layoutX="298.0" layoutY="242.0" prefHeight="18.0" prefWidth="366.0" text="Interests: (television shows, favorite foods, music, etc.)" textFill="#fbfaf9" />
-      <TextArea fx:id="interest" layoutX="298.0" layoutY="274.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Interests">
+      <TextArea fx:id="interest" layoutX="298.0" layoutY="274.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Interests" wrapText="true">
          <cursor>
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextArea>
       <Label layoutX="298.0" layoutY="348.0" prefHeight="18.0" prefWidth="366.0" text="Hobbies: (video games, instruments, sports, etc.)" textFill="#fbfaf9" />
-      <TextArea fx:id="hobbies" layoutX="298.0" layoutY="375.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Hobbies">
+      <TextArea fx:id="hobbies" layoutX="298.0" layoutY="375.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Hobbies" wrapText="true">
          <cursor>
             <Cursor fx:constant="TEXT" />
          </cursor>
@@ -107,10 +104,13 @@
       </AnchorPane>
       <ChoiceBox fx:id="genderField" layoutX="298.0" layoutY="158.0" prefHeight="27.0" prefWidth="341.0" />
       <DatePicker fx:id="dob" layoutX="298.0" layoutY="196.0" prefHeight="27.0" prefWidth="341.0" />
-      <Button layoutX="104.0" layoutY="471.0" mnemonicParsing="false" style="-fx-background-color: #ff0000;" text="Delete Account" textFill="WHITE">
+      <Button layoutX="104.0" layoutY="471.0" mnemonicParsing="false" onAction="#deleteUser" style="-fx-background-color: #ff0000;" text="Delete Account" textFill="WHITE">
          <font>
             <Font size="9.0" />
          </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
       </Button>
    </children>
 </AnchorPane>

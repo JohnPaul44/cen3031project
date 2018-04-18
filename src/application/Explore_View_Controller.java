@@ -9,8 +9,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import model.Profile;
-import sun.plugin.javascript.navig.Anchor;
-import sun.plugin.javascript.navig.Array;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,16 +23,14 @@ public class Explore_View_Controller extends ViewController{
     @FXML
     private VBox vbox;
     @FXML
-    private Label item;
-    @FXML
     private AnchorPane anchor;
     private AnchorPane noRes;
 
-    ArrayList<String> interestsList;
-    int interestsCount;
-    int interestsSize;
-    ArrayList<String> hobbiesList;
-    int hobbiesCount;
+    private ArrayList<String> interestsList;
+    private int interestsCount;
+    private int interestsSize;
+    private ArrayList<String> hobbiesList;
+    private int hobbiesCount;
 
     public void setUp(){
         interestsList = connection.getCurrentUser().getProfile().getInterests();
@@ -99,7 +95,7 @@ public class Explore_View_Controller extends ViewController{
         vbox.getChildren().add(noRes);
     }
 
-    public void setInterestLabel(){
+    private void setInterestLabel(){
         AnchorPane interest = new AnchorPane();
         interest.setPrefHeight(20);
         interest.setMinHeight(20);

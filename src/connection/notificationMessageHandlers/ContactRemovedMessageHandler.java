@@ -19,8 +19,9 @@ public class ContactRemovedMessageHandler extends ModelUpdateMessageHandler impl
         ErrorInformation errorInformation = new ErrorInformation();
         if (serverMessage.error()) {
             errorInformation.setErrorInformation(serverMessage);
+        } else {
+            updateUser(serverMessage);
         }
-        updateUser(serverMessage);
         delegate.contactRemovedNotification(errorInformation, serverMessage.getUsername());
     }
 }

@@ -83,6 +83,9 @@ public class Message implements Comparable<Message> {
     public boolean getRead(){
         return read;
     }
+    public boolean getTyping() {
+        return typing;
+    }
 
     public void setText(String text) { this.text = text; }
     public void setClientTime(String clientTime) {
