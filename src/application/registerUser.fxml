@@ -11,16 +11,16 @@
       <VBox prefHeight="522.0" prefWidth="210.0" translateX="20.0" BorderPane.alignment="CENTER">
          <children>
             <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Username*" translateX="120.0" translateY="2.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Password*" translateX="120.0" translateY="20.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm Password*" translateX="75.0" translateY="38.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name*" translateX="113.0" translateY="55.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name*" translateX="113.0" translateY="70.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Email*" translateX="133.0" translateY="90.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone #*" translateX="125.0" translateY="173.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Gender" translateX="125.0" translateY="188.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Date of Birth" translateX="110.0" translateY="202.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question*" translateX="75.0" translateY="58.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question Answer*" translateX="35.0" translateY="72.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Password*" translateX="120.0" translateY="21.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm Password*" translateX="75.0" translateY="40.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name*" translateX="113.0" translateY="58.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name*" translateX="113.0" translateY="76.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Email*" translateX="133.0" translateY="95.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone #*" translateX="125.0" translateY="185.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Gender" translateX="125.0" translateY="204.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Date of Birth" translateX="110.0" translateY="218.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question*" translateX="75.0" translateY="70.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question Answer*" translateX="35.0" translateY="88.0" />
          </children>
       </VBox>
    </left>
