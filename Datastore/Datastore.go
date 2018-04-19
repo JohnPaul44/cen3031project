@@ -1100,7 +1100,7 @@ func AddMessage(message msg.Message) (*Message, error) {
 
 	// add message to datastore and get key
 	dsMessage := new(Message)
-	dsMessage.Time = time.Now()
+	dsMessage.Time = time.Now().UTC()
 	dsMessage.Text = *message.Text
 	dsMessage.From = GetUserKey(*message.From)
 
