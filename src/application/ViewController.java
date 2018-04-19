@@ -13,7 +13,6 @@ import java.util.Map;
 abstract public class ViewController {
     public void notification(ServerMessage message) {}
 
-
     //Utility Functions for using ArrayLists in Views
     public String ArrayListToString(ArrayList<String> list) {
         if(!(list==null)) {
