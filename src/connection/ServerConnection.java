@@ -74,17 +74,17 @@ public class ServerConnection implements IServerConnection {
     @Override
     public void listenToServer() {
         Thread thread = new Thread(() -> {
+            String messageFromServer;
+
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject;
+
+            MessageFactory messageFactory = new MessageFactory();
+
+            HandlerFactory handlerFactory = new HandlerFactory();
+            UserUpdater userUpdater = new UserUpdater(currentUser);
+
             while (true) {
-                String messageFromServer;
-
-                JsonParser parser = new JsonParser();
-                JsonObject jsonObject;
-
-                MessageFactory messageFactory = new MessageFactory();
-
-                HandlerFactory handlerFactory = new HandlerFactory();
-                UserUpdater userUpdater = new UserUpdater(currentUser);
-
                 try {
                     while ((messageFromServer = in.readLine()) != null) {
                         jsonObject = parser.parse(messageFromServer).getAsJsonObject();
