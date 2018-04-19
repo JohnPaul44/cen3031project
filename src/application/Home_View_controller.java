@@ -46,16 +46,16 @@ public class Home_View_controller extends ViewController{
             }
         }
 
-        HashMap<String, Conversation> conversationList = connection.getCurrentUser().getConversationList();
-        if(!conversationList.isEmpty()){
-            for(Map.Entry<String, Conversation> entry : conversationList.entrySet()){
-                String key = entry.getKey();
-                Conversation value = entry.getValue();
-                if(value.getMemberStatus().size() > 2){
-                    createNewConversationCard(value);
-                }
-            }
-        }
+//        HashMap<String, Conversation> conversationList = connection.getCurrentUser().getConversationList();
+//        if(!conversationList.isEmpty()){
+//            for(Map.Entry<String, Conversation> entry : conversationList.entrySet()){
+//                String key = entry.getKey();
+//                Conversation value = entry.getValue();
+//                if(value.getMemberStatus().size() > 2){
+//                    createNewConversationCard(value);
+//                }
+//            }
+//        }
         setMessageNotificationStart();
     }
 
@@ -458,21 +458,18 @@ public class Home_View_controller extends ViewController{
 
         view.getScene().getWindow().requestFocus();
 
-        System.out.println("openedName " + openedName.getText());
-
         Map<String, Status> mem = connection.getCurrentUser().getConversationList().get(conversationKey).getMemberStatus();
-        int size = mem.size();
+        //int size = mem.size();
         if(from.equals(connection.getCurrentUser().getUserName())){
-            System.out.println("inside here");
-            currentConvo.setFrom(openedName.getText());
+            currentConvo.setUsername(openedName.getText());
             currentConvo.newMessage(conversationKey, messageKey, time, from, text, mem);
         }
         //if the message is from the user that is currently open
-        else if(openedName.getText().contains(from)){
-            if(size > 2){
-                text = from + ": "  + text;
-            }
-            currentConvo.setFrom(from);
+        else if(openedName.getText().equals(from)){
+//            if(size > 2){
+//                text = from + ": "  + text;
+//            }
+            currentConvo.setUsername(from);
             currentConvo.newMessage(conversationKey, messageKey, time, from, text, mem);
             if (!currentConvo.getConvKey().isEmpty()) connection.readMessage(currentConvo.getConvKey());
         }

@@ -68,7 +68,7 @@
       </Button>
       <AnchorPane layoutX="18.0" layoutY="60.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
          <children>
-            <TextArea fx:id="bio" layoutX="10.0" layoutY="259.0" onKeyPressed="#SaveChangesEventKey" prefHeight="117.0" prefWidth="226.0" promptText="Bio">
+            <TextArea fx:id="bio" layoutX="10.0" layoutY="259.0" onKeyPressed="#SaveChangesEventKey" prefHeight="117.0" prefWidth="226.0" promptText="Bio" wrapText="true">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>

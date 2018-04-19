@@ -1,6 +1,7 @@
 package application;
 
 import connection.ServerConnection;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -41,19 +42,19 @@ public class Conversation_View_controller extends ViewController {
 
     private String thisUser;
     private boolean typing;
-    private Home_View_controller home;
-    private String fromUser;
-    private ArrayList<String> groupMembers = new ArrayList<>();
-
-    public void setHome(Home_View_controller h){
-        home = h;
-    }
-    public void setFrom(String f){
-        fromUser = f;
-    }
-    public void setGroupMembers(ArrayList<String> mems){
-        groupMembers = mems;
-    }
+//    private Home_View_controller home;
+//    private String fromUser;
+//    private ArrayList<String> groupMembers = new ArrayList<>();
+//
+//    public void setHome(Home_View_controller h){
+//        home = h;
+//    }
+//    public void setFrom(String f){
+//        fromUser = f;
+//    }
+//    public void setGroupMembers(ArrayList<String> mems){
+//        groupMembers = mems;
+//    }
 
     private String[] convoTopics = {"Will technology save the human race or destroy it?", "What was the last movie you watched?", "What is the most overrated movie?",
             "What was your favorite book as a child?", "Who are the three greatest athletes of all time?", "Where would you like to travel next?", "What was the best invention of the last 50 years?",
@@ -132,7 +133,6 @@ public class Conversation_View_controller extends ViewController {
     }
 
     public void notTyping(){
-        System.out.println("not typing");
         if(align.equals("r")){
             status.setAlignment(Pos.CENTER_RIGHT);
             align = "";
@@ -168,9 +168,11 @@ public class Conversation_View_controller extends ViewController {
 
     public void sendMessageClicked (ActionEvent event) {
         if (!yourMessageField.getText().isEmpty()) {
-            t.cancel();
-            typing = false;
-            connection.setTyping(convKey, false);
+            if(!convKey.isEmpty()){
+                t.cancel();
+                typing = false;
+                connection.setTyping(convKey, false);
+            }
 
             String message = yourMessageField.getText();
             //Setting the text to blank here to improve responsiveness -Lincoln
@@ -178,13 +180,7 @@ public class Conversation_View_controller extends ViewController {
             //sentMessage(message);
             if (convKey.isEmpty()) {
                 ArrayList<String> mess = new ArrayList<>();
-                if(groupMembers.size() > 2){
-                    mess = groupMembers;
-                }
-                else{
-                    mess.add(username.getText());
-                }
-                System.out.println("First message with " + mess.toString());
+                mess.add(username.getText());
                 connection.sendFirstMessage(mess, message);
             } else {
                 connection.sendMessage(convKey, message);
@@ -249,7 +245,7 @@ public class Conversation_View_controller extends ViewController {
         Collections.sort(messagesList);
 
         boolean readConvo = connection.getCurrentUser().getConversationList().get(convKey).getMemberStatus().get(thisUser).getRead();
-        int size = connection.getCurrentUser().getConversationList().get(convKey).getMemberStatus().size();
+   //     int size = connection.getCurrentUser().getConversationList().get(convKey).getMemberStatus().size();
 
         for(Message values : messagesList){
             String time = convertTimeView(values.getServerTime(), false);
@@ -265,11 +261,11 @@ public class Conversation_View_controller extends ViewController {
                 }
             }
             else{
-                String message = values.getText();
-                if(size > 2){
-                    message = values.getFrom() + ": " + values.getText();
-                }
-                receivedMessage(message);
+                //String message = values.getText();
+                //if(size > 2){
+                //    message = values.getFrom() + ": " + values.getText();
+                //}
+                receivedMessage(values.getText());
                 status.setAlignment(Pos.CENTER_LEFT);
                 status.setEditable(false);
                 status.setText("Message Received " + time);
@@ -280,20 +276,20 @@ public class Conversation_View_controller extends ViewController {
     public void newMessage(String conversationKey, String messageKey,
                            String time, String from, String text, Map<String, Status> mem){
 
-        System.out.println("inside new message");
         time = convertTimeView(time, true);
-        if(mem.keySet().contains(from)){
+        if(mem.keySet().contains(thisUser)){
             if(convKey.isEmpty()){
                 setConversationKey(conversationKey);
-                if(mem.size() > 2){
-                    home.createNewConversationCard(connection.getCurrentUser().getConversationList().get(conversationKey));
-                }
+//                if(mem.size() > 2){
+//                    home.createNewConversationCard(connection.getCurrentUser().getConversationList().get(conversationKey));
+//                }
             }
-            if(from.equals(fromUser)){
+            if(from.equals(username.getText())){
                 receivedMessage(text);
                 status.setAlignment(Pos.CENTER_LEFT);
                 status.setEditable(false);
                 status.setText("Message Received " + time);
+                prevMess = status.getText();
             }
             else{
                 sentMessage(text);
@@ -306,6 +302,7 @@ public class Conversation_View_controller extends ViewController {
 
     private String convertTimeView(String serverTime, boolean newM){
 
+        System.out.println("server time " + serverTime);
         String newTime = serverTime.substring(5,7) + "/" + serverTime.substring(8,10) + "/" + serverTime.substring(2,4);
 
         int hour = Integer.parseInt(serverTime.substring(11,13));

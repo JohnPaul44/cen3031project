@@ -106,11 +106,11 @@ public class CreateGroupMessage_View_Controller extends ViewController {
         anchor.getChildren().add(temp);
 
         Conversation_View_controller convo = loadEdit.getController();
-        convo.setGroupMembers(groupMembers);
+        //convo.setGroupMembers(groupMembers);
         convo.passConnection(connection);
         convo.setUsername(groupMembers.toString());
         convo.setTopic();
-        convo.setHome(home);
+        //convo.setHome(home);
 
         home.setCurrentConvo(convo);
     }
