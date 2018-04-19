@@ -1,10 +1,12 @@
 package model;
 
-import connection.serverMessages.NotificationMessageReceivedMessage;
-import connection.serverMessages.NotificationMessageUpdatedMessage;
+import connection.serverMessages.notificationMessages.NotificationMessageReaction;
+import connection.serverMessages.notificationMessages.NotificationMessageReceivedMessage;
+import connection.serverMessages.notificationMessages.NotificationMessageUpdatedMessage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
@@ -20,7 +22,7 @@ public class Message implements Comparable<Message> {
 
     private String serverTime;
     private String clientTime;
-    private String[] to;
+    private ArrayList<String> to;
     private String messageKey;
     private String conversationKey;
     private String from;
@@ -28,9 +30,12 @@ public class Message implements Comparable<Message> {
     private enum Reaction {  }
     private Map<String, Reactions> reactions;
     private boolean typing;
+    private boolean read;
+
+    public Message() {}
 
     // Test Constructor
-    public Message(String serverTime, String clientTime, String[] to, String messageKey, String conversationKey,
+    public Message(String serverTime, String clientTime, ArrayList<String> to, String messageKey, String conversationKey,
                    String from, String text, Map<String, Reactions> reactions, boolean typing) {
         this.serverTime = serverTime;
         this.clientTime = clientTime;
@@ -43,42 +48,56 @@ public class Message implements Comparable<Message> {
         this.typing = typing;
     }
 
-    public Message(NotificationMessageReceivedMessage messageFromServer) {
-        this.conversationKey = messageFromServer.getConversationKey();
-        this.messageKey = messageFromServer.getMessageKey();
-        this.serverTime = messageFromServer.getServerTime();
-        this.from = messageFromServer.getFrom();
-        this.text = messageFromServer.getText();
-        if (messageFromServer.getReactions() != null) {
-            this.reactions = messageFromServer.getReactions();
-        }
-    }
-
-    // New Conversation
-    public Message(String[] to, String text, String clientTime) {
+    // Use this constructor for a new conversation
+    public Message(ArrayList<String> to, String text) {
         this.to = to;
         this.text = text;
-        this.clientTime = clientTime;
     }
 
-    // Existing Conversation
-    public Message(String conversationKey, String text, String clientTime) {
+    // Use this constructor for an existing Conversation
+    public Message(String conversationKey, String text) {
         this.conversationKey = conversationKey;
         this.text = text;
-        this.clientTime = clientTime;
+    }
+
+    // Use this constructor for reading a message
+    public Message(String conversationKey) {
+        this.conversationKey = conversationKey;
+    }
+
+    public Message(String conversationKey, boolean typing) {
+        this.conversationKey = conversationKey;
+        this.typing = typing;
     }
 
     public String getClientTime() { return clientTime; }
     public String getServerTime() { return serverTime; }
-    public String[] getTo() { return to; }
+    public ArrayList<String> getTo() { return to; }
     public String getFrom() { return from; }
     public String getConversationKey() { return conversationKey; }
     public String getMessageKey() { return messageKey; }
     public String getText() { return text; }
+    public Map<String, Reactions> getReactions() {
+        return reactions;
+    }
+    public boolean getRead(){
+        return read;
+    }
+    public boolean getTyping() {
+        return typing;
+    }
+
     public void setText(String text) { this.text = text; }
+    public void setClientTime(String clientTime) {
+        this.clientTime = clientTime;
+    }
 
     public void updateMessage(NotificationMessageUpdatedMessage message) {
         text = message.getText();
+    }
+
+    public void messageReactions(NotificationMessageReaction message) {
+        reactions = message.getReactions();
     }
 
     // Sorts messages by time.
@@ -87,11 +106,13 @@ public class Message implements Comparable<Message> {
     public int compareTo(Message anotherMessage) {
         Date thisMessageDate = null;
         Date anotherMessageDate = null;
+        String servertime = this.getServerTime().replace('T',' ').substring(0,23);
+        String anotherServertime = anotherMessage.getServerTime().replace('T',' ').substring(0,23);
         SimpleDateFormat sdf = new SimpleDateFormat(Globals.simpldDateFormat);
 
         if (this.serverTime != null) {
             try {
-                thisMessageDate = sdf.parse(this.serverTime);
+                thisMessageDate = sdf.parse(servertime);
             } catch (ParseException e) {
                 System.out.println("Error converting serverTime to Date while comparing messages: " + e);
             }
@@ -105,17 +126,17 @@ public class Message implements Comparable<Message> {
 
         if (anotherMessage.serverTime != null) {
             try {
-                thisMessageDate = sdf.parse(anotherMessage.serverTime);
+                anotherMessageDate = sdf.parse(anotherServertime);
             } catch (ParseException e) {
                 System.out.println("Error converting serverTime to Date while comparing messages: " + e);
             }
         } else {
             try {
-                thisMessageDate = sdf.parse(anotherMessage.clientTime);
+                anotherMessageDate = sdf.parse(anotherMessage.clientTime);
             } catch (ParseException e) {
                 System.out.println("Error converting clientTime to Date while comparing messages: " + e);
             }
         }
-        return anotherMessageDate.compareTo(thisMessageDate);
+        return thisMessageDate.compareTo(anotherMessageDate);
     }
 }

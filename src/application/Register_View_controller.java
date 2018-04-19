@@ -1,7 +1,7 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
-import connection.serverMessages.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,7 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
-import javafx.scene.Node;
+import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -19,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import model.Profile;
 
@@ -29,8 +30,8 @@ public class Register_View_controller extends ViewController {
         connection = con;
     }
 
-    ObservableList<Profile.Gender> genderFieldList = FXCollections.observableArrayList(Profile.Gender.values());
-    ObservableList<String> securityQuestionList = FXCollections.observableArrayList("<Security Questions>", "What is your mother's maiden name?", "What was the name of your first pet?", "What was your high school mascot?");
+    private ObservableList<Profile.Gender> genderFieldList = FXCollections.observableArrayList(Profile.Gender.values());
+    private ObservableList<String> securityQuestionList = FXCollections.observableArrayList("<Security Questions>", "What is your mother's maiden name?", "What was the name of your first pet?", "What was your high school mascot?");
 
 
     //Fields on the Register Screen
@@ -63,8 +64,12 @@ public class Register_View_controller extends ViewController {
     @FXML
     private TextField securityQuestionAnswer;
 
+    public Label getStatus(){return status;}
+    public void setStatus(String stat){status.setText(stat);}
+    public ChoiceBox getSecurityQuestion(){return securityQuestion;}
+
     //overrides so the enter key allows the user to register
-    public void registerEnterKey(KeyEvent keyEvent) throws Exception{
+    public void registerEnterKey(KeyEvent keyEvent){
     		if(keyEvent.getCode() == KeyCode.ENTER) {
     			//calls the same action that occurs when the enter button is pressed
     			ActionEvent aevent = new ActionEvent(keyEvent.getSource(), registerButton);
@@ -73,9 +78,9 @@ public class Register_View_controller extends ViewController {
     }
     
     	@FXML
-    public void registerButtonClicked(ActionEvent event) throws Exception {
+    public void registerButtonClicked(ActionEvent event){
         //error checking for empty fields
-        if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("") || phoneNumber().equals("") || securityAnswer().equals("")) {
+        if(username().equals("") || (passwordField.getText()).equals("") ||firstName().equals("") || lastName().equals("") || email().equals("") || phoneNumberField.getText().equals("") || securityAnswer().equals("") || securityQuestion().equals("<Security Questions>")) {
         		status.setText("Please enter: ");
         		if(username().equals("")) {
         			status.setText(status.getText() + "|username|  ");
@@ -92,29 +97,31 @@ public class Register_View_controller extends ViewController {
         		if(email().equals("")) {
         			status.setText(status.getText() + "|email|  ");
         		}
-        		if(phoneNumber().equals("")){
+        		if(phoneNumberField.getText().equals("")){
         		    status.setText(status.getText() + "|phone number|  ");
                 }
-                if(securityAnswer().equals("")){
+                if(securityAnswer().equals("") || securityQuestion().equals("<Security Questions>")){
         		    status.setText(status.getText() + "|security question|  ");
                 }
-        		return;
         }
         //error checking for mismatched passwords
         else if(!confPassword()) {
-        		//sets incorrect status in the message
-        		return;
+            //sets incorrect status in the message
+            status.setText("Error: passwords do not match");
+        }
+        else if(phoneNumber() == null){
+            status.setText("Invalid Phone Number");
         }
         else {
-            connection.registerNewUser(username(), checkedPassword(), firstName(), lastName(), email(), phoneNumber(), gender(), birthDay(), securityQuestion(), securityAnswer());
-            status.setText("Register Successful");
+            registerButton.getScene().setCursor(Cursor.WAIT);
 
-            //closes the login screen when the home screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
+            String default_color = String.valueOf(Color.GREEN);
+            connection.registerNewUser(username(), checkedPassword(), firstName(), lastName(), email(), phoneNumber(), gender(), birthDay(), securityQuestion(), securityAnswer(), default_color);
+            status.setText("Register Successful");
         }
     }
 
-    public void loggedIn(){
+    private void loggedIn(){
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/home.fxml"));
@@ -127,10 +134,12 @@ public class Register_View_controller extends ViewController {
 
             Parent root = loader.getRoot();
             Stage registerStage = new Stage();
-            Scene scene = new Scene(root, 700, 500);
+            Scene scene = new Scene(root, 880, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
+
+            registerButton.getScene().getWindow().hide();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -146,18 +155,16 @@ public class Register_View_controller extends ViewController {
         String confPassword = confirmPasswordField.getText();
 
         if (!password.equals(confPassword)){
-            status.setText("Error: passwords do not match");
             return false;
         }
         else if (password.equals(confPassword)) {
-            String passwordMathces = confPassword;
             return true;
         }
         return true;
     }
 
     private String checkedPassword(){
-        if (confPassword() == true){
+        if (confPassword()){
             return passwordField.getText();
         }
         else{
@@ -185,7 +192,6 @@ public class Register_View_controller extends ViewController {
         String phoneNum = phoneNumberField.getText();
         System.out.println(phoneNum);
         if (phoneNum.matches("[0-9]*") && !phoneNum.isEmpty() && phoneNum.length() == 10) {
-            System.out.println("Phone # accepted!");
             return phoneNum;
         }
         else if (phoneNum.isEmpty()){
@@ -194,8 +200,8 @@ public class Register_View_controller extends ViewController {
         }
         else {
             System.out.println("Numbers only! Please re-enter a valid phone number!");
+            return null;
         }
-        return null;
     }
 
     private Profile.Gender gender (){
@@ -227,7 +233,7 @@ public class Register_View_controller extends ViewController {
     }
 
     @FXML
-    public void BackButton(ActionEvent event) throws Exception{
+    public void BackButton(){
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/login.fxml"));
@@ -238,23 +244,20 @@ public class Register_View_controller extends ViewController {
             connection.setDelegate(login);
 
             Parent root = loader.getRoot();
-            Stage registerStage = new Stage();
-            Scene scene = new Scene(root, 700, 500);
+            Stage registerStage = (Stage) backButton.getScene().getWindow();
+            Scene scene = new Scene(root, 880, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
 
-            //closes the login screen when the home screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void notification(ServerMessage message) {
-        switch(message.getStatus()){
-            case NOTIFICATIONLOGGEDIN:
+    public void loggedInNotification(ErrorInformation errorInformation) {
+            if (errorInformation.getErrorNumber() == 0) {
                 status.setText("Register Successful");
                 Platform.runLater(new Runnable() {
                     @Override
@@ -262,40 +265,17 @@ public class Register_View_controller extends ViewController {
                         loggedIn();
                     }
                 });
-
-                break;
-            case NOTIFICATIONERROR:
-                status.setText("Username Unavailable");
-                break;
-            default:
-                break;
+            }
+            else {
+                System.out.println(errorInformation.getErrorString());
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            status.setText("Username Unavailable");
+                        }
+                    });
+            }
         }
     }
-    	
-    /*
-    @FXML
-    private int calcAge() {
-            Calendar now = Calendar.getInstance();
-            int year = now.get(Calendar.YEAR);
-            int month = now.get(Calendar.MONTH) + 1;
-            int day = now.get(Calendar.DAY_OF_MONTH);
-            if((DOBField.getValue() == null)){
-                int age = 0;
-                return age;
-            }
-            int birthYear = (DOBField.getValue().getYear());
-            int birthMonth = (DOBField.getValue().getMonthValue());
-            int birthDay = (DOBField.getValue().getDayOfMonth());
-            int age = year - birthYear;
-            if (birthMonth > month){
-                age--;
-            }
-            else if (month == birthMonth){
-                if(birthDay > day){
-                    age--;
-                }
-            }
-            return age;
-    }
-    */
-}
+
+

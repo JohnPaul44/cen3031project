@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane focusTraversable="true" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EditProfile_View_Controller">
+<AnchorPane fx:id="anchor" focusTraversable="true" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.EditProfile_View_Controller">
    <children>
-      <Label layoutX="623.0" layoutY="23.0" text="/*Edit*/" textFill="#fbfaf9" />
+      <Label layoutX="594.0" layoutY="23.0" text="/*Edit*/" textFill="#fbfaf9" />
       <TextField fx:id="firstName" layoutX="298.0" layoutY="60.0" onKeyPressed="#SaveChangesEventKey" promptText="First Name">
          <cursor>
             <Cursor fx:constant="TEXT" />
@@ -33,46 +33,32 @@
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextField>
-      <TextField fx:id="gender" layoutX="298.0" layoutY="160.0" onKeyPressed="#SaveChangesEventKey" prefHeight="23.0" prefWidth="341.0" promptText="Gender">
-         <font>
-            <Font size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="TEXT" />
-         </cursor>
-      </TextField>
-      <TextField fx:id="dob" layoutX="298.0" layoutY="191.0" onKeyPressed="#SaveChangesEventKey" prefHeight="23.0" prefWidth="341.0" promptText="DOB (Age)">
-         <font>
-            <Font size="12.0" />
-         </font>
-         <cursor>
-            <Cursor fx:constant="TEXT" />
-         </cursor>
-      </TextField>
       <Label layoutX="298.0" layoutY="242.0" prefHeight="18.0" prefWidth="366.0" text="Interests: (television shows, favorite foods, music, etc.)" textFill="#fbfaf9" />
-      <TextArea fx:id="interest" layoutX="298.0" layoutY="274.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Interests">
+      <TextArea fx:id="interest" layoutX="298.0" layoutY="274.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Interests" wrapText="true">
          <cursor>
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextArea>
       <Label layoutX="298.0" layoutY="348.0" prefHeight="18.0" prefWidth="366.0" text="Hobbies: (video games, instruments, sports, etc.)" textFill="#fbfaf9" />
-      <TextArea fx:id="hobbies" layoutX="298.0" layoutY="375.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Hobbies">
+      <TextArea fx:id="hobbies" layoutX="298.0" layoutY="375.0" onKeyPressed="#SaveChangesEventKey" prefHeight="62.0" prefWidth="348.0" promptText="Hobbies" wrapText="true">
          <cursor>
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextArea>
-      <Button fx:id="backButton" layoutX="20.0" layoutY="18.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #698F3F;" text="&lt;" textFill="#fbfaf9">
+      <Button fx:id="backButton" layoutX="465.0" layoutY="452.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #ff6961;" text="Discard Changes" textFill="#fbfaf9">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
+         <effect>
+            <Reflection />
+         </effect>
       </Button>
-      <Label layoutX="62.0" layoutY="23.0" text="System.out.chat()" textFill="#fbfaf9" />
       <TextField fx:id="lastName" layoutX="472.0" layoutY="60.0" onKeyPressed="#SaveChangesEventKey" promptText="Last Name">
          <cursor>
             <Cursor fx:constant="TEXT" />
          </cursor>
       </TextField>
-      <Button fx:id="save" layoutX="419.0" layoutY="452.0" mnemonicParsing="false" onAction="#SaveChangesButton" style="-fx-background-color: #698F3F;" text="Save Changes" textFill="#fbfaf9">
+      <Button fx:id="save" layoutX="329.0" layoutY="452.0" mnemonicParsing="false" onAction="#SaveChangesButton" style="-fx-background-color: #698F3F;" text="Save Changes" textFill="#fbfaf9">
          <effect>
             <Reflection />
          </effect>
@@ -82,12 +68,12 @@
       </Button>
       <AnchorPane layoutX="18.0" layoutY="60.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
          <children>
-            <TextArea fx:id="bio" layoutX="10.0" layoutY="259.0" onKeyPressed="#SaveChangesEventKey" prefHeight="117.0" prefWidth="226.0" promptText="Bio">
+            <TextArea fx:id="bio" layoutX="10.0" layoutY="259.0" onKeyPressed="#SaveChangesEventKey" prefHeight="117.0" prefWidth="226.0" promptText="Bio" wrapText="true">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextArea>
-            <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="89.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME" textFill="#fbfaf9">
+            <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="12.0" layoutY="4.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME" textFill="#030303">
                <font>
                   <Font size="16.0" />
                </font>
@@ -97,7 +83,35 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
+            <Circle fx:id="iconDesign" layoutX="145.0" layoutY="95.0" radius="72.0" stroke="BLACK" strokeType="INSIDE">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#698f3f" />
+                        <Stop color="#698f3f" offset="0.007434944237918215" />
+                        <Stop color="WHITE" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </fill>
+            </Circle>
+            <Circle fx:id="icon" fill="#698f3f" layoutX="104.0" layoutY="95.0" radius="72.0" stroke="BLACK" strokeType="INSIDE" />
+            <Label fx:id="icon_letter" alignment="CENTER" layoutX="32.0" layoutY="64.0" prefHeight="63.0" prefWidth="144.0" text="UN">
+               <font>
+                  <Font name="Verdana Bold" size="48.0" />
+               </font>
+            </Label>
+            <ColorPicker fx:id="color" layoutX="60.0" layoutY="179.0" onAction="#ChangeIconColor" />
          </children>
       </AnchorPane>
+      <ChoiceBox fx:id="genderField" layoutX="298.0" layoutY="158.0" prefHeight="27.0" prefWidth="341.0" />
+      <DatePicker fx:id="dob" layoutX="298.0" layoutY="196.0" prefHeight="27.0" prefWidth="341.0" />
+      <Button layoutX="104.0" layoutY="471.0" mnemonicParsing="false" onAction="#deleteUser" style="-fx-background-color: #ff0000;" text="Delete Account" textFill="WHITE">
+         <font>
+            <Font size="9.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
    </children>
 </AnchorPane>

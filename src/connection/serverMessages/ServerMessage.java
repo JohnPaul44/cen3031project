@@ -1,10 +1,6 @@
 package connection.serverMessages;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.annotations.SerializedName;
 
 public abstract class ServerMessage {
     public enum Status {
@@ -12,7 +8,10 @@ public abstract class ServerMessage {
         NOTIFICATIONERROR,
         NOTIFICATIONLOGGEDIN,
         NOTIFICATIONUSERONLINESTATUS,
+        NOTIFICATIONSECURITYQUESTION,
+        NOTIFICATIONPASSWORDCHANGED,
         NOTIFICATIONLOGGEDOUT,
+        NOTIFICATIONQUERYRESULTS,
         NOTIFICATIONCONTACTADDED,
         NOTIFICATIONCONTACTREMOVED,
         NOTIFICATIONPROFILEUPDATED,
@@ -23,10 +22,15 @@ public abstract class ServerMessage {
         NOTIFICATIONUSERREMOVEDFROMCONVERSATION,
         NOTIFICATIONMESSAGEREAD,
         NOTIFICATIONTYPING,
+        NOTIFICATIONFRIENDSHIPSTATS,
+        NOTIFICATIONACCOUNTDELETED,
 
         ACTIONREGISTER,
         ACTIONLOGIN,
+        ACTIONREQUESTSECURITYQUESTION,
+        ACTIONCHANGEPASSWORD,
         ACTIONLOGOUT,
+        ACTIONQUERYUSERS,
         ACTIONADDCONTACT,
         ACTIONREMOVECONTACT,
         ACTIONUPDATEPROFILE,
@@ -36,16 +40,32 @@ public abstract class ServerMessage {
         ACTIONADDUSERTOCONVERSATION,
         ACTIONREMOVEDUSERFROMCONVERSATION,
         ACTIONREADMESSAGE,
-        ACTIONSETTYPING;
+        ACTIONSETTYPING,
+        ACTIONGETFRIENDSHIPSTATISTICS,
+        ACTIONDELETEACCOUNT,
     }
-    int status;
+    public int status;
+    public int errorNumber = 0;
+    public String errorString;
 
     public Status getStatus() {
         return Status.values()[status];
     }
 
+    public int getErrorNumber() {
+        return errorNumber;
+    }
+
+    public String getErrorString() {
+        return errorString;
+    }
+
     public String toJsonString() {
         Gson gson = new Gson();
         return gson.toJson(this);
+    }
+
+    public boolean error() {
+        return errorNumber != 0;
     }
 }

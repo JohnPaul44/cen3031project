@@ -1,42 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.scene.control.*?>
 <?import java.lang.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Home_View_controller">
-   <children>
-      <Label layoutX="175.0" layoutY="29.0" text="Welcome to System.out.chat()!" textFill="#fbfaf9">
-         <font>
-            <Font size="24.0" />
-         </font></Label>
-      <Label fx:id="username" alignment="CENTER" contentDisplay="CENTER" layoutX="207.0" layoutY="64.0" prefHeight="11.0" prefWidth="287.0" text="Username" textAlignment="CENTER" textFill="#fbfaf9">
-         <font>
-            <Font size="16.0" />
-         </font></Label>
-      <Label layoutX="56.0" layoutY="122.0" text="First Name:" textFill="#fbfaf9" />
-      <Label layoutX="56.0" layoutY="150.0" text="Last Name:" textFill="#fbfaf9" />
-      <Label layoutX="56.0" layoutY="183.0" text="Email:" textFill="#fbfaf9" />
-      <Label layoutX="56.0" layoutY="214.0" text="Phone Number:" textFill="#fbfaf9" />
-      <Label layoutX="53.0" layoutY="276.0" text="Birthday:" textFill="#fbfaf9" />
-      <Label layoutX="56.0" layoutY="246.0" text="Gender:" textFill="#fbfaf9" />
-      <Label fx:id="firstName" layoutX="138.0" layoutY="122.0" text="firstName" textFill="#fbfaf9" />
-      <Label fx:id="lastName" layoutX="138.0" layoutY="150.0" text="last name" textFill="#fbfaf9" />
-      <Label fx:id="email" layoutX="104.0" layoutY="183.0" text="email" textFill="#fbfaf9" />
-      <Label fx:id="phone" layoutX="168.0" layoutY="214.0" text="phone" textFill="#fbfaf9" />
-      <Label fx:id="gender" layoutX="110.0" layoutY="246.0" text="gender" textFill="#fbfaf9" />
-      <Label fx:id="birthday" layoutX="115.0" layoutY="276.0" text="birthday" textFill="#fbfaf9" />
-      <Label layoutX="394.0" layoutY="122.0" text="Bio:" textFill="#fbfaf9" />
-      <Label fx:id="bio" alignment="TOP_LEFT" layoutX="434.0" layoutY="120.0" prefHeight="61.0" prefWidth="171.0" text="bio" textFill="#fbfaf9" wrapText="true" />
-      <Label layoutX="281.0" layoutY="193.0" text="What's on your mind?:" textFill="#fbfaf9" />
-      <Label fx:id="mind" alignment="TOP_LEFT" layoutX="434.0" layoutY="193.0" prefHeight="48.0" prefWidth="248.0" text="What's on your mind?" textFill="#fbfaf9" />
-      <Label layoutX="365.0" layoutY="246.0" text="Interests:" textFill="#fbfaf9" />
-      <Label fx:id="interests" alignment="TOP_LEFT" layoutX="440.0" layoutY="246.0" prefHeight="76.0" prefWidth="204.0" text="interests" textFill="#fbfaf9" />
-      <Label layoutX="365.0" layoutY="333.0" text="Hobbies:" textFill="#fbfaf9" />
-      <Label fx:id="hobbies" alignment="TOP_LEFT" layoutX="440.0" layoutY="333.0" prefHeight="68.0" prefWidth="191.0" text="Hobbies" textFill="#fbfaf9" />
-      <Button layoutX="91.0" layoutY="388.0" mnemonicParsing="false" onAction="#EditProfile" style="-fx-background-color: #698F3F;" text="Edit Profile" textFill="#fbfaf9" />
-      <Button layoutX="407.0" layoutY="388.0" mnemonicParsing="false" onAction="#Logout" style="-fx-background-color: #ff0000;" text="Log Out" textFill="#fbfaf9" />
-   </children>
-</AnchorPane>
+<SplitPane fx:id="split" dividerPositions="0.5" prefHeight="500.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Home_View_controller">
+   <items>
+      <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="500.0" maxWidth="200.0" minHeight="500.0" minWidth="200.0" prefHeight="500.0" prefWidth="200.0" style="-fx-background-color: #E7DECD;">
+         <content>
+            <Accordion fx:id="conversations" prefHeight="493.0" prefWidth="202.0" style="-fx-background-color: #E7DECD;">
+              <panes>
+                  <TitledPane fx:id="usernameAcc" animated="false" style="-fx-background-color: #E7DECD;" text="username">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="3.0" style="-fx-background-color: #E7DECD;">
+                           <children>
+                              <Label onMouseClicked="#loadCurrentProfile" text="View Profile">
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Label>
+                              <Label onMouseClicked="#loadEditProfile" text="Edit Profile">
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Label>
+                              <Label onMouseClicked="#Logout" text="Log Out">
+                                 <cursor>
+                                    <Cursor fx:constant="HAND" />
+                                 </cursor>
+                              </Label>
+                           </children>
+                        </VBox>
+                     </content>
+                  </TitledPane>
+                <TitledPane animated="false" text="Search Users">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <content>
+                        <VBox prefHeight="200.0" prefWidth="100.0" style="-fx-background-color: #E7DECD;">
+                           <children>
+                              <TextField fx:id="search" onKeyPressed="#Search" promptText="search for other users">
+                                 <cursor>
+                                    <Cursor fx:constant="TEXT" />
+                                 </cursor>
+                              </TextField>
+                           </children>
+                        </VBox>
+                     </content>
+                </TitledPane>
+                <TitledPane fx:id="explore" animated="false" collapsible="false" onMousePressed="#setLoading" onMouseReleased="#openExplore" text="Explore">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                </TitledPane>
+              </panes>
+            </Accordion>
+         </content>
+      </ScrollPane>
+      <AnchorPane fx:id="view" prefHeight="200.0" prefWidth="200.0" />
+   </items>
+</SplitPane>

@@ -1,30 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.effect.*?>
-<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.scene.image.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Register_View_controller">
+<BorderPane fx:id="border" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="880.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Register_View_controller">
    <left>
       <VBox prefHeight="522.0" prefWidth="210.0" translateX="20.0" BorderPane.alignment="CENTER">
          <children>
             <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Username*" translateX="120.0" translateY="2.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Password*" translateX="120.0" translateY="20.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm Password*" translateX="75.0" translateY="38.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name*" translateX="113.0" translateY="55.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name*" translateX="113.0" translateY="70.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Email*" translateX="133.0" translateY="90.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone #*" translateX="125.0" translateY="173.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Gender" translateX="125.0" translateY="188.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Date of Birth" translateX="110.0" translateY="202.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question*" translateX="75.0" translateY="58.0" />
-            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question Answer*" translateX="35.0" translateY="72.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Password*" translateX="120.0" translateY="21.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Confirm Password*" translateX="75.0" translateY="40.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="First Name*" translateX="113.0" translateY="58.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Last Name*" translateX="113.0" translateY="76.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Email*" translateX="133.0" translateY="95.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone #*" translateX="125.0" translateY="185.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Gender" translateX="125.0" translateY="204.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Date of Birth" translateX="110.0" translateY="218.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question*" translateX="75.0" translateY="70.0" />
+            <Text fill="#fbfaf9" strokeType="OUTSIDE" strokeWidth="0.0" text="Security Question Answer*" translateX="35.0" translateY="88.0" />
          </children>
       </VBox>
    </left>
@@ -91,22 +87,22 @@
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </TextField>
-            <ChoiceBox fx:id="genderField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="268.0" translateY="75.0">
+            <ChoiceBox fx:id="genderField" onKeyPressed="#registerEnterKey" prefHeight="27.0" prefWidth="514.0" translateY="75.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></ChoiceBox>
-            <DatePicker fx:id="DOBField" onKeyPressed="#registerEnterKey" prefHeight="25.0" prefWidth="261.0" translateY="80.0">
+            <DatePicker fx:id="DOBField" editable="false" onKeyPressed="#registerEnterKey" prefHeight="27.0" prefWidth="517.0" translateY="80.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></DatePicker>
-            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonClicked" prefHeight="50.0" prefWidth="103.0" style="-fx-background-color: #698F3F;" text="Register!" textFill="#fbfaf9" translateX="80.0" translateY="120.0">
+            <Button fx:id="registerButton" mnemonicParsing="false" onAction="#registerButtonClicked" prefHeight="50.0" prefWidth="103.0" style="-fx-background-color: #698F3F;" text="Register!" textFill="#fbfaf9" translateX="200.0" translateY="90.0">
                <effect>
                   <Reflection />
                </effect>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor></Button>
-            <ChoiceBox fx:id="securityQuestion" prefWidth="268.0" translateY="-130.0" />
+            <ChoiceBox fx:id="securityQuestion" prefHeight="27.0" prefWidth="512.0" translateY="-130.0" />
          </children>
       </VBox>
    </center>

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.effect.*?>
-<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Login_View_controller">
+<AnchorPane fx:id="anchor" prefHeight="500.0" prefWidth="880.0" style="-fx-background-color: #0A122A; -fx-border-color: #E7DECD; -fx-border-width: 8;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Login_View_controller">
    <children>
-      <AnchorPane focusTraversable="true" layoutX="378.0" layoutY="99.0" opacity="0.83" prefHeight="302.0" prefWidth="287.0" style="-fx-background-color: #E7DECD; -fx-border-color: #804E49; -fx-border-width: 6;">
+      <AnchorPane focusTraversable="true" layoutX="514.0" layoutY="101.0" opacity="0.83" prefHeight="302.0" prefWidth="287.0" style="-fx-background-color: #E7DECD; -fx-border-color: #804E49; -fx-border-width: 6;">
          <children>
             <TextField fx:id="username" layoutX="39.0" layoutY="73.0" onKeyPressed="#LoginEventKey" opacity="0.9" prefHeight="25.0" prefWidth="200.0" promptText="username">
                <cursor>
@@ -54,18 +54,30 @@
             <Glow />
          </effect>
       </AnchorPane>
-      <Label layoutX="30.0" layoutY="121.0" text="SYSTEM.OUT.CHAT()" textFill="#fbfaf9">
+      <QuadCurve controlX="-50.0" controlY="-100.0" endX="200.0" endY="100.0" fill="#182f6b" layoutX="240.0" layoutY="221.0" rotate="40.0" startX="-50.0" stroke="BLACK" strokeType="INSIDE" />
+      <QuadCurve controlX="-50.0" controlY="-100.0" endX="400.0" endY="100.0" fill="#182f69" layoutX="61.0" layoutY="191.0" rotate="35.0" startX="-50.0" stroke="BLACK" strokeType="INSIDE" />
+      <QuadCurve controlX="-50.0" controlY="-100.0" endX="200.0" endY="100.0" layoutX="181.0" layoutY="274.0" rotate="10.0" startX="-50.0" stroke="BLACK" strokeType="INSIDE">
+         <fill>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop color="#182f6b" />
+                  <Stop color="#182f6b" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </fill>
+      </QuadCurve>
+      <Label layoutX="98.0" layoutY="106.0" text="SYSTEM.OUT.CHAT()" textFill="#fbfaf9">
          <font>
             <Font name="System Font" size="30.0" />
          </font>
       </Label>
-      <Label layoutX="77.0" layoutY="164.0" text="HELLO_WORLD:~ MESSENGER$" textFill="#fbfaf9" />
-      <Label layoutX="160.0" layoutY="329.0" text="New?" textFill="#fbfaf9">
+      <Label layoutX="145.0" layoutY="149.0" text="HELLO_WORLD:~ MESSENGER$" textFill="#fbfaf9" />
+      <Label layoutX="229.0" layoutY="350.0" text="New?" textFill="#fbfaf9">
          <font>
             <Font name="Georgia" size="13.0" />
          </font>
       </Label>
-      <Button fx:id="createAnAccount" contentDisplay="CENTER" layoutX="111.0" layoutY="355.0" mnemonicParsing="false" onAction="#RegisterEvent" style="-fx-background-color: #698F3F;" text="Create an Account" textFill="#fbfaf9">
+      <Button fx:id="createAnAccount" contentDisplay="CENTER" layoutX="180.0" layoutY="376.0" mnemonicParsing="false" onAction="#RegisterEvent" style="-fx-background-color: #698F3F;" text="Create an Account" textFill="#fbfaf9">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>

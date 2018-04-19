@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="anchor" focusTraversable="true" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewProfile_View_Controller">
+    <children>
+        <Button fx:id="backButton" layoutX="20.0" layoutY="18.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #698F3F;" text="&lt;" textFill="#fbfaf9">
+            <cursor>
+                <Cursor fx:constant="HAND" />
+            </cursor>
+        </Button>
+        <Label layoutX="62.0" layoutY="23.0" text="System.out.chat()" textFill="#fbfaf9" visible="false" />
+        <AnchorPane layoutX="18.0" layoutY="60.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
+            <children>
+                <TextArea fx:id="bio" editable="false" focusTraversable="false" layoutX="10.0" layoutY="259.0" prefHeight="117.0" prefWidth="226.0" promptText="User has no Bio" wrapText="true">
+                    <cursor>
+                        <Cursor fx:constant="TEXT" />
+                    </cursor>
+                </TextArea>
+                <Label fx:id="usern" alignment="CENTER" contentDisplay="CENTER" layoutX="10.0" layoutY="169.0" prefHeight="17.0" prefWidth="226.0" text="USERNAME">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Label>
+            <Circle fx:id="icon_design" layoutX="137.0" layoutY="86.0" radius="72.0" stroke="BLACK" strokeType="INSIDE">
+               <fill>
+                  <LinearGradient endX="1.0" endY="1.0">
+                     <stops>
+                        <Stop color="#698f3f" />
+                        <Stop color="#698f3f" offset="0.007434944237918215" />
+                        <Stop color="WHITE" offset="1.0" />
+                     </stops>
+                  </LinearGradient>
+               </fill>
+            </Circle>
+            <Circle fx:id="icon" fill="#698f3f" layoutX="96.0" layoutY="86.0" radius="72.0" stroke="BLACK" strokeType="INSIDE" />
+            <Label fx:id="icon_letter" alignment="CENTER" layoutX="24.0" layoutY="55.0" prefHeight="63.0" prefWidth="144.0" text="U">
+               <font>
+                  <Font name="Verdana Bold" size="48.0" />
+               </font>
+            </Label>
+            <TextField fx:id="mind" editable="false" layoutX="13.0" layoutY="199.0" prefHeight="27.0" prefWidth="226.0" promptText="User has no Status">
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor>
+            </TextField>
+            </children>
+        </AnchorPane>
+        <Pane layoutX="277.0" layoutY="12.0" prefHeight="477.0" prefWidth="417.0">
+            <children>
+                <TextArea fx:id="interests" editable="false" focusTraversable="false" layoutX="21.0" layoutY="386.0" prefHeight="62.0" prefWidth="348.0" wrapText="true" />
+                <TextArea fx:id="hobbies" editable="false" focusTraversable="false" layoutX="21.0" layoutY="290.0" prefHeight="62.0" prefWidth="348.0" wrapText="true" />
+                <ProgressBar fx:id="levelProgress" layoutX="23.0" layoutY="204.0" prefHeight="34.0" prefWidth="348.0" progress="0.49" />
+            <Label fx:id="level" alignment="CENTER" contentDisplay="CENTER" layoutX="148.0" layoutY="203.0" prefHeight="36.0" prefWidth="87.0" text="level" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="25.0" />
+               </font>
+            </Label>
+            <TextField fx:id="name" editable="false" layoutX="22.0" layoutY="14.0" prefHeight="25.0" prefWidth="366.0" promptText="Name" />
+            <TextField fx:id="email" editable="false" layoutX="23.0" layoutY="46.0" prefHeight="25.0" prefWidth="366.0" promptText="Email" />
+            <TextField fx:id="dob" editable="false" layoutX="23.0" layoutY="78.0" prefHeight="25.0" prefWidth="188.0" promptText="Date of Birth" />
+            <Label layoutX="21.0" layoutY="264.0" prefHeight="18.0" prefWidth="366.0" text="Interests: (television shows, favorite foods, music, etc.)" textFill="#fbfaf9" />
+            <Label layoutX="21.0" layoutY="359.0" prefHeight="18.0" prefWidth="366.0" text="Hobbies: (video games, instruments, sports, etc.)" textFill="#fbfaf9" />
+            <TextField fx:id="gender" editable="false" layoutX="239.0" layoutY="78.0" prefHeight="25.0" prefWidth="148.0" promptText="Gender" />
+            <TextField fx:id="sent" alignment="CENTER" editable="false" layoutX="72.0" layoutY="157.0" prefHeight="36.0" prefWidth="91.0" promptText="Sent">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </TextField>
+            <TextField fx:id="received" alignment="CENTER" editable="false" layoutX="213.0" layoutY="157.0" prefHeight="36.0" prefWidth="91.0" promptText="Received">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </TextField>
+            <Label fx:id="sentLabel" layoutX="72.0" layoutY="139.0" prefHeight="18.0" prefWidth="38.0" text="Sent:" textFill="#fbfaf9" />
+            <Label fx:id="receivedLabel" layoutX="213.0" layoutY="139.0" prefHeight="18.0" prefWidth="61.0" text="Received:" textFill="#fbfaf9" />
+            </children>
+        </Pane>
+      <Button fx:id="remove" layoutX="96.0" layoutY="468.0" mnemonicParsing="false" onAction="#removeContact" style="-fx-background-color: #ff6961;" text="Remove Contact" textFill="WHITE">
+         <font>
+            <Font size="10.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Button fx:id="add" layoutX="96.0" layoutY="468.0" mnemonicParsing="false" onAction="#addContact" prefHeight="23.0" prefWidth="87.0" style="-fx-background-color: #698F3F;" text="Add Contact" textFill="WHITE">
+         <font>
+            <Font size="10.0" />
+         </font>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+    </children>
+</AnchorPane>

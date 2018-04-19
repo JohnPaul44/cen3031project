@@ -1,13 +1,14 @@
 package application;
 
+import connection.ErrorInformation;
 import connection.ServerConnection;
-import connection.serverMessages.ServerMessage;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -36,15 +37,23 @@ public class ChangePassword_View_controller extends ViewController {
 	@FXML
 	private TextField confPass;
 	@FXML
-	private Button backButton;
-	@FXML
-	private Button confirmButton;
-	@FXML
 	private Button changeButton;
 	@FXML
 	private Label status;
 	@FXML
 	private ChoiceBox securityQuestion;
+
+	public TextField getPhone(){
+		return phone;
+	}
+
+	public Label getStatus(){
+		return status;
+	}
+
+	public void setStatus(String stat){
+		status.setText(stat);
+	}
 	
 	public String getUsername() {
 		return username.getText();
@@ -56,13 +65,13 @@ public class ChangePassword_View_controller extends ViewController {
 	
 	ObservableList<String> securityQuestionList = FXCollections.observableArrayList("<Security Questions>", "What is your mother's maiden name?", "What was the name of your first pet?", "What was your high school mascot?");
     @FXML
-    private void initialize() {
-    		securityQuestion.setValue("<Security Questions>");
-    		securityQuestion.setItems(securityQuestionList);
-    }
+	public void setSecurityQuestion(String ques){
+    	securityQuestion.setValue(ques);
+    	securityQuestion.setItems(securityQuestionList);
+	}
 	
 	@FXML
-    public void BackButton(ActionEvent event) throws Exception{
+    public void BackButton(){
         try {
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(getClass().getResource("/application/login.fxml"));
@@ -73,51 +82,19 @@ public class ChangePassword_View_controller extends ViewController {
             connection.setDelegate(login);
 
             Parent root = loader.getRoot();
-            Stage registerStage = new Stage();
-            Scene scene = new Scene(root, 700, 500);
+            Stage registerStage = (Stage) changeButton.getScene().getWindow();
+            Scene scene = new Scene(root, 880, 500);
             scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
             registerStage.setScene(scene);
             registerStage.show();
 
-            //closes the old screen when the new screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-	
-	//event handlers for both when the login button is pressed or when the enter key is used
+
 	@FXML
-	public void confirmIdentityEventKey(KeyEvent keyEvent) throws Exception{
-		if(keyEvent.getCode() == KeyCode.ENTER) {
-		//calls the same action that occurs when the button is pressed
-		ActionEvent aevent = new ActionEvent(keyEvent.getSource(), confirmButton);
-		//pass the keyEvent into the button action event
-		confirmIdentity(aevent);
-		}
-	}
-	
-	@FXML
-	public void confirmIdentity(ActionEvent event) throws Exception{
-		//check the validity of the phone number
-		if(/*checkPhone(phone.getText())*/!phone.getText().equals("1234567890")) {
-			status.setText("Incorrect Credentials");
-			return;
-		}
-		//check the security question answer
-		if(/*checkSecurity(answer.getText())*/!answer.getText().equals("ans")) {
-			status.setText("Incorrect Credentials");
-			return;
-		}
-		
-		confirmButton.setVisible(false);
-		newPass.setVisible(true);
-		confPass.setVisible(true);
-		changeButton.setVisible(true);
-	}
-	
-	@FXML
-	public void changePasswordEventKey(KeyEvent keyEvent) throws Exception{
+	public void changePasswordEventKey(KeyEvent keyEvent){
 		if(keyEvent.getCode() == KeyCode.ENTER) {
 		//calls the same action that occurs when the button is pressed
 		ActionEvent aevent = new ActionEvent(keyEvent.getSource(), changeButton);
@@ -127,64 +104,73 @@ public class ChangePassword_View_controller extends ViewController {
 	}
 	
 	@FXML
-	public void changePassword(ActionEvent event) throws Exception{
+	public void changePassword(ActionEvent event){
 		//check that the two passwords match
 		if(!confPassword()) {
 			return;
 		}
 		//send the information to the database
-		
-		//opens confirmation screen
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getResource("/application/changePassConf.fxml"));
-		loader.load();
-		
-		//creates instance of the change password controller
-		//passes the username to the confirmation screen
-		ChangePassConf_View_controller conf = loader.getController();
-		conf.setUsername(username.getText());
-		
-		Parent root = loader.getRoot();
-		Stage changeStage = new Stage();
-		Scene scene = new Scene(root,250,200);
-		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		changeStage.setScene(scene);
-		changeStage.show();
+		connection.changePassword(username.getText(), answer.getText(), phone.getText(), newPass.getText());
 	}
-	
+
 	@FXML
-	public boolean confPassword() {
+	private void confPassChanged(){
+    	try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(getClass().getResource("/application/login.fxml"));
+			loader.load();
+
+			Login_View_controller login = loader.getController();
+			login.passConnection(connection);
+			connection.setDelegate(login);
+
+			Parent root = loader.getRoot();
+			Stage registerStage = (Stage) changeButton.getScene().getWindow();
+			Scene scene = new Scene(root, 880, 500);
+			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+			registerStage.setScene(scene);
+			registerStage.show();
+
+		} catch(Exception e){
+    		e.printStackTrace();
+		}
+
+	}
+
+	@FXML
+	private boolean confPassword() {
 		if(!newPass.getText().equals(confPass.getText())) {
 			status.setText("Passwords do not match");
 			return false;
 		}
 		return true;
 	}
-	
-	@FXML
-	public boolean checkPhone(String number) {
-		if(/*number is not associated with the username*/true){
-			status.setText("Incorrect phone number");
-			return false;
-		}
-		return true;
-	}
-	
-	@FXML
-	public boolean checkSecurityQuestion(String ans) {
-		if(/*answers do not match*/true) {
-			status.setText("Incorrect information");
-			return false;
-		}
-		return true;
-	}
-	
-	public void close(ActionEvent event) {
-		
-	}
 
 	@Override
-	public void notification(ServerMessage message) {
-
+	public void passwordChangedNotification(ErrorInformation errorInformation){
+    	if(errorInformation.getErrorNumber() == 0){
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					status.setText("Password Changed");
+					PauseTransition pause = new PauseTransition(
+							javafx.util.Duration.seconds(3)
+					);
+					pause.setOnFinished(event -> {
+						confPassChanged();
+					});
+					pause.play();
+				}
+			});
+		}
+		else{
+    		System.out.println(errorInformation.getErrorString());
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					status.setText("Incorrect Credentials");
+				}
+			});
+		}
 	}
 }

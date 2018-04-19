@@ -1,7 +1,9 @@
 package model;
 
-import connection.serverMessages.NotificationContactAddedMessage;
-import connection.serverMessages.NotificationUserOnlineStatusMessage;
+import connection.serverMessages.notificationMessages.NotificationContactAddedMessage;
+import connection.serverMessages.notificationMessages.NotificationUserOnlineStatusMessage;
+
+import java.util.HashMap;
 
 public class Contact {
     /*Username string `json:"username"`
@@ -9,6 +11,8 @@ public class Contact {
 
     private String username;
     private boolean online;
+    private Profile profile;
+    private FriendshipStats friendshipStats;
 
     // Test Constructor
     public Contact(String username, boolean online) {
@@ -18,17 +22,30 @@ public class Contact {
 
     public Contact(NotificationContactAddedMessage message) {
         username = message.getUsername();
+        profile = message.getProfile();
         online = false;
+        friendshipStats = new FriendshipStats(0,0,0);
     }
 
-    public String getUsername() {
-        return username;
+    public String getUsername() {return username;}
+
+    public boolean getOnline() {return online;}
+
+    public Profile getProfile() {return profile;}
+
+    public FriendshipStats getFriendshipStats() {
+        if(friendshipStats == null) {
+            friendshipStats = new FriendshipStats(0,0,0);
+        }
+        return friendshipStats;
     }
-    public boolean getOnline() {
-        return online;
+
+    public void setFriendshipStats(FriendshipStats friendshipStats) {
+        this.friendshipStats = friendshipStats;
     }
 
     public void updateOnline(NotificationUserOnlineStatusMessage message) {
         online = message.getOnline();
     }
+
 }

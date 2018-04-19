@@ -1,6 +1,7 @@
 package model;
 
 import connection.serverMessages.*;
+import connection.serverMessages.notificationMessages.*;
 
 import java.text.ParseException;
 
@@ -37,6 +38,9 @@ public class UserUpdater {
             case NOTIFICATIONMESSAGEUPDATED: // Message Updated
                 currentUser.updateMessage((NotificationMessageUpdatedMessage) serverMessage);
                 break;
+            case NOTIFICATIONMESSAGEREACTION: // Message Reactions
+                currentUser.messageReactions((NotificationMessageReaction) serverMessage);
+                break;
             case NOTIFICATIONUSERADDEDTOCONVERSATION: // User Added to Conversation
                 currentUser.addUserToConversation((NotificationUserAddedToConversationMessage) serverMessage);
                 break;
@@ -48,6 +52,10 @@ public class UserUpdater {
                 break;
             case NOTIFICATIONTYPING: // Typing
                 currentUser.updateMessageTyping((NotificationTypingMessage) serverMessage);
+                break;
+            case NOTIFICATIONFRIENDSHIPSTATS: // Contact updated
+                currentUser.friendshipStats((NotificationFriendshipStatsMessage) serverMessage);
+                break;
         }
     }
 }

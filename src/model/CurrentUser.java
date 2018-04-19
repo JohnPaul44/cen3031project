@@ -1,9 +1,11 @@
 package model;
 
-import connection.serverMessages.*;
+import connection.serverMessages.notificationMessages.*;
 
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class CurrentUser {
     private String userName;
@@ -66,17 +68,29 @@ public class CurrentUser {
         contactList.remove(message.getUsername());
     }
 
+    public void friendshipStats(NotificationFriendshipStatsMessage message) {
+        Contact contact = contactList.get(message.getUsername());
+        contact.setFriendshipStats(message.getFriendshipStats());
+    }
+
     public void updateProfile(NotificationProfileUpdatedMessage message) {
         profile = message.getProfile();
     }
 
     public void addMessage(NotificationMessageReceivedMessage message) throws ParseException {
         if (message.getConversation() == null) { // existing conversation
-            Message textMessage = new Message(message);
-            Conversation conversation = conversationList.get(message.getConversationKey());
+            Message textMessage = message.getMessage();
+            Conversation conversation = conversationList.get(textMessage.getConversationKey());
             conversation.addMessage(textMessage);
         } else { // new conversation
-            Conversation newConversation = message.getConversation();
+            Map<String, Conversation>  conversationMap = message.getConversation();
+            Conversation conversation = new Conversation();
+            Iterator it1 = conversationMap.entrySet().iterator();
+            while (it1.hasNext()) {
+                Map.Entry pair = (Map.Entry)it1.next();
+                conversation = (Conversation) pair.getValue();
+            }
+            Conversation newConversation = conversation;
             conversationList.put(newConversation.getConversationKey(), newConversation);
         }
     }
@@ -84,6 +98,11 @@ public class CurrentUser {
     public void updateMessage(NotificationMessageUpdatedMessage message) {
         Conversation conversation = conversationList.get(message.getConversationKey());
         conversation.updateMessage(message);
+    }
+
+    public void messageReactions(NotificationMessageReaction message) {
+        Conversation conversation = conversationList.get(message.getConversationKey());
+        conversation.messageReactions(message);
     }
 
     public void addUserToConversation(NotificationUserAddedToConversationMessage message) {
@@ -110,7 +129,7 @@ public class CurrentUser {
     }
 
     public void updateMessageTyping(NotificationTypingMessage message) {
-        Conversation conversation = conversationList.get(message.getConversationKey());
+        Conversation conversation = conversationList.get(message.getMessage().getConversationKey());
         conversation.updateTyping(message);
     }
 }

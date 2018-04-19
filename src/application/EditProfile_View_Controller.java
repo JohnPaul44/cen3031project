@@ -1,20 +1,22 @@
 package application;
 
 import connection.ServerConnection;
-import connection.serverMessages.ServerMessage;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Stage;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Circle;
+import model.Profile;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class EditProfile_View_Controller extends ViewController {
     ServerConnection connection;
@@ -22,12 +24,19 @@ public class EditProfile_View_Controller extends ViewController {
     public void passConnection(ServerConnection con){
         connection = con;
         setUsername(connection.getCurrentUser().getUserName());
-        setFirstName(connection.getCurrentUser().getProfile().getName());
+        setFirstName(connection.getCurrentUser().getProfile().getFirstName());
         setLastName(connection.getCurrentUser().getProfile().getLastName());
         setEmail(connection.getCurrentUser().getProfile().getEmail());
         setPhone(connection.getCurrentUser().getProfile().getPhone());
+        genderField.setItems(genderFieldList);
         setGender(connection.getCurrentUser().getProfile().getGender());
         setBirthday(connection.getCurrentUser().getProfile().getBirthday());
+        setBio(connection.getCurrentUser().getProfile().getBio());
+        setMind(connection.getCurrentUser().getProfile().getStatus());
+        setInterests(connection.getCurrentUser().getProfile().getInterests());
+        setHobbies(connection.getCurrentUser().getProfile().getHobbies());
+        setIconLetter();
+        setColorPicker();
     }
 
     @FXML
@@ -45,83 +54,103 @@ public class EditProfile_View_Controller extends ViewController {
     @FXML
     private TextField phone;
     @FXML
-    private TextField gender;
+    private ChoiceBox genderField;
     @FXML
-    private TextField dob;
+    private DatePicker dob;
     @FXML
     private TextArea interest;
     @FXML
     private TextArea hobbies;
     @FXML
     private Button save;
+    @FXML
+    private ColorPicker color;
+    @FXML
+    private Circle icon;
+    @FXML
+    private Circle iconDesign;
+    @FXML
+    private Label icon_letter;
+    @FXML
+    private AnchorPane anchor;
 
-    public void setUsername(String user){
+    private void setIconLetter(){
+        icon_letter.setText("" + connection.getCurrentUser().getUserName().charAt((0)));
+
+
+        Paint icon_color = Paint.valueOf(connection.getCurrentUser().getProfile().getColor());
+        icon.setFill(icon_color);
+        iconDesign.setFill(icon_color);
+        iconDesign.setOpacity(0.4);
+    }
+
+    private void setColorPicker(){
+        color.setValue((Color)icon.getFill());
+    }
+
+    private void setUsername(String user){
         username.setText(user);
     }
 
-    public void setFirstName(String first){
+    private void setFirstName(String first){
         firstName.setText(first);
     }
 
-    public void setLastName(String last){
+    private void setLastName(String last){
         lastName.setText(last);
     }
 
-    public void setEmail(String e){
+    private void setEmail(String e){
         email.setText(e);
     }
 
-    public void setPhone(String phoneNum){
+    private void setPhone(String phoneNum){
         phone.setText(phoneNum);
     }
 
-    public void setGender(String gen){
-        gender.setText(gen);
-    }
-
-    public void setBirthday(String birth){
-        if(birth.isEmpty()){
-            dob.setText("N/A");
+    private void setGender(String gen){
+        if(gen.equalsIgnoreCase("female")){
+            genderField.setValue(Profile.Gender.FEMALE);
+        }
+        else if(gen.equalsIgnoreCase("male")){
+            genderField.setValue(Profile.Gender.MALE);
+        }
+        else if(gen.equalsIgnoreCase("other")){
+            genderField.setValue(Profile.Gender.OTHER);
         }
         else{
-            dob.setText(birth);
+            genderField.setValue(Profile.Gender.NA);
         }
     }
 
-    public void setMind(String mindStatement){
+    private void setBirthday(String birth){
+        if(birth == null || birth.equals("null") || birth.equals("")){
+            return;
+        }
+        LocalDate birthdate = LocalDate.parse(birth);
+        dob.setValue(birthdate);
+    }
+
+    private void setMind(String mindStatement){
         mind.setText(mindStatement);
     }
 
-    public void setBio(String bioStatement){
+    private void setBio(String bioStatement){
         bio.setText(bioStatement);
     }
 
-    public void setInterests(String interestList){
-        interest.setText(interestList);
+    private void setInterests(ArrayList<String> interestList){
+        interest.setText(ArrayListToString(interestList));
     }
 
-    public void setHobbies(String hob){
-        hobbies.setText(hob);
+    private void setHobbies(ArrayList<String> hob){
+        hobbies.setText(ArrayListToString(hob));
     }
-
-    //initializes all the information on the profile
-//    @FXML
-//    public void initialize(){
-//        setUsername(connection.getCurrentUser().getUserName());
-//        setFirstName(connection.getCurrentUser().getProfile().getName());
-//        setLastName(connection.getCurrentUser().getProfile().getLastName());
-//        setEmail(connection.getCurrentUser().getProfile().getEmail());
-//        setPhone(connection.getCurrentUser().getProfile().getPhone());
-//        setGender(connection.getCurrentUser().getProfile().getGender());
-//        setBirthday(connection.getCurrentUser().getProfile().getBirthday());
-//
-//        //TODO: set the bio, what's on your mind, interests, hobbies. update the profile settings
-//    }
 
     //event handlers for both when the button is pressed or when the enter key is used
     @FXML
-    public void SaveChangesEventKey(KeyEvent keyEvent) throws Exception{
-        if(keyEvent.getCode() == KeyCode.ENTER) {
+    public void SaveChangesEventKey(KeyEvent keyEvent) {
+        if (keyEvent.getCode() == KeyCode.ENTER) {
             //calls the same action that occurs when the button is pressed
             ActionEvent aevent = new ActionEvent(keyEvent.getSource(), save);
             //pass the keyEvent into the button action event
@@ -129,11 +158,19 @@ public class EditProfile_View_Controller extends ViewController {
         }
     }
 
+    public void ChangeIconColor(){
+        System.out.println(color.getValue());
+        icon.setFill(color.getValue());
+        iconDesign.setFill(color.getValue());
+        iconDesign.setOpacity(0.4);
+    }
+
     @FXML
     public void SaveChangesButton(ActionEvent event){
-        //has limited error checking
-        //will update at a later time
 
+        //error checks if there is information in the required fields
+        //if there are empty required fields or if the input information is not correct, it just doesn't update the profile
+        //currently, does not alert the user of the incorrect information
         if(!firstName().isEmpty()){
             connection.getCurrentUser().getProfile().setName(firstName());
         }
@@ -143,75 +180,107 @@ public class EditProfile_View_Controller extends ViewController {
         if(!email().isEmpty()){
             connection.getCurrentUser().getProfile().setEmail(email());
         }
-        if(!phone().isEmpty()){
+        if(checkPhoneNumber()){
             connection.getCurrentUser().getProfile().setPhone(phone());
         }
-        if(!gender().isEmpty()){
-            connection.getCurrentUser().getProfile().setGender(gender());
-        }
-        if(!birthday().isEmpty()){
+        System.out.println("birthday" + birthday());
+        if(!birthday().equals("null")) {
             connection.getCurrentUser().getProfile().setBirthday(birthday());
         }
+        connection.getCurrentUser().getProfile().setGender(gender());
+
+        connection.getCurrentUser().getProfile().setColor(color());
+
+        connection.getCurrentUser().getProfile().setBio(bio.getText());
+        connection.getCurrentUser().getProfile().setStatus(mind.getText());
+        connection.getCurrentUser().getProfile().setHobbies(StringToArrayList(hobbies.getText()));
+        connection.getCurrentUser().getProfile().setInterests(StringToArrayList(interest.getText()));
 
         connection.updateProfile();
-
-        //TODO: setting the bio, whats on your mind, interest and hobbies
-
         //call the function to open the home screen up
-        BackButton(event);
+        BackButton();
     }
 
-    public String firstName(){
+    private String firstName(){
         return firstName.getText();
     }
 
-    public String lastName(){
+    private String lastName(){
         return lastName.getText();
     }
 
-    public String email(){
+    private String email(){
         return email.getText();
     }
 
-    public String phone(){
+    private String phone(){
         return phone.getText();
     }
 
-    public String gender(){
-        return gender.getText();
+    private ObservableList<Profile.Gender> genderFieldList = FXCollections.observableArrayList(Profile.Gender.values());
+    private String gender(){
+        return genderField.getValue().toString();
     }
 
-    public String birthday(){
-        return dob.getText();
+    private String color(){
+        String default_color = String.valueOf(color.getValue());
+        return default_color;
+    }
+
+    private String birthday(){
+        if(dob.getValue() == null){
+            return "";
+        }
+        return dob.getValue().toString();
+    }
+
+    private boolean checkPhoneNumber() {
+        String phoneNum = phone.getText();
+        if (phoneNum.matches("[0-9]*") && !phoneNum.isEmpty() && phoneNum.length() == 10) {
+            System.out.println("Phone # accepted!");
+            return true;
+        }
+        else {
+            System.out.println("Numbers only! Please re-enter a valid phone number!");
+        }
+        return false;
     }
 
     @FXML
-    public void BackButton(ActionEvent event){
+    public void BackButton(){
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(getClass().getResource("/application/home.fxml"));
-            loader.load();
+            loader.setLocation(getClass().getResource("/application/viewCurrentUser.fxml"));
+            AnchorPane temp = new AnchorPane();
+            try{
+                temp = loader.load();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            anchor.getChildren().add(temp);
 
-            Home_View_controller home = loader.getController();
-            home.passConnection(connection);
-            connection.setDelegate(home);
+            ViewCurrentUser_View_controller view = loader.getController();
+            view.passConnection(connection);
+            connection.setDelegate(view);
 
-            Parent root = loader.getRoot();
-            Stage registerStage = new Stage();
-            Scene scene = new Scene(root, 700, 500);
-            scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-            registerStage.setScene(scene);
-            registerStage.show();
-
-            //closes the login screen when the home screen pops up
-            ((Stage) ((Node) event.getSource()).getScene().getWindow()).close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void notification(ServerMessage message) {
+    public void deleteUser(){
+        FXMLLoader loadEdit = new FXMLLoader();
+        loadEdit.setLocation(getClass().getResource("/application/confirmDelete.fxml"));
+        AnchorPane temp = new AnchorPane();
+        try {
+            temp = loadEdit.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        anchor.getChildren().add(temp);
 
+        confirmDelete_View_Controller conf = loadEdit.getController();
+        conf.passConnection(connection);
+        conf.setAnchorPane(anchor);
     }
 }

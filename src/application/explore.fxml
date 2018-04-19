@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="anchor" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Explore_View_Controller">
+   <children>
+      <Label layoutX="16.0" layoutY="16.0" text="Explore" textFill="WHITE">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <ScrollPane hbarPolicy="NEVER" layoutX="-2.0" layoutY="41.0" prefHeight="460.0" prefViewportHeight="458.0" prefViewportWidth="666.0" prefWidth="660.0" vbarPolicy="ALWAYS">
+         <content>
+            <VBox fx:id="vbox" layoutX="-2.0" layoutY="41.0" prefHeight="458.0" prefWidth="643.0" spacing="5.0" style="-fx-background-color: #E7DECD;" />
+         </content>
+      </ScrollPane>
+      <Label fx:id="item" layoutX="582.0" layoutY="8.0" visible="false" />
+   </children>
+</AnchorPane>

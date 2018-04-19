@@ -1,6 +1,6 @@
 package model;
 
-import connection.serverMessages.*;
+import connection.serverMessages.notificationMessages.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,22 +18,14 @@ public class Conversation implements Comparable<Conversation> {
     private Map<String, Status> memberStatus;
     private HashMap<String, Message> messages;
 
+    public Conversation() {}
+
     // Test Constructor
     public Conversation(String conversationKey, String time, Map<String, Status> memberStatus, HashMap<String, Message> messages) {
         this.conversationKey = conversationKey;
         this.time = time;
         this.memberStatus = memberStatus;
         this.messages = messages;
-    }
-
-    public Conversation(NotificationMessageReceivedMessage messageFromServer) { // used when message received from server is first in a conversation
-        this.conversationKey = messageFromServer.getConversationKey();
-        this.time = messageFromServer.getServerTime();
-        this.memberStatus = new HashMap<>();
-        memberStatus.put(messageFromServer.getFrom(), new Status(true, false));
-        // TODO group message for first message status
-        this.messages = new HashMap<>();
-        messages.put(messageFromServer.getConversationKey(), new Message(messageFromServer));
     }
 
     public Conversation(Message firstMessage) {
@@ -60,17 +52,26 @@ public class Conversation implements Comparable<Conversation> {
     public HashMap<String, Message> getMessages() { return messages; }
 
     public void addMessage(Message message) throws ParseException {
-        messages.put(message.getConversationKey(), message);
-        Date currentConversationTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(time);
-        Date messageToAddTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(message.getServerTime());
-        if (messageToAddTime.after(currentConversationTime)) {
-            time = message.getServerTime();
-        }
+
+        messages.put(message.getMessageKey(), message);
+//        if(time!=null) {
+//            Date currentConversationTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(time);
+//            Date messageToAddTime = new SimpleDateFormat(Globals.simpldDateFormat).parse(message.getServerTime());
+//            if (messageToAddTime.after(currentConversationTime)) {
+//                time = message.getServerTime();
+//            }
+//        }
+        time = message.getServerTime();
     }
 
-    public void updateMessage(NotificationMessageUpdatedMessage notificationMessageUpdatedMessagemessage) {
-        Message message = messages.get(notificationMessageUpdatedMessagemessage.getMessageKey());
-        message.updateMessage(notificationMessageUpdatedMessagemessage);
+    public void updateMessage(NotificationMessageUpdatedMessage notificationMessageUpdatedMessageMessage) {
+        Message message = messages.get(notificationMessageUpdatedMessageMessage.getMessageKey());
+        message.updateMessage(notificationMessageUpdatedMessageMessage);
+    }
+
+    public void messageReactions(NotificationMessageReaction notificationMessageReactionMessage) {
+        Message message = messages.get(notificationMessageReactionMessage.getMessageKey());
+        message.messageReactions(notificationMessageReactionMessage);
     }
 
     public void addUser(NotificationUserAddedToConversationMessage message) {
@@ -87,7 +88,7 @@ public class Conversation implements Comparable<Conversation> {
     }
 
     public void updateTyping(NotificationTypingMessage message) {
-        Status status = memberStatus.get(message.getFrom());
+        Status status = memberStatus.get(message.getMessage().getFrom());
         status.updateTyping(message);
     }
 
