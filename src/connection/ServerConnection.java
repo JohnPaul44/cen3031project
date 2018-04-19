@@ -19,7 +19,7 @@ public class ServerConnection implements IServerConnection {
     private PrintWriter out;
     private BufferedReader in;
     private CurrentUser currentUser;
-    private String hostname = "35.231.80.25";
+    private String hostname = "systemoutchat.serveirc.com";
     private int portNumber = 8675;
     private ViewController delegate;
 
