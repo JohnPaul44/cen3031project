@@ -84,30 +84,22 @@ public class ServerConnection implements IServerConnection {
             HandlerFactory handlerFactory = new HandlerFactory();
             UserUpdater userUpdater = new UserUpdater(currentUser);
 
-            while (true) {
-                try {
-                    while ((messageFromServer = in.readLine()) != null) {
-                        jsonObject = parser.parse(messageFromServer).getAsJsonObject();
-                        System.out.println("Received: " + messageFromServer);
-                        ServerMessage serverMessage = messageFactory.produce(jsonObject);
+            try {
+                while ((messageFromServer = in.readLine()) != null) {
+                    jsonObject = parser.parse(messageFromServer).getAsJsonObject();
+                    System.out.println("Received: " + messageFromServer);
+                    ServerMessage serverMessage = messageFactory.produce(jsonObject);
 
-                        MessageHandler handler = handlerFactory.produce(serverMessage, userUpdater);
-                        handler.handle(delegate);
-                    }
-                } catch (IOException e) {
-                    System.out.println("Error while receiving a message from server: " + e);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    MessageHandler handler = handlerFactory.produce(serverMessage, userUpdater);
+                    handler.handle(delegate);
                 }
-
-                try {
-                    Thread.sleep(200);
-                } catch (Exception e) {
-                    // do nothing, it's fine...
-                }
-
-                System.out.println("Reconnecting to server");
+            } catch (IOException e) {
+                System.out.println("Error while receiving a message from server: " + e);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
+            System.out.println("done listening to server");
         });
 
         thread.start();
