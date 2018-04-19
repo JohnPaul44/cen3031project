@@ -139,8 +139,15 @@ func handleAddContact(user *ds.User, conn net.Conn, message *msg.ServerMessage) 
 
 	rsp.Username = message.Username
 	rsp.Profile = &contactProfile
-
 	sendServerMessageToUser(user.Username, rsp)
+
+	onlineStatusRsp := new(msg.ServerMessage)
+	onlineStatusRsp.Status = msg.NotificationUserOnlineStatus
+	onlineStatusRsp.Username = message.Username
+	onlineStatusRsp.Online = new(bool)
+	*onlineStatusRsp.Online = ds.ConnectionsContains(*message.Username)
+	sendServerMessageToUser(user.Username, onlineStatusRsp)
+
 	log.Printf("%s added %s as a contact\n", user.Username, *message.Username)
 
 	// TODO: send notification to contact that user.Username has added him/her as a contact
