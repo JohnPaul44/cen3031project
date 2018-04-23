@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.*?>
@@ -79,7 +80,7 @@
                </cursor>
             </TextField>
             <PasswordField fx:id="securityQuestionAnswer" promptText="Please Enter Your Answer To The Question Selected Above" translateY="65.0" />
-            <TextField fx:id="phoneNumberField" onKeyPressed="#registerEnterKey" promptText="(Optional) Please Enter Your Phone #" translateY="70.0">
+            <TextField fx:id="phoneNumberField" onKeyPressed="#registerEnterKey" promptText="Please Enter Your Phone #" translateY="70.0">
                <font>
                   <Font size="14.0" />
                </font>

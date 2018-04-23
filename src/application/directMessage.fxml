@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="anchor" prefHeight="425.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Conversation_View_controller">
+<AnchorPane fx:id="anchor" maxHeight="500.0" maxWidth="659.0" minHeight="500.0" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Conversation_View_controller">
    <children>
       <Label fx:id="username" layoutX="14.0" layoutY="6.0" prefHeight="17.0" prefWidth="333.0" text="username" textFill="WHITE" />
       <AnchorPane layoutY="23.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="659.0" style="-fx-background-color: #0A122A;">

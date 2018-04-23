@@ -20,7 +20,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="anchor" focusTraversable="true" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewProfile_View_Controller">
+<AnchorPane fx:id="anchor" focusTraversable="true" maxWidth="659.0" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewProfile_View_Controller">
     <children>
         <Button fx:id="backButton" layoutX="20.0" layoutY="18.0" mnemonicParsing="false" onAction="#BackButton" style="-fx-background-color: #698F3F;" text="&lt;" textFill="#fbfaf9">
             <cursor>
@@ -28,7 +28,7 @@
             </cursor>
         </Button>
         <Label layoutX="62.0" layoutY="23.0" text="System.out.chat()" textFill="#fbfaf9" visible="false" />
-        <AnchorPane layoutX="18.0" layoutY="60.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
+        <AnchorPane layoutX="18.0" layoutY="52.0" prefHeight="398.0" prefWidth="245.0" style="-fx-background-color: #E7DECD; -fx-border-width: 6; -fx-border-color: #804E49;">
             <children>
                 <TextArea fx:id="bio" editable="false" focusTraversable="false" layoutX="10.0" layoutY="259.0" prefHeight="117.0" prefWidth="226.0" promptText="User has no Bio" wrapText="true">
                     <cursor>
@@ -74,12 +74,12 @@
                   <Font name="System Bold" size="25.0" />
                </font>
             </Label>
-            <TextField fx:id="name" editable="false" layoutX="22.0" layoutY="14.0" prefHeight="25.0" prefWidth="366.0" promptText="Name" />
-            <TextField fx:id="email" editable="false" layoutX="23.0" layoutY="46.0" prefHeight="25.0" prefWidth="366.0" promptText="Email" />
+            <TextField fx:id="name" editable="false" layoutX="22.0" layoutY="14.0" prefHeight="27.0" prefWidth="348.0" promptText="Name" />
+            <TextField fx:id="email" editable="false" layoutX="23.0" layoutY="46.0" prefHeight="27.0" prefWidth="348.0" promptText="Email" />
             <TextField fx:id="dob" editable="false" layoutX="23.0" layoutY="78.0" prefHeight="25.0" prefWidth="188.0" promptText="Date of Birth" />
             <Label layoutX="21.0" layoutY="264.0" prefHeight="18.0" prefWidth="366.0" text="Interests: (television shows, favorite foods, music, etc.)" textFill="#fbfaf9" />
             <Label layoutX="21.0" layoutY="359.0" prefHeight="18.0" prefWidth="366.0" text="Hobbies: (video games, instruments, sports, etc.)" textFill="#fbfaf9" />
-            <TextField fx:id="gender" editable="false" layoutX="239.0" layoutY="78.0" prefHeight="25.0" prefWidth="148.0" promptText="Gender" />
+            <TextField fx:id="gender" editable="false" layoutX="228.0" layoutY="78.0" prefHeight="27.0" prefWidth="144.0" promptText="Gender" />
             <TextField fx:id="sent" alignment="CENTER" editable="false" layoutX="72.0" layoutY="157.0" prefHeight="36.0" prefWidth="91.0" promptText="Sent">
                <font>
                   <Font size="15.0" />
@@ -94,7 +94,7 @@
             <Label fx:id="receivedLabel" layoutX="213.0" layoutY="139.0" prefHeight="18.0" prefWidth="61.0" text="Received:" textFill="#fbfaf9" />
             </children>
         </Pane>
-      <Button fx:id="remove" layoutX="96.0" layoutY="468.0" mnemonicParsing="false" onAction="#removeContact" style="-fx-background-color: #ff6961;" text="Remove Contact" textFill="WHITE">
+      <Button fx:id="remove" layoutX="97.0" layoutY="460.0" mnemonicParsing="false" onAction="#removeContact" style="-fx-background-color: #ff6961;" text="Remove Contact" textFill="WHITE">
          <font>
             <Font size="10.0" />
          </font>
@@ -102,7 +102,7 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
-      <Button fx:id="add" layoutX="96.0" layoutY="468.0" mnemonicParsing="false" onAction="#addContact" prefHeight="23.0" prefWidth="87.0" style="-fx-background-color: #698F3F;" text="Add Contact" textFill="WHITE">
+      <Button fx:id="add" layoutX="100.0" layoutY="458.0" mnemonicParsing="false" onAction="#addContact" prefHeight="23.0" prefWidth="87.0" style="-fx-background-color: #698F3F;" text="Add Contact" textFill="WHITE">
          <font>
             <Font size="10.0" />
          </font>

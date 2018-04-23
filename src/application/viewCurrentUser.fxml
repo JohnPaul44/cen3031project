@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.*?>
@@ -8,7 +9,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="anchor" focusTraversable="true" maxWidth="504.0" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewCurrentUser_View_controller">
+<AnchorPane fx:id="anchor" focusTraversable="true" maxWidth="659.0" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" style="-fx-background-color: #0A122A;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ViewCurrentUser_View_controller">
     <children>
         <Label layoutX="569.0" layoutY="27.0" text="/*View*/" textFill="#fbfaf9" />
         <TextField fx:id="firstName" editable="false" layoutX="285.0" layoutY="66.0" promptText="First Name">

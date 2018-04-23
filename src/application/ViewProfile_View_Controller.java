@@ -4,6 +4,8 @@ import connection.ServerConnection;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -192,7 +194,7 @@ public class ViewProfile_View_Controller extends ViewController {
     @FXML
     public void BackButton(){
         try {
-            home.SearchHelper(usern.getText());
+            home.SearchHelper(home.getSearchField());
         } catch (Exception e) {
             e.printStackTrace();
         }

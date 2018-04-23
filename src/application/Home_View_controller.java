@@ -218,6 +218,10 @@ public class Home_View_controller extends ViewController{
     private Home_View_controller home;
     private Explore_View_Controller expl;
 
+    public String getSearchField(){
+        return search.getText();
+    }
+
     public void setHome(Home_View_controller h){
         home = h;
     }

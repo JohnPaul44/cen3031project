@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane fx:id="split" dividerPositions="0.5" prefHeight="500.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Home_View_controller">
+<SplitPane fx:id="split" dividerPositions="200.0" prefHeight="500.0" prefWidth="880.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Home_View_controller">
    <items>
       <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" maxHeight="500.0" maxWidth="200.0" minHeight="500.0" minWidth="200.0" prefHeight="500.0" prefWidth="200.0" style="-fx-background-color: #E7DECD;">
          <content>
@@ -62,6 +62,6 @@
             </Accordion>
          </content>
       </ScrollPane>
-      <AnchorPane fx:id="view" prefHeight="200.0" prefWidth="200.0" />
+      <AnchorPane fx:id="view" maxWidth="659.0" minWidth="659.0" prefHeight="500.0" prefWidth="659.0" />
    </items>
 </SplitPane>

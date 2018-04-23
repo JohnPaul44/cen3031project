@@ -89,6 +89,8 @@ public class Search_View_Controller extends ViewController{
             a.setFont(Font.font("System", FontWeight.BOLD,14));
             a.setAlignment(Pos.CENTER);
 
+            gridp.setVgap(3);
+
             gridp.addRow(0, u, n, e, a, new Label(""), new Label(""));
             grid = gridp;
         }
