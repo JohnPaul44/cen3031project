@@ -14,7 +14,6 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		try {
-
 			//set icon
 			primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("taskbarIcon.png")));
 			ServerConnection connection = new ServerConnection();
@@ -32,6 +31,7 @@ public class Main extends Application {
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setScene(scene);
 			primaryStage.show();
+			primaryStage.setOnCloseRequest(e -> System.exit(1));
 			primaryStage.setResizable(false);
 			login.getUsername().requestFocus();
 		} catch(Exception e) {
